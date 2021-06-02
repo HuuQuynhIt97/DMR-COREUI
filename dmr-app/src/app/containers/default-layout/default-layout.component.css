@@ -1,0 +1,10 @@
+.app-header .navbar-brand {
+    display: inline-flex!important;
+    align-items: center!important;
+    justify-content: center!important;
+    width: 155px!important;
+    /* height: 55px; */
+    padding: 0!important;
+    margin-right: 0!important;
+    background-color: transparent!important;
+}

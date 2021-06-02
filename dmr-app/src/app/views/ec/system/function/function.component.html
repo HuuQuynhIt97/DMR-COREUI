@@ -1,0 +1,48 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Function List</h5>
+      </div>
+      <ejs-treegrid #treeGrid id="treegrid" [dataSource]='data' [toolbar]='toolbarOptionsTree' [treeColumnIndex]='1'
+        [editSettings]='editSettingsTree' childMapping='childNodes'
+        (actionComplete)="actionComplete($event)" enableCollapseAll="true"
+        (created)='created()' (queryCellInfo)="queryCellInfoEvent($event)"
+        [allowPaging]='true' [pageSettings]='pageSettings'
+         allowSorting='true' [contextMenuItems]='contextMenuItems2'
+         (toolbarClick)='toolbarClick($event)' (contextMenuClick)='contextMenuClick($event)'
+        (actionBegin)="actionBegin($event)" gridLines='Both' (rowSelected)="rowSelected($event)"
+        >
+        <e-columns>
+
+          <e-column field='entity.index' headerText='#' width='70' textAlign='Center' isPrimaryKey='true' >
+          </e-column>
+            <e-column field='entity.code' headerText='Function Code' width='200' textAlign='Left'>
+            </e-column>
+            <e-column field='entity.name' headerText='Function Name' width='200' textAlign='Left'>
+            </e-column>
+            <!-- <e-column field='entity.icon' headerText='Icon' width='200' textAlign='Center'>
+              <ng-template #template let-data>
+                <i class="font-2xl" [class]="data.icon"></i>
+              </ng-template>
+            </e-column> -->
+            <e-column field='entity.url' headerText='Url' width='200' textAlign='Center'>
+            </e-column>
+
+            <e-column field='entity.sequence' headerText='Sequence' width='100' textAlign='Center'>
+            </e-column>
+            <e-column field='entity.languageID' headerText='languageID' width='120' textAlign='Center'>
+            </e-column>
+
+            <e-column field='entity.moduleName' headerText='Module name' width='200' textAlign='Center'>
+              <ng-template #editTemplate let-data>
+                <ejs-dropdownlist #moduleDropdownlist [dataSource]='moduleData' [value]="data.entity.moduleName" [fields]='fieldsModule'
+                  [allowFiltering]='true' (change)='onChangeModule($event)'>
+                </ejs-dropdownlist>
+              </ng-template>
+            </e-column>
+        </e-columns>
+      </ejs-treegrid>
+    </div>
+  </div>
+</div>

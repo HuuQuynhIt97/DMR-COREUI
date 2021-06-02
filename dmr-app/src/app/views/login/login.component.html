@@ -1,0 +1,52 @@
+
+<ngx-spinner [fullScreen]="true" type="square-jelly-box" size="medium">
+  <p class="loading">Loading data...</p>
+</ngx-spinner>
+
+<div class="app-body">
+  <main class="main d-flex align-items-center" style="margin-top: 20vh;">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mx-auto">
+          <div class="card-group">
+            <div class="card p-4" style="background: rgba(238, 238, 238, 0.7); border: 1px solid #DDD;">
+              <div class="card-body">
+                <form (ngSubmit)="login()" #form="ngForm">
+                  <h3 style="font-size: 20px;" class="text-muted">Digital Mixing Room System</h3>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control"
+                     [(ngModel)]="username"
+                      name="username"
+                     placeholder="Username" autocomplete="username" required>
+                  </div>
+                  <div class="input-group mb-4">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-lock"></i></span>
+                    </div>
+                    <input type="password" name='password' [(ngModel)]="password" class="form-control" placeholder="Password" autocomplete="current-password"
+                      required>
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                    </div>
+                    <div class="col-6 text-right">
+                      <button type="submit" [disabled]="!form.valid" class="btn btn-primary px-4">Login</button>
+                      <!-- <button type="button" class="btn btn-link px-0">Forgot password?</button> -->
+                    </div>
+                  </div>
+                </form>
+                <div class="checkbox mb-3 text-danger" *ngIf="loginError">
+                  Login failed. Please try again.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

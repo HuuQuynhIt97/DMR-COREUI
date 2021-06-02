@@ -1,0 +1,42 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    <i class="fas fa-plus"></i> {{title}}
+  </h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12" *ngFor="let item of translations">
+      <label>Name ({{item.languageName}}): </label>
+      <div class="form-group">
+        <input type="text" [(ngModel)]="item.name" placeholder="{{item.languageName}}" class="form-control" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <label>Icon: </label>
+      <div class="form-group">
+        <input name="icon" type="text" [(ngModel)]="module.icon" placeholder="Icon" class="form-control" />
+      </div>
+    </div>
+      <div class="col-md-6">
+        <label>URL: </label>
+        <div class="form-group">
+          <input name="url" type="text" [(ngModel)]="module.url" placeholder="URL" class="form-control" />
+        </div>
+      </div>
+    <div class="col-md-2">
+      <label>Sequence: </label>
+      <div class="form-group">
+        <input name="sequence" type="text" [(ngModel)]="module.sequence" placeholder="Sequence"
+          class="form-control" />
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="activeModal.close('Close click')">Close</button>
+  <button type="submit" (click)='createModule()' class="btn btn-primary">Save</button>
+</div>
