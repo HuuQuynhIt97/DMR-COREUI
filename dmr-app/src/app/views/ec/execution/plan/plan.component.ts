@@ -414,7 +414,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // pass the filter data source, filter query to updateData method.
     e.updateData(this.buildings as any, query);
   }
-  select(args){
+  filterLineData(){
     const selectedRecords = this.grid.dataSource as any[];
     console.log(selectedRecords);
     const data = selectedRecords;
@@ -638,7 +638,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   actionBegin(args) {
-    this.select(args)
+    this.filterLineData()
     if (args.requestType === 'add' && args.type === "actionBegin") {
       args.data.hourlyOutput = 120;
     }
