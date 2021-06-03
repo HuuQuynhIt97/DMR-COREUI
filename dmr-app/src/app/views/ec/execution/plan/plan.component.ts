@@ -140,7 +140,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   period: any = {};
   planID: number;
   isSTF: boolean;
-  lines: [] = [];
+  lines: any[] = [];
   lineStop: any[] = [];
   kindOfLine = 0;
   bpfcKindData: number[] = [];
@@ -414,9 +414,26 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // pass the filter data source, filter query to updateData method.
     e.updateData(this.buildings as any, query);
   }
+  select(args){
+    const selectedRecords = this.grid.dataSource as any[];
+    console.log(selectedRecords);
+    const data = selectedRecords;
+    const building_name = data.map((item: any) => {
+      return item.buildingName;
+    });
+    for (const item of building_name) {
+      for (var i = 0; i < this.lines.length; i++) {
+        if (this.lines[i].name == item) {
+          this.lines.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
   getAllLine(buildingID) {
     this.planService.getLines(buildingID).subscribe((res: any) => {
       this.lines = res;
+
       this.lineStop = res;
     });
   }
@@ -621,6 +638,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   actionBegin(args) {
+    this.select(args)
     if (args.requestType === 'add' && args.type === "actionBegin") {
       args.data.hourlyOutput = 120;
     }
@@ -707,6 +725,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           if (res) {
             this.alertify.success('Tạo thành công!<br>Created succeeded!');
             this.getAll();
+            this.getAllLine(this.buildingID)
             this.achievementRate();
             this.clearForm();
           } else {

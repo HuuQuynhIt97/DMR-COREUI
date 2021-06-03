@@ -53,7 +53,7 @@
                 <ejs-dropdownlist #buildingNameDropdownlist id="buildingNameDropdownlist" [dataSource]='lines'
                   [placeholder]="'Select a line' | translate" [value]="data.buildingID" popupHeight='200px'
                   popupWidth='250px' [fields]='fieldsLine' [allowFiltering]='true'
-                  (change)='onChangeLine($event, data)'>
+                  (change)='onChangeLine($event, data)' >
                 </ejs-dropdownlist>
               </ng-template>
             </e-column>
