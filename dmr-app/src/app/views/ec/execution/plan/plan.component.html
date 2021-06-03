@@ -189,7 +189,7 @@
                     (click)="openChangeBPFCModalComponent(changeBPFCModal, data)"
                     class="btn btn-xs btn-primary step1-li"> <i class="fas fa-arrows-alt-h"></i> </button>
                 </div>
-                <div class="btn-group ml-1" *ngIf="data.isOffline === false && data.isGenerate == false || data.isOffline">
+                <div class="btn-group ml-1" *ngIf="data.isOffline === false && data.isGenerate == false ">
                   <button type="button" (click)="delete(data.id)" class="btn btn-xs btn-danger"  appPermission appFunction="Work Plan" appAction="DELETE"><i
                       class="fa fa-trash"></i> </button>
                 </div>
