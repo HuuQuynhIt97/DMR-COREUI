@@ -1,3 +1,4 @@
+import { AdditionRemarkComponent } from './addition-remark/addition-remark.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/_core/_guards/auth.guard';
@@ -14,6 +15,15 @@ const routes: Routes = [
   {
     path: '',
     children: [
+      {
+        path: 'addition-remark',
+        component: AdditionRemarkComponent,
+        data: {
+          title: 'Remark',
+          breadcrumb: 'Remark'
+        },
+        canActivate: [AuthGuard]
+      },
       {
         path: 'account',
         component: AccountComponent,

@@ -35,6 +35,18 @@ namespace DMR_API.Controllers
             return Ok(ingredients);
         }
 
+        //Update 08/04/2021 - Leo
+        [HttpPost]
+        public async Task<IActionResult> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity)
+        {
+            return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouseV1(entity));
+        }
+        [HttpPost]
+        public async Task<IActionResult> ScanQRCodeOutputV1(ScanQrCodeDto entity)
+        {
+            return Ok(await _ingredientService.ScanQRCodeOutputV1(entity));
+        }
+        //end update
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -142,12 +154,14 @@ namespace DMR_API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create1(IngredientDto1 ingredientIngredientDto)
         {
-            if (await _ingredientService.CheckExists(ingredientIngredientDto.ID))
-                return BadRequest("Ingredient ID already exists!");
-            if (await _ingredientService.CheckBarCodeExists(ingredientIngredientDto.MaterialNO))
-                return BadRequest("Ingredient Material# already exists!");
-            if (await _ingredientService.CheckExistsName(ingredientIngredientDto.Name))
-                return BadRequest("Ingredient Name already exists!");
+            //if (await _ingredientService.CheckExists(ingredientIngredientDto.ID))
+            //    return BadRequest("Ingredient ID already exists!");
+            //if (await _ingredientService.CheckBarCodeExists(ingredientIngredientDto.MaterialNO))
+            //    return BadRequest("Ingredient Material# already exists!");
+            //if (await _ingredientService.CheckExistsName(ingredientIngredientDto.Name))
+            //    return BadRequest("Ingredient Name already exists!");
+            if (await _ingredientService.CheckExistsIngredient(ingredientIngredientDto.Name, ingredientIngredientDto.MaterialNO))
+                return BadRequest("Ingredient already exists!");
             ingredientIngredientDto.CreatedDate = DateTime.Now.ToString("MMMM dd, yyyy HH:mm:ss tt");
             if (await _ingredientService.Add1(ingredientIngredientDto))
             {

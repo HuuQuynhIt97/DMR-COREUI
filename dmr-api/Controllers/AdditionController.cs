@@ -64,6 +64,7 @@ namespace DMR_API.Controllers
         //    Response.AddPagination(lists.CurrentPage, lists.PageSize, lists.TotalCount, lists.TotalPages);
         //    return Ok(lists);
         //}
+
         [HttpPost]
         public async Task<IActionResult> CreateRange(List<AdditionDto> create)
         {
@@ -74,6 +75,42 @@ namespace DMR_API.Controllers
 
             throw new Exception("Creating the addition failed on save");
         }
+
+        //Addition - Remak
+        [HttpGet]
+        public async Task<IActionResult> GetAllRemark()
+        {
+            var lines = await _additionService.GetAllRemark();
+            return Ok(lines);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddRemark(RemarkDto create)
+        {
+            if (await _additionService.AddRemark(create))
+            {
+                return NoContent();
+            }
+
+            throw new Exception("Creating the Remark failed on save");
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateRemark(RemarkDto update)
+        {
+            if (await _additionService.UpdateRemark(update))
+                return NoContent();
+            return BadRequest($"Updating Remark {update.ID} failed on save");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRemark(int id)
+        {
+            if (await _additionService.DeleteRemark(id))
+                return NoContent();
+            throw new Exception("Error deleting the Remark");
+        }
+
+        //End Addition-Remark
         [HttpDelete]
         public async Task<IActionResult> DeleteRange([FromQuery]List<int> idList, [FromQuery] int deleteBy)
         {

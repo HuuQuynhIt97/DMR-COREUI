@@ -589,7 +589,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
         this.getAll();
         break;
       case 'grid_Excel Export':
-        const data = this.data.map((item) => {
+        const data = this.data.filter(x => x.modelName !== "STOP" && x.modelNo !== "STOP").map((item) => {
           return {
             approvedBy: item.approvedBy,
             approvalStatus: item.approvalStatus,
@@ -687,7 +687,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
   getAll() {
     this.spinner.show();
     this.bPFCEstablishService.getAll().subscribe((res: any) => {
-      this.data = res.map((item: any) => {
+      this.data = res.filter(x => x.modelName !== "STOP" && x.modelNo !== "STOP").map((item: any) => {
         return {
           id: item.id,
           modelNameID: item.modelNameID,
@@ -718,7 +718,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
   getDone() {
     this.spinner.show();
     this.bPFCEstablishService.getDoneBPFC().subscribe((res: any) => {
-      this.data = res.data.map((item: any) => {
+      this.data = res.data.filter(x => x.modelName !== "STOP" && x.modelNo !== "STOP").map((item: any) => {
         return {
           id: item.id,
           modelNameID: item.modelNameID,
@@ -753,7 +753,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
   getUndone() {
     this.spinner.show();
     this.bPFCEstablishService.getUndoneBPFC().subscribe((res: any) => {
-      this.data = res.data.map((item: any) => {
+      this.data = res.data.filter(x => x.modelName !== "STOP" && x.modelNo !== "STOP").map((item: any) => {
         return {
           id: item.id,
           modelNameID: item.modelNameID,

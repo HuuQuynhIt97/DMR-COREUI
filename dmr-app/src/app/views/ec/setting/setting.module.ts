@@ -51,6 +51,7 @@ import { AccountComponent, BuildingComponent, BuildingLunchTimeComponent,
   MaterialComponent, PartComponent, PrintQRCodeComponent, ScalingSettingComponent,
   SubpackageCapacityComponent, SuppilerComponent } from '.';
 import { CoreDirectivesModule } from 'src/app/_core/_directive/core.directives.module';
+import { AdditionRemarkComponent } from './addition-remark/addition-remark.component';
 
 declare var require: any;
 let defaultLang: string;
@@ -143,7 +144,8 @@ if (lang === 'vi') {
     CostingComponent,
     RoleComponent,
     PrivilegeComponent,
-    MyMultiSelectComponent
+    MyMultiSelectComponent,
+    AdditionRemarkComponent
   ]
 })
 export class SettingModule {

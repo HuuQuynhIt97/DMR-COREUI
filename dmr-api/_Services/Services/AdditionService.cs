@@ -11,6 +11,7 @@ using DMR_API.DTO;
 using DMR_API.Models;
 using Microsoft.EntityFrameworkCore;
 using CodeUtility;
+using DMR_API.Data;
 
 namespace DMR_API._Services.Services
 {
@@ -20,6 +21,7 @@ namespace DMR_API._Services.Services
         private readonly IBPFCEstablishRepository _repoBPFCEstablish;
         private readonly IBuildingRepository _repoBuilding;
         private readonly IIngredientRepository _repoIngredient;
+        private readonly IECRepository<Remark> _repoEc;
         private readonly IMapper _mapper;
         private readonly MapperConfiguration _configMapper;
         public AdditionService(
@@ -27,16 +29,75 @@ namespace DMR_API._Services.Services
             IBPFCEstablishRepository repoBPFCEstablish,
             IBuildingRepository repoBuilding,
             IIngredientRepository repoIngredient,
+            IECRepository<Remark> repoEc,
             IMapper mapper,
             MapperConfiguration configMapper)
         {
             _configMapper = configMapper;
             _mapper = mapper;
+            _repoEc = repoEc;
             _repoAddition = repoAddition;
             _repoBPFCEstablish = repoBPFCEstablish;
             _repoBuilding = repoBuilding;
             _repoIngredient = repoIngredient;
         }
+
+
+        //Additon-Remark
+        public async Task<List<RemarkDto>> GetAllRemark()
+        => await _repoEc.FindAll().ProjectTo<RemarkDto>(_configMapper).OrderByDescending(x => x.ID).ToListAsync();
+
+        public async Task<bool> AddRemark(RemarkDto model)
+        {
+            var addition = _mapper.Map<Remark>(model);
+            addition.CreatedDate = DateTime.Now;
+            _repoEc.Add(addition);
+            try
+            {
+                return await _repoEc.SaveAll();
+
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateRemark(RemarkDto model)
+        {
+            var addition = _mapper.Map<Remark>(model);
+            addition.CreatedDate = DateTime.Now;
+            _repoEc.Update(addition);
+            try
+            {
+                return await _repoEc.SaveAll();
+
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteRemark(int id)
+        {
+            var addition = _repoEc.FindById(id);
+            _repoEc.Update(addition);
+            try
+            {
+                return await _repoEc.SaveAll();
+
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+        //End Addition-Remark
 
         //Thêm Addition mới vào bảng addition
         public async Task<bool> Add(AdditionDto model)

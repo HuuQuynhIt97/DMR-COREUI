@@ -43,6 +43,8 @@ namespace DMR_API.Helpers.Extensions
 
         public static IServiceCollection AddRepositoriesExtention(this IServiceCollection services)
         {
+
+            services.AddScoped(typeof(IECRepository<>), typeof(ECRepository<>));
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IGlueIngredientRepository, GlueIngredientRepository>();
             services.AddScoped<IGlueRepository, GlueRepository>();

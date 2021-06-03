@@ -8,6 +8,7 @@ export class ActionConstant {
   public static EXCEL_IMPORT = 'EXCEL_IMPORT';
   public static PRINT = 'PRINT';
   public static DONE = 'DONE';
+  public static STOP_LINE = 'STOP_LINE';
   public static FINISH = 'FINISH';
   public static RELEASE = 'RELEASE';
   public static REJECT = 'REJECT';

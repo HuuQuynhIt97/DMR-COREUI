@@ -271,7 +271,6 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   getAllIngredient() {
     this.ingredientService.getAllIngredient().subscribe((res: any) => {
       this.ingredients = res;
-      console.log('Global Ingerdient: ', res);
     });
   }
 

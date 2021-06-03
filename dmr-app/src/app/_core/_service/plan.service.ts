@@ -51,6 +51,9 @@ export class PlanService {
   create(modal: Plan) {
     return this.http.post(this.baseUrl + 'Plan/Create', modal);
   }
+  createForStopLine(modal) {
+    return this.http.post(this.baseUrl + 'Plan/CreateForStopLine', modal);
+  }
   update(modal: Plan) {
     return this.http.put(this.baseUrl + 'Plan/Update', modal);
   }

@@ -82,6 +82,7 @@ export class AlertifyService {
       }
     });
   }
+
   valid(title: string, message: string): Promise<boolean> {
     return new Promise((res, rejects) => {
       Swal.fire({
@@ -146,5 +147,24 @@ export class AlertifyService {
     } else {
       Swal.fire('Info!', message, 'info');
     }
+  }
+
+  delete(title: string, message: string): Promise<boolean> {
+    return new Promise((resolve, rejects) => {
+      Swal.fire({
+        title,
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.value) {
+          resolve(true);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          rejects(false);
+        }
+      });
+    });
   }
 }

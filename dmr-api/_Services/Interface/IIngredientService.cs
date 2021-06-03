@@ -9,7 +9,12 @@ using System.Threading.Tasks;
 namespace DMR_API._Services.Interface
 {
    public interface IIngredientService: IECService<IngredientDto>
-    {   Task<bool> CheckExists(int id); 
+    {
+        //Update 08/04/2021 - Leo
+        Task<object> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity);
+        Task<object> ScanQRCodeOutputV1(ScanQrCodeDto entity);
+        //End update
+        Task<bool> CheckExists(int id); 
         Task<bool> CheckBarCodeExists(string code);
         Task<bool> Add1(IngredientDto1 ingredientIngredientDto);
         Task<string> AddRangeAsync(List<IngredientForImportExcelDto> model);
@@ -37,6 +42,8 @@ namespace DMR_API._Services.Interface
         Task<bool> UpdateConsumptionOfBuildingIngredientReport(UpdateConsumpDto entity );
 
         Task<bool> CheckExistsName(string name);
+        Task<bool> CheckExistsIngredient(string name, string material);
+
         Task<ResponseDetail<object>> Rate();
         Task<bool> CheckIncoming(string ingredientName, string batch, string building);
 

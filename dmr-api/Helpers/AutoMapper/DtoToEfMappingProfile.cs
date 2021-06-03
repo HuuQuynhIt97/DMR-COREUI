@@ -18,6 +18,7 @@ namespace DMR_API.Helpers.AutoMapper
             CreateMap<DispatchTodolistDto, Dispatch>();
             CreateMap<UserForDetailDto, User>();
             CreateMap<GlueDto, Glue>();
+            CreateMap<RemarkDto, Remark>();
             CreateMap<GlueCreateDto, Glue>();
             CreateMap<GlueCreateDto1, Glue>();
             CreateMap<IngredientDto, Ingredient>()

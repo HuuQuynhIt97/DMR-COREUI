@@ -125,6 +125,28 @@ namespace DMR_API.Controllers
             return Ok(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateForStopLine(PlanDto create)
+        {
+            var buildingID = await _planService.FindBuildingByLine(create.BuildingID);
+            //var period = await _planService.GetStartTimeFromPeriod(buildingID.Value);
+            //if (period.Status == false)
+            //{
+            //    return BadRequest(period.Message);
+            //}
+            //var start = period.Data.StartTime;
+            var startTime = create.DueDate.Date.Add(new TimeSpan(07, 30, 0)).ToRemoveSecond();
+            var endTime = create.DueDate.Date.Add(new TimeSpan(16, 30, 0)).ToRemoveSecond();
+
+            create.StartWorkingTime = startTime;
+            create.FinishWorkingTime = endTime;
+
+            var model = await _planService.CreateForStopLine(create);
+            if (model)
+                await _hubContext.Clients.All.SendAsync("ReceiveCreatePlan");
+            return Ok(model);
+        }
+
         [HttpPut]
         public async Task<IActionResult> Update(PlanDto update)
         {

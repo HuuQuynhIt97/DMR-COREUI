@@ -17,6 +17,7 @@ namespace DMR_API.Data
         public DbSet<User> Users { get; set; }
         public DbSet<GlueIngredient> GlueIngredient { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<Remark> Remarks { get; set; }
         public DbSet<GlueType> GlueTypes { get; set; }
 
         public DbSet<Glue> Glues { get; set; }

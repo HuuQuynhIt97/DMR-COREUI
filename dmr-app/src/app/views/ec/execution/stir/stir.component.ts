@@ -339,7 +339,6 @@ export class StirComponent implements OnInit, OnDestroy {
       const newStir = this.stirData.filter(item => item.actualDuration === 0)[0];
       if (newStir !== undefined) {
         this.startScanTime = newStir?.startScanTime as any === '0001-01-01T00:00:00' ? null : newStir?.startScanTime;
-        console.log('start scan time', this.startScanTime);
         // const currentTime = new Date();
         // this.remainingTime = new Date(this.startScanTime.setMinutes(newStir?.glueType.minutes));
         // this.leftTime = this.remainingTime.getMinutes() - currentTime.getMinutes();

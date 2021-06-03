@@ -2845,11 +2845,8 @@ namespace DMR_API._Services.Services
                     };
                     _repoDispatchListDetail.Add(dispatchListDetail);
                     _repoDispatchListDetail.Save();
-
-
                     transaction.Commit();
                     return mixing;
-
                 }
                 catch
                 {

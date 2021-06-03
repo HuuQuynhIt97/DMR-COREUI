@@ -33,7 +33,7 @@ namespace DMR_API.DTO
         public bool IsGenerate { get; set; }
         public bool IsChangeBPFC { get; set; }
         public bool IsOvertime { get; set; }
-        public bool IsOffline { get; set; }// v102
+        public bool IsOffline { get; set; } // v102
 
         public TimeDto StartTime { get; set; }
         public TimeDto EndTime { get; set; }
@@ -59,6 +59,14 @@ namespace DMR_API.DTO
         public DateTime CreatedDate { get; set; }
         public DateTime StartWorkingTime { get; set; }
         public DateTime FinishWorkingTime { get; set; }
+
+        public List<PlanDto> listAdd;
+    }
+    public class StopLineDto
+    {
+
+        public int Hour { get; set; }
+        public int Minute { get; set; }
     }
     public class ExportExcelPlanDto
     {

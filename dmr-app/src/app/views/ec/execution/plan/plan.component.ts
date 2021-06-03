@@ -92,6 +92,8 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
   };
+
+  modalStopLine: any
   public queryString: string;
   buildingNameForChangeModal = '';
   public textLine = 'Select a line name';
@@ -119,6 +121,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   selectOptions: object;
   hourlyOutputRules = { required: true };
   elem: HTMLInputElement;
+  BpfcIdStopLineFixed: number = 1507
   numericParams: IEditCell = {
     create: () => { // to create input element
       this.elem = document.createElement('input');
@@ -128,8 +131,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       return this.elem.value;
     },
     write: (args: { rowData: object, column: Column }) => { // to create input element
-      // // console.log(args.rowData);
-      // this.elem.value = args.rowData[args.column.field] || 120 ;
     },
     params: { value: 120, format: '####' }
   };
@@ -140,11 +141,23 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   planID: number;
   isSTF: boolean;
   lines: [] = [];
+  lineStop: any[] = [];
   kindOfLine = 0;
   bpfcKindData: number[] = [];
   bpfcDataSource: Array<BPFC> = new Array<BPFC>();
   updateOnTimePercentage = '';
   planInfo: { text: string, total: any, updateOnTime: any, rate: any } = { text: "", total: 0, updateOnTime: 0, rate: 0 };
+  @ViewChild('stopLineModal', { static: true })
+  stopLineModal: TemplateRef<any>;
+  dataPicked = [];
+  @ViewChild('gridLine')
+  public gridLine: GridComponent;
+
+  @ViewChild('stopLines')
+  public stopLines: GridComponent;
+
+  @ViewChild('gridStopLine')
+  public gridStopLine: GridComponent;
   constructor(
     private alertify: AlertifyService,
     public modalService: NgbModal,
@@ -178,9 +191,149 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.checkRole();
     this.clearForm();
   }
+
+  generateTodolist() {
+    const selectedRecords = this.grid.dataSource as any[];
+    const data = selectedRecords.filter(x => x.isGenerate === false && x.isOffline === false);
+    if (data.length === 0) {
+      this.alertify.warning(`Tất cả các kế hoạch làm việc đã được tạo nhiệm vụ!<br>
+      All work plans have been created with tasks !`, true);
+      return;
+    }
+    const plansSelected: number[] = data.map((item: any) => {
+      return item.id;
+    });
+    this.todolistService.generateToDoList(plansSelected).subscribe((res: any) => {
+      if (res.status) {
+        this.alertify.success('Tạo nhiệm vụ thành công!<br>Success!', true);
+        this.getAll();
+        this.achievementRate();
+      } else {
+        this.alertify.error(res.message, true);
+      }
+    }, err => this.alertify.error(err, true));
+  }
+
+  showModal(importModal) {
+    this.modalReference = this.modalService.open(importModal, { size: 'lg'});
+    const selectedRecords = this.grid.dataSource as any[];
+    const data = selectedRecords.filter(x => x.isGenerate || x.isOffline);
+    const building_name = data.map((item: any) => {
+      return item.buildingName;
+    });
+    for (const item of building_name) {
+      for (var i = 0; i < this.lineStop.length; i++) {
+        if (this.lineStop[i].name == item) {
+          this.lineStop.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  saveStopLine(){
+    const obj = {
+      buildingID: this.buildingID,
+      dueDate: new Date(),
+      startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
+      finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
+      listAdd: this.dataPicked
+    }
+    this.planService.createForStopLine(obj).subscribe(res => {
+      if (res) {
+        this.alertify.success('Tạo thành công!<br>Created succeeded!');
+        this.getAll();
+        this.achievementRate();
+        this.modalReference.close();
+        this.dataPicked = []
+        this.getAllLine(this.buildingID);
+      } else {
+        this.alertify.warning('Dữ liệu đã tồn tại! <br>This plan has already existed!!!');
+        this.getAll();
+      }
+    }, error => {
+      this.alertify.error(error, true);
+      this.grid.refresh();
+      this.getAll();
+      this.getAllLine(this.buildingID);
+      this.dataPicked = []
+      this.clearForm();
+    });
+    // this.planService.create(this.dataPicked)
+  }
+  rowSelected(args) {
+    if (args.isHeaderCheckboxClicked) {
+      for (const item of args.data) {
+        this.modalStopLine = {
+          id: 0,
+          buildingID: item.id,
+          BPFCEstablishID: 0,
+          BPFCName: '',
+          IsOffline: true,
+          hourlyOutput: 0,
+          workingHour: 0,
+          dueDate: new Date(),
+          startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
+          finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
+          startTime: {
+            hour: 7,
+            minute: 0
+          },
+          endTime: {
+            hour: 16,
+            minute: 30
+          },
+        };
+        this.dataPicked.push(this.modalStopLine);
+      }
+    }else {
+      this.modalStopLine = {
+        id: 0,
+        buildingID: args.data.id,
+        BPFCEstablishID: 0,
+        BPFCName: '',
+        IsOffline: true,
+        hourlyOutput: 0,
+        workingHour: 0,
+        dueDate: new Date(),
+        startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
+        finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
+        startTime: {
+          hour: 7,
+          minute: 0
+        },
+        endTime: {
+          hour: 16,
+          minute: 30
+        },
+      };
+      this.dataPicked.push(this.modalStopLine);
+    }
+  }
+
+  rowDeselected(args) {
+    if (args.isHeaderCheckboxClicked) {
+      for (const item of args.data) {
+        for (var i = 0; i < this.dataPicked.length; i++) {
+          if (this.dataPicked[i].buildingID == item.id) {
+            this.dataPicked.splice(i, 1);
+            break;
+          }
+        }
+      }
+    }else {
+      for (var i = 0; i < this.dataPicked.length; i++) {
+        if (this.dataPicked[i].buildingID == args.data.id) {
+          this.dataPicked.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+
+
   onTimeChange(agrs) {
-    // // console.log(agrs);
-    // this.endTime = {hour: +value.hour, minute: +value.minute};
   }
   public onFiltering: EmitType<FilteringEventArgs> = (
     e: FilteringEventArgs
@@ -193,6 +346,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // pass the filter data source, filter query to updateData method.
     e.updateData(this.BPFCs as any, query);
   }
+
   watch() {
     const watchAction = this.stationSevice.getValue().subscribe(status => {
       if (status === true) {
@@ -201,6 +355,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     });
     this.subscription.push(watchAction);
   }
+
   checkRole(): void {
     const buildingId = +localStorage.getItem('buildingID');
     if (buildingId === 0) {
@@ -244,6 +399,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     //     break;
     // }
   }
+
   ngOnDestroy() {
     localStorage.removeItem('isSTF');
     this.subscription.forEach(subscription => subscription.unsubscribe());
@@ -258,15 +414,19 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // pass the filter data source, filter query to updateData method.
     e.updateData(this.buildings as any, query);
   }
+  getAllLine(buildingID) {
+    this.planService.getLines(buildingID).subscribe((res: any) => {
+      this.lines = res;
+      this.lineStop = res;
+    });
+  }
+
   onChangeBuilding(args) {
-    // console.clear();
     this.buildingID = args.itemData.id;
     this.buildingName = args.itemData.name;
     this.isSTF = args.itemData.isSTF as boolean;
     localStorage.setItem('buildingID', args.itemData.id);
     localStorage.setItem('isSTF', args.itemData.isSTF);
-    // console.log('- Chon tòa nhà: ', this.buildingName);
-    // console.log(`Đây là: ${this.isSTF === true ? 'Xưởng đế' : 'Thành hình'}`);
     this.getAll();
     this.achievementRate();
     this.getStartTimeFromPeriod();
@@ -290,6 +450,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       this.toolbarOptions = uniqueOptionItem;
     }
   }
+
   makeAction(input: string): any[] {
     const lang = localStorage.getItem('lang');
     switch (input) {
@@ -305,6 +466,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       case ActionConstant.CREATE:
         this.editSettings.allowAdding = true;
         return ['Add'];
+
       case ActionConstant.EDIT:
         this.editSettings.allowEditing = true;
         if (lang === 'vi') {
@@ -318,10 +480,22 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         return [
           { text: 'Update', tooltipText: 'Update', prefixIcon: 'fa fa-tasks', id: 'Update' }
         ];
+
+      case ActionConstant.STOP_LINE:
+        if (lang === 'vi') {
+          return [
+            { text: 'Ngưng chuyền', tooltipText: 'Ngưng chuyền', prefixIcon: 'fa fa-stop', id: 'Stopline' }
+          ];
+        }
+        return [
+          { text: 'Stop Line', tooltipText: 'Stop Line', prefixIcon: 'fa fa-stop', id: 'Stopline' }
+        ];
+
       default:
         return [undefined];
     }
   }
+
   gridConfig(): void {
     this.selectOptions = { checkboxOnly: true };
     this.pageSettings = { pageCount: 20, pageSizes: true, pageSize: 12 };
@@ -357,12 +531,8 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       this.planInfo = res.data;
     });
   }
-  getAllLine(buildingID) {
-    this.planService.getLines(buildingID).subscribe((res: any) => {
-      this.lines = res;
-      // console.log('Lấy tất cả các chuyền theo tòa nhà: ', this.buildingName);
-    });
-  }
+
+
   onChangeLine(args, data) {
     this.lineID = args.itemData?.id || 0;
     this.kindOfLine = args.itemData?.kindID || 0;
@@ -383,6 +553,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   onChangeDueDateEdit(args, data) {
     this.dueDate = (args.value as Date)?.toDateString();
     if (data.isGenerate) {
@@ -448,6 +619,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // this.endTime = { hour: value.getHours(), minute: value.getMinutes() };
     // this.modalPlan.endTime = { hour: value.getHours(), minute: value.getMinutes() };
   }
+
   actionBegin(args) {
     if (args.requestType === 'add' && args.type === "actionBegin") {
       args.data.hourlyOutput = 120;
@@ -457,7 +629,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       if (args.rowData.isOffline === true) {
         args.cancel = true;
       }
-     
+
       this.clearForm();
       this.modalPlan.finishWorkingTime = data.finishWorkingTime;
       this.modalPlan.startWorkingTime = data.startWorkingTime;
@@ -514,8 +686,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           this.getAll();
           this.clearForm();
         });
-        // console.clear();
-        // console.log('Đã chỉnh sửa thành công kế hoạch làm việc!');
       }
       if (args.action === 'add') {
         const hourlyOutput = args.data.hourlyOutput || 120;
@@ -550,8 +720,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           this.getAll();
           this.clearForm();
         });
-        // console.clear();
-        // console.log('Đã thêm mới thành công kế hoạch làm việc!');
       }
     }
   }
@@ -609,13 +777,13 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   openaddModalPlan(addModalPlan) {
     this.modalReference = this.modalService.open(addModalPlan);
   }
+
+
   actionFailure(e: any): void {
-    // console.log(e.error);
   }
 
   getAllBPFC() {
     this.bPFCEstablishService.filterByApprovedStatus().subscribe((res: any) => {
-      // console.log('Nếu là thành hình thì chỉ lấy những mẫu giầy của thành hình, ngược lại lấy của xưởng đế!');
       this.bpfcDataSource = res.map((item) => {
         return {
           id: item.id,
@@ -651,7 +819,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         this.BPFCs = Object.assign([], bpfcList);
         this.BPFCsForChangeModal = Object.assign([], bpfcList);
       }
-      // console.log('Lấy danh sách mẫu giày: ', this.BPFCs.length);
     });
   }
 
@@ -659,8 +826,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.planService.getStartTimeFromPeriod(this.buildingID).subscribe(res => {
       if (res.status === true) {
         this.period = res.data;
-        // console.log('Những dữ liệu cần thiết cho việc tạo kế hoạch làm việc: ');
-        // console.log('Lấy thời gian bắt đầu trộn keo đầu tiên trong ngày!');
 
       } else {
         this.alertify.warning(res.message);
@@ -696,7 +861,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           isShowOvertimeOption: item.isShowOvertimeOption
         };
       });
-      // console.log('Lấy tất cả kế hoạch làm việc của tòa nhà : ', this.buildingName);
 
     });
   }
@@ -715,8 +879,10 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.alertify.confirm('Delete Plan <br> Xóa kế hoạc làm việc', 'Are you sure you want to delete this Plans ?<br> Bạn có chắc chắn muốn xóa không?', () => {
       this.planService.deleteRange([id]).subscribe(() => {
         this.getAll();
+        this.getAllLine(this.buildingID);
         this.alertify.success('Xóa thành công! <br>Plans has been deleted');
       }, error => {
+        this.getAllLine(this.buildingID);
         this.alertify.error('Xóa thất bại! <br>Failed to delete the Model Name');
       });
     });
@@ -749,6 +915,8 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       buildingID: item.buildingID
     }];
   }
+
+
   toolbarClick(args: any): void {
     switch (args.item.id) {
       case 'Clone':
@@ -756,6 +924,9 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         break;
       case 'Update':
         this.generateTodolist();
+        break;
+      case 'Stopline':
+        this.showModal(this.stopLineModal)
         break;
       case 'exportExcel':
         this.spinner.show();
@@ -833,6 +1004,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       });
     });
   }
+
   changeStopLine(args, data) {
     const planID = data.id;
     if (args.checked) {
@@ -845,6 +1017,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   changeOvertime(args, data) {
     const plans = [data.id];
     if (args.checked) {
@@ -857,19 +1030,23 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   onClickDefault() {
     this.startDate = new Date();
     this.endDate = new Date();
     this.getAll();
   }
+
   startDateOnchange(args) {
     this.startDate = (args.value as Date);
     this.search(this.startDate, this.endDate);
   }
+
   endDateOnchange(args) {
     this.endDate = (args.value as Date);
     this.search(this.startDate, this.endDate);
   }
+
   tooltipContext(data) {
     if (data) {
       const array = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
@@ -884,6 +1061,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       return '';
     }
   }
+
   tooltip(args: QueryCellInfoEventArgs) {
     if (args.column.field === 'bpfcName') {
       const data = args.data as any;
@@ -898,30 +1076,13 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       }, args.cell as HTMLTableCellElement);
     }
   }
+
   onClickFilter() {
     this.search(this.startDate, this.endDate);
   }
-  generateTodolist() {
-    const selectedRecords = this.grid.dataSource as any[];
-    const data = selectedRecords.filter(x => x.isGenerate === false);
-    if (data.length === 0) {
-      this.alertify.warning(`Tất cả các kế hoạch làm việc đã được tạo nhiệm vụ!<br>
-      All work plans have been created with tasks !`, true);
-      return;
-    }
-    const plansSelected: number[] = data.map((item: any) => {
-      return item.id;
-    });
-    this.todolistService.generateToDoList(plansSelected).subscribe((res: any) => {
-      if (res.status) {
-        this.alertify.success('Tạo nhiệm vụ thành công!<br>Success!', true);
-        this.getAll();
-        this.achievementRate();
-      } else {
-        this.alertify.error(res.message, true);
-      }
-    }, err => this.alertify.error(err, true));
-  }
+
+
+
   generateDispatchList() {
     const selectedRecords = this.grid.dataSource as any[];
     const data = selectedRecords.filter(x => x.isGenerate === false);
@@ -942,6 +1103,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       }
     }, err => this.alertify.error(err, true));
   }
+
   changeBPFC() {
     this.planService.changeBPFC(this.planID, this.changebpfcID).subscribe(() => {
       this.alertify.success('Tạo nhiệm vụ thành công!<br>Success!', true);

@@ -95,7 +95,6 @@ export class MixingComponent implements OnInit, OnDestroy {
     private settingService: SettingService,
     public todolistService: TodolistService
   ) {
-    console.log('========Collapse========');
   }
   ngOnDestroy(): void {
     this.subscription.forEach(item => item.unsubscribe());
@@ -165,6 +164,7 @@ export class MixingComponent implements OnInit, OnDestroy {
           this.alertify.warning(`Mã QR không hợp lệ!<br>The QR Code invalid!`);
           this.qrCode = '';
           this.errorScan();
+          this.offSignalr();
           return;
         }
         if (qr !== null) {
@@ -174,6 +174,7 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
               this.errorScan();
+              this.offSignalr();
               return;
             }
             this.qrCode = qr[0];
@@ -182,12 +183,14 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
               this.errorScan();
+              this.offSignalr();
               return;
             }
             if (item.position === 'A') {
               this.stdcon = this.scalingKG === SMALL_MACHINE_UNIT ? this.stdcon * 1000 : this.stdcon;
               this.changeExpected('A', this.stdcon);
               this.checkedSmallScale = true;
+              this.offSignalr();
               this.startTime = new Date();
             }
             // const checkIncoming = await this.checkIncoming(item.name, this.level.name, input[1]);
@@ -206,16 +209,18 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.alertify.error('Hóa chất này đã bị khóa!<br>This chemical has been locked!');
               this.qrCode = '';
               this.errorScan();
+              this.offSignalr();
               return;
             }
 
             /// Khi quét qr-code thì chạy signal
-            this.signal();
 
             const code = item.code;
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
+              this.mixingService.connect();
+              this.signal();
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
                 this.changeFocusStatus(ingredient.code, false, true);
@@ -254,7 +259,6 @@ export class MixingComponent implements OnInit, OnDestroy {
                 break;
             }
           } catch (error) {
-            console.log('tag', error);
             this.errorScan();
             this.alertify.error('Mã QR không hợp lệ!<br>Wrong Chemical!');
             this.qrCode = '';
@@ -1209,14 +1213,13 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.endTime = new Date();
     const details = this.ingredients.map(item => {
       const amountTemp = item.unit === SMALL_MACHINE_UNIT ? item.real / 1000 : item.real;
-      // console.log('finish', amount, item);
       return {
         amount: amountTemp,
         ingredientID: item.id,
         batch: item.batch,
         mixingInfoID: 0,
         position: item.position,
-        time_start: item.time_start // Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
+        time_start: item.time_start // Thêm bởi Quỳnh (2/2/2021 11:46)
       };
     });
     const mixing = {
@@ -1231,20 +1234,8 @@ export class MixingComponent implements OnInit, OnDestroy {
       details
     };
 
-    // console.log('details', details);
-    // this.onSignalr();
     if (mixing) {
       this.makeGlueService.add(mixing).subscribe((glue: any) => {
-        // this.checkValidPosition(item, args);
-        // const buildingName = this.building.name;
-        // this.UpdateConsumption(item.code, item.batch, item.real);
-        // const obj = {
-        //   qrCode: ingredient.code,
-        // batch: ingredient.batch,
-        //   consump: ingredient.real,
-        //   buildingName,
-        // };
-        // this.UpdateConsumptionWithBuilding(obj);
         this.todolistService.setValue(false);
         this.back();
         this.alertify.success('The Glue has been finished successfully');

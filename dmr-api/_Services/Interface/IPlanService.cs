@@ -11,6 +11,8 @@ namespace DMR_API._Services.Interface
 {
     public interface IPlanService : IECService<PlanDto>
     {
+
+        Task<bool> CreateForStopLine(PlanDto entity);
         /// <summary>
         /// Lấy danh sách các kế hoạch làm việc của ngày mai mà đã được tạo và dc nhấn nút cập nhật trong ngày hôm nay của 1 tòa nhà
         /// Tính tỉ lệ thành tích của từng chuyền theo công tức: 

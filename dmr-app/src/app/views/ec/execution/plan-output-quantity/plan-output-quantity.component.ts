@@ -386,7 +386,6 @@ export class PlanOutputQuantityComponent implements OnInit {
           const selectedRecords = this.grid.getSelectedRecords().map((item: any) => {
             return item.id;
           });
-          console.log('Delete Range', selectedRecords);
           this.deleteRange(selectedRecords);
         }
         break;

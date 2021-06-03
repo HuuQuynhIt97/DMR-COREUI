@@ -60,6 +60,161 @@ namespace DMR_API._Services.Services
             _repoGlue = repoGlue;
             _repoMixingInfo = repoMixingInfo;
         }
+        //Update 08/04/2021 - Leo
+        public async Task<object> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity)
+        {
+            var results = entity.qrCode.Split("    ");
+            var partNo = results[2].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim().Replace(" ", "").ToUpper();
+            var Batch = results[4].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim();
+            var model = _repoIngredient.FindAll().FirstOrDefault(x => x.PartNO.Equals(partNo));
+            var supModel = _repoSupplier.GetAll();
+            var ProductionDates = results[5].Split(":")[1].Trim().ToDateTime();
+            var exp = results[6].Split(":")[1].Trim().ToDateTime();
+            var currentDate = DateTime.Now;
+            var data = await CreateIngredientInfo(new IngredientInfo
+            {
+                Name = model.Name,
+                ExpiredTime = exp.Date,
+                ManufacturingDate = ProductionDates.Date,
+                SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
+                Qty = model.Unit.ToInt(),
+                Batch = Batch,
+                Consumption = "0",
+                Code = model.PartNO,
+                IngredientID = model.ID,
+                UserID = entity.userid,
+                BuildingName = entity.building
+
+            });
+
+            // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
+            if (await _repoIngredientInfoReport.CheckBarCodeExists(partNo))
+            {
+                // check tiep trong bang ingredientReport xem co du lieu chua 
+                var result = _repoIngredientInfoReport.FindAll().FirstOrDefault(x => x.Code == partNo && x.Batch == Batch && x.CreatedDate.Date == currentDate.Date);
+
+                // nếu khác Null thi update lai
+                if (result != null)
+                {
+                    result.Qty = model.Unit.ToInt() + result.Qty;
+                    await UpdateIngredientInfoReport(result);
+                }
+
+                // nếu bằng null thì tạo mới IngredientReport
+                else
+                {
+                    await CreateIngredientInfoReport(new IngredientInfoReport
+                    {
+                        Name = model.Name,
+                        ExpiredTime = ProductionDates.Date.AddMonths(3),
+                        ManufacturingDate = ProductionDates.Date,
+                        SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
+                        Qty = model.Unit.ToInt(),
+                        Consumption = "0",
+                        Code = model.PartNO,
+                        Batch = Batch,
+                        IngredientInfoID = data.ID,
+                        UserID = entity.userid,
+                        BuildingName = entity.building
+                    });
+                }
+            }
+
+            // nếu chưa tồn tại thì thêm mới
+            else
+                await CreateIngredientInfoReport(new IngredientInfoReport
+                {
+                    Name = model.Name,
+                    ExpiredTime = ProductionDates.Date.AddMonths(3),
+                    ManufacturingDate = ProductionDates.Date,
+                    SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
+                    Qty = model.Unit.ToInt(),
+                    Batch = Batch,
+                    Consumption = "0",
+                    Code = model.PartNO,
+                    IngredientInfoID = data.ID,
+                    UserID = entity.userid,
+                    BuildingName = entity.building
+                });
+            return true;
+
+        }
+        public async Task<object> ScanQRCodeOutputV1(ScanQrCodeDto enity)
+        {
+
+            //var dayAndBatch = string.Empty;
+            //var pattern = @"((\d*)-(\w*)-)*";
+            //var obj = new string[] { };
+            //Regex r = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            //Match m = r.Match(qrCode);
+            //if (m.Success)
+            //{
+            //    dayAndBatch = m.Groups[1].ToSafetyString();
+            //    obj = dayAndBatch.Split('-');
+            //}
+
+            var results = enity.qrCode.Split("    ");
+            //var partNo = results[2].Split(":")[1].Trim();
+            //var Batch = results[4].Split(":")[1].Trim();
+            //var model = _repoIngredient.FindAll().FirstOrDefault(x => x.PartNO.Equals(partNo));
+            //var supModel = _repoSupplier.GetAll();
+            //var ProductionDates = results[5].Split(":")[1].Trim().ToDateTime();
+            //var exp = ProductionDates.AddMonths(3);
+            //var currentDate = DateTime.Now;
+
+            // load tat ca supplier
+            var supModel = _repoSupplier.GetAll();
+            // lay gia tri "barcode" trong chuỗi qrcode được chuyền lên
+            var partNo = results[2].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim().Replace(" ", "").ToUpper();
+            // tim ID của ingredient
+            var ingredientID = _repoIngredient.FindAll().FirstOrDefault(x => x.PartNO.Equals(partNo)).ID;
+            // Find ingredient theo ingredientID vừa tìm được ở trên
+            var model = _repoIngredient.FindById(ingredientID);
+            // lấy giá trị "Batch" trong chuỗi qrcode được chuyền lên
+            var Batch = results[4].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim();
+
+            var currentDay = DateTime.Now;
+
+
+            // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
+            if (await _repoIngredientInfo.CheckBarCodeExists(partNo))
+            {
+                // check tiep trong bang ingredientReport xem co du lieu chua 
+                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == partNo && x.BuildingName == enity.building && x.Batch == Batch && x.CreatedDate.Date == currentDay.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
+                // nếu khác Null thi update lai
+                if (checkStatus != null)
+                {
+                    checkStatus.Status = true;
+                    await UpdateIngredientInfo(checkStatus);
+                }
+                else
+                {
+                    return new
+                    {
+                        status = false,
+                        message = "Đã dùng hết !"
+                    };
+                }
+            }
+
+            // nếu chưa tồn tại thì thêm mới
+            else
+            {
+                return new
+                {
+                    status = false,
+                    message = "Hãy scan QR Code hàng nhập trước :) !"
+                };
+            }
+
+            return true;
+        }
+        //End update
+        public async Task<bool> CheckExistsIngredient(string name, string material)
+        {
+            return await _repoIngredient.FindAll().AnyAsync(x => x.isShow && x.MaterialNO.Trim().ToLower().Equals(material.Trim().ToLower()) && x.Name.Trim().ToLower().Equals(name.Trim().ToLower()));
+        }
         public async Task<bool> CheckExists(int id)
         {
             return await _repoIngredient.CheckExists(id);
@@ -84,13 +239,33 @@ namespace DMR_API._Services.Services
 
         public async Task<bool> Add1(IngredientDto1 model)
         {
+            //string token = _accessor.HttpContext.Request.Headers["Authorization"];
+            //var userID = JWTExtensions.GetDecodeTokenByProperty(token, "nameid").ToInt();
+            //if (userID == 0) return false;
+            //var ingredient = _mapper.Map<Ingredient>(model);
+            //ingredient.isShow = true;
+            //ingredient.CreatedBy = userID;
+            //_repoIngredient.Add(ingredient);
+            //return await _repoIngredient.SaveAll();
+
             string token = _accessor.HttpContext.Request.Headers["Authorization"];
             var userID = JWTExtensions.GetDecodeTokenByProperty(token, "nameid").ToInt();
             if (userID == 0) return false;
-            var ingredient = _mapper.Map<Ingredient>(model);
-            ingredient.isShow = true;
-            ingredient.CreatedBy = userID;
-            _repoIngredient.Add(ingredient);
+            var exist = _repoIngredient.FindAll().FirstOrDefault(x => x.MaterialNO.Trim().ToLower().Equals(model.MaterialNO.Trim().ToLower()) && x.Name.Trim().ToLower().Equals(model.Name.Trim().ToLower()));
+            if (exist != null)
+            {
+                exist.isShow = true;
+
+            }
+            else
+            {
+                var ingredient = _mapper.Map<Ingredient>(model);
+                ingredient.isShow = true;
+                var supplier_name = _repoSupplier.FindAll().FirstOrDefault(x => x.ID == model.SupplierID).Name;
+                ingredient.PartNO = model.PartNO + ':' + supplier_name;
+                ingredient.CreatedBy = userID;
+                _repoIngredient.Add(ingredient);
+            }
             return await _repoIngredient.SaveAll();
         }
 

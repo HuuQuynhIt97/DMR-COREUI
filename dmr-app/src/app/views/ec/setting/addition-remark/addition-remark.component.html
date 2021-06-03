@@ -1,0 +1,32 @@
+<div class="row" >
+  <div class="col-md-12">
+      <div class="card">
+          <ejs-grid #grid (actionBegin)="actionBegin($event)"
+                gridLines='Both'
+                (onDoubleClick)='onDoubleClick($event)'
+                (actionComplete)='actionComplete($event)'
+                [toolbar]='toolbarOptions'
+                [dataSource]='remark'
+                allowPaging='true'
+                [allowSorting]='true'
+                allowResizing= 'true'
+                showColumnMenu='true'
+                [allowExcelExport]='true'
+                allowFiltering='true'
+                [filterSettings]='filterSettings'
+                [pageSettings]='pageSettings'
+                (toolbarClick)='toolbarClick($event)'
+                [editSettings]='editSettings'>
+            <e-columns>
+                <e-column field='id' isPrimaryKey="true" headerText='#' width='70' textAlign='Center' isPrimaryKey='true' >
+                    <ng-template #template let-data>
+                        {{NO(data.index)}}
+                    </ng-template>
+                </e-column>
+                <e-column field='content' headerText="Remark Content" width='200' textAlign='Center' >
+                </e-column>
+            </e-columns>
+        </ejs-grid>
+      </div>
+  </div>
+</div>

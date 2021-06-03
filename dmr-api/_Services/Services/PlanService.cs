@@ -720,8 +720,51 @@ namespace DMR_API._Services.Services
         #endregion
 
         #region Action
-      
 
+        public async Task<bool> CreateForStopLine(PlanDto model)
+        {
+            var userID = _jwtService.GetUserID();
+
+            try
+            {
+                foreach (var item in model.listAdd)
+                {
+                    var plan = _mapper.Map<Plan>(item);
+                    var checkExist = await _repoPlan.FindAll()
+                        .OrderByDescending(x => x.CreatedDate)
+                        .FirstOrDefaultAsync(x =>
+                        x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1507
+                        && x.DueDate.Date == item.DueDate.Date);
+                    // Neu ton tai thi kiem tra xem co phai la ngung chuyen khong
+                    if (checkExist != null)
+                    {
+                        if (checkExist.IsOffline)
+                        {
+                            plan.StartWorkingTime = DateTime.Now.ToRemoveSecond();
+                        }
+                        else
+                        { // Khong phai la ngung chuyen thi thong bao da ton tại
+                            return false;
+                        }
+                    }
+                    DateTime dt = DateTime.Now.ToLocalTime().ToRemoveSecond();
+                    plan.CreatedDate = dt;
+                    plan.CreateBy = userID;
+                    plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE LOCAL TEST
+                    //plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE RUN PRODUCT
+                    _repoPlan.Add(plan);
+                    await _repoPlan.SaveAll();
+                    //var stationModel = await _stationService.GetAllByPlanID(plan.ID);
+                    //await _stationService.AddRange(stationModel);
+                }
+                await _hubContext.Clients.All.SendAsync("summaryRecieve", "ok");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public async Task<bool> Add(PlanDto model)
         {
             var userID = _jwtService.GetUserID();
@@ -732,7 +775,7 @@ namespace DMR_API._Services.Services
                 var checkExist = await _repoPlan.FindAll()
                     .OrderByDescending(x => x.CreatedDate)
                     .FirstOrDefaultAsync(x =>
-                    x.BuildingID == model.BuildingID
+                    x.BuildingID == model.BuildingID && x.BPFCEstablishID == model.BPFCEstablishID
                     && x.DueDate.Date == model.DueDate.Date);
                 // Neu ton tai thi kiem tra xem co phai la ngung chuyen khong
                 if (checkExist != null)
@@ -749,6 +792,10 @@ namespace DMR_API._Services.Services
                 DateTime dt = DateTime.Now.ToLocalTime().ToRemoveSecond();
                 plan.CreatedDate = dt;
                 plan.CreateBy = userID;
+                if (model.BPFCEstablishID == 0)
+                {
+                    plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE
+                }
                 plan.BPFCEstablishID = model.BPFCEstablishID;
                 _repoPlan.Add(plan);
                 await _repoPlan.SaveAll();

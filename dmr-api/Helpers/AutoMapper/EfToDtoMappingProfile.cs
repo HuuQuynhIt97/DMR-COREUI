@@ -17,6 +17,7 @@ namespace DMR_API.Helpers.AutoMapper
         public EfToDtoMappingProfile()
         {
             CreateMap<Dispatch, DispatchTodolistDto>();
+            CreateMap<Remark, RemarkDto>();
 
             CreateMap<User, UserForDetailDto>();
             CreateMap<Glue, GlueDto>().ForMember(d => d.CreatedDate, o => o.MapFrom(s => s.CreatedDate.ToParseStringDateTime()));

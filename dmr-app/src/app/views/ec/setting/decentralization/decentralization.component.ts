@@ -203,6 +203,5 @@ export class DecentralizationComponent implements OnInit {
     return (this.grid.pageSettings.currentPage - 1) * this.pageSettings.pageSize + Number(index) + 1;
   }
   selectedAll(args) {
-    console.log(args);
   }
 }

@@ -278,7 +278,6 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.buildings = res.data;
       callback();
     }, err => {
-      console.log('getBuildingUserByUserID', err);
     });
   }
   cancelRange(): void {
@@ -647,7 +646,6 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
       }
     }
-    console.log('oninit', this.isShowTab, this.focusDone);
     const toolbarTodo = this.toolbarTodo.element;
     const span = document.createElement('span');
     span.className = 'e-clear-icon';
@@ -727,7 +725,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
         case this.BONDING_GAP:
           bondingGapButton?.classList.add('todo');
-  
+
           todoButton?.classList.remove('todo');
           delayButton?.classList.remove('todo');
           dispatchButton?.classList.remove('todo');

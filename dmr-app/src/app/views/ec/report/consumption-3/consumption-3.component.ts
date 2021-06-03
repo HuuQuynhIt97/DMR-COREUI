@@ -193,7 +193,6 @@ export class Consumption3Component extends BaseComponent implements OnInit {
     this.planService.reportConsumptionCase3(this.buildingID, this.startDate, this.endDate).subscribe((data: any) => {
       const blob = new Blob([data],
         { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
       const downloadURL = window.URL.createObjectURL(data);
       const link = document.createElement('a');
       link.href = downloadURL;

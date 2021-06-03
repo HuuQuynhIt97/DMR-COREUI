@@ -79,7 +79,6 @@ export class DispatchEVAUVComponent implements OnInit {
     }
   }
   onChangeLine(args) {
-    console.log('onchangeline', args.itemData.value);
     this.obj = {
       mixingInfoID: this.data.mixingInfoID,
       lineName: args.itemData.value,
@@ -90,14 +89,11 @@ export class DispatchEVAUVComponent implements OnInit {
       estimatedFinishTime: this.data.estimatedFinishTime
     };
     this.addDispatch();
-    console.log('onchangeline', this.obj);
 
   }
   onChangeReset(args) {
-    console.log('onChangeReset', this.option);
   }
   onChangeDefault(args) {
-    console.log('onChangeDefault', this.option);
   }
 
   getAllDispatch() {

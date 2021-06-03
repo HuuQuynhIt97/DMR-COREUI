@@ -109,6 +109,7 @@
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^3.5.0",
     "ngx-perfect-scrollbar": "^10.1.0",
+    "ngx-pretty-checkbox": "^1.2.1",
     "ngx-spinner": "^10.0.1",
     "popper.js": "1.12.9",
     "pretty-checkbox": "^3.0.3",

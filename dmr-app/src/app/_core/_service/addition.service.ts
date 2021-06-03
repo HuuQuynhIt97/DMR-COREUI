@@ -16,6 +16,18 @@ export class AdditionService {
   getAllAddition() {
     return this.http.get<any>(this.baseUrl + 'Addition/GetAll', {});
   }
+  getAllRemark() {
+    return this.http.get<any>(this.baseUrl + 'Addition/GetAllRemark', {});
+  }
+  createRemark(model) {
+    return this.http.post(this.baseUrl + 'Addition/AddRemark', model);
+  }
+  updateRemark(model) {
+    return this.http.put(this.baseUrl + 'Addition/UpdateRemark', model);
+  }
+  deleteRemark(id) {
+    return this.http.delete(this.baseUrl + `Addition/DeleteRemark/${id}`);
+  }
   getAllChemical() {
     return this.http.get<any>(this.baseUrl + 'Addition/getAllChemical', {});
   }
@@ -43,5 +55,5 @@ export class AdditionService {
      const deleteByQuery = `deleteBy=${deleteBy}`;
     return this.http.delete(this.baseUrl + `Addition/DeleteRange?${query}${deleteByQuery}`);
   }
- 
+
 }

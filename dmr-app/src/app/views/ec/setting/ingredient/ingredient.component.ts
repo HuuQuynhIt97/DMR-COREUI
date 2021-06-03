@@ -169,6 +169,7 @@ export class IngredientComponent extends BaseComponent implements OnInit {
     this.getAllIngredients();
     this.rate();
   }
+
   Permission(route: ActivatedRoute) {
     this.functions = JSON.parse(localStorage.getItem('functions'));
     for (const item of this.functions) {
@@ -187,6 +188,7 @@ export class IngredientComponent extends BaseComponent implements OnInit {
       }
     }
   }
+
   makeAction(input: string): string[] {
     switch (input) {
       case ActionConstant.CREATE:
@@ -525,7 +527,6 @@ export class IngredientComponent extends BaseComponent implements OnInit {
       // if (args.value === null) { return; }
       // this.pd = (args.value as Date);
       // const productionDate = this.datePipe.transform(this.pd, 'yyyyMMdd');
-      // console.log(productionDate);
       // this.updateProductionDate(data.id, productionDate);
       // const expDate = this.datePipe.transform(this.pd.setDate(this.pd.getDate() + data.daysToExpiration), 'yyyy/MM/dd');
       // this.updateExp(data.id, expDate);
@@ -618,7 +619,6 @@ export class IngredientComponent extends BaseComponent implements OnInit {
   getAll() {
     this.ingredientService.getAllIngredient().subscribe(res => {
       this.data = res;
-      console.log(res);
     });
   }
   delete(ingredient: IIngredient) {

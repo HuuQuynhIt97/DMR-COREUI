@@ -278,7 +278,6 @@ export class AccountComponent extends BaseComponent implements OnInit {
     return (this.grid.pageSettings.currentPage - 1) * this.pageSettings.pageSize + Number(index) + 1;
   }
   checkboxChange(args, data) {
-    // console.log('checkboxChange', args);
     // const checked = args.checked;
     // if (checked === true) {
     //   this.accountService.mapLineUser(this.userID, data.id).subscribe(res => {

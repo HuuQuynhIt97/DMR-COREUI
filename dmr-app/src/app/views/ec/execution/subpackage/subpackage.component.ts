@@ -51,7 +51,6 @@ export class SubpackageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('oninit', this.data);
     this.focusNumberOfScan = false;
     this.status = null;
     this.statusText = '';
@@ -70,7 +69,6 @@ export class SubpackageComponent implements OnInit, OnDestroy {
       glueName: this.data.glueName,
       glueNameID: this.data.glueNameID,
     };
-    console.log('onkeypress', this.generateSubpackageParams);
     this.generateScanByNumber();
   }
   onkeypressV110(args) {
@@ -151,7 +149,6 @@ export class SubpackageComponent implements OnInit, OnDestroy {
     this.mixingInfoCode = result.code;
     this.batch = result.batch;
     this.mixingInfoID = result.data.mixingInfoID;
-    console.log('scannQRcode', result);
     const checkLock = await this.hasLock(result.name, input[4].split(":")[1].trim() + ':' + input[0].split(":")[1].trim());
     if (result === null) {
       this.alertify.warning('The QR Code is invalid!<br> Mã QR không hợp lệ! Vui lòng thử lại mã khác.', true);

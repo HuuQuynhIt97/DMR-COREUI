@@ -35,6 +35,7 @@ export class AdditionComponent extends BaseComponent implements OnInit {
   pageSettings = { pageCount: 20, pageSizes: true, pageSize: 10 };
   fieldsChemical: object = { text: 'name', value: 'name' };
   fieldsLine: object = { text: 'name', value: 'id' };
+  fieldsRemark: object = { text: 'content', value: 'content' };
   public fieldsBPFC: object = {
     text: 'name', value: 'name', tooltip: 'name', itemCreated: (e: any) => {
       highlightSearch(e.item, this.queryString, true, 'Contains');
@@ -62,6 +63,7 @@ export class AdditionComponent extends BaseComponent implements OnInit {
     e.updateData(this.bpfcData as any, query);
   }
   queryString: string;
+  dataRemark: any = [];
   constructor(
     public activeModal: NgbActiveModal,
     private additionService: AdditionService,
@@ -79,7 +81,16 @@ export class AdditionComponent extends BaseComponent implements OnInit {
     this.getAllByBuildingID();
     this.getAllChemical();
     this.getLinesByBuildingID();
+    this.getAllRemark();
     this.getBPFCSchedulesByApprovalStatus();
+  }
+  onChangeRemark(args) {
+    this.addition.remark = args.value
+  }
+  getAllRemark() {
+    this.additionService.getAllRemark().subscribe(res => {
+      this.dataRemark = res
+    })
   }
   // api
   getAllByBuildingID() {
@@ -205,7 +216,7 @@ export class AdditionComponent extends BaseComponent implements OnInit {
         if (this.lines.length > 0) {
           this.addData = [];
           this.addition.id = 0;
-          this.addition.remark = data.remark;
+          //this.addition.remark = data.remark;
           this.addition.amount = data.amount;
           this.addition.chemicalID = this.chemicalID;
           this.addition.bpfcEstablishID = this.bpfcEstablishID;
@@ -223,7 +234,7 @@ export class AdditionComponent extends BaseComponent implements OnInit {
       if (args.action === 'edit') {
         const data = args.data;
         this.addition.id = data.id;
-        this.addition.remark = data.remark;
+        //this.addition.remark = data.remark;
         this.addition.workerID = data.workerID;
         this.addition.amount = data.amount;
         this.addition.lineID = this.lineID;
@@ -259,13 +270,11 @@ export class AdditionComponent extends BaseComponent implements OnInit {
     this.bpfcEstablishID = args.itemData.id;
   }
   removing(args) {
-    console.log(args);
     // const filteredItems = this.lineIDList.filter(item => item !== args.itemData.id);
     // this.lineIDList = filteredItems;
     // this.lineList = this.userList.filter(item => item.id !== args.itemData.id);
   }
   onSelectUsername(args) {
-    console.log(args);
     const data = args.itemData;
     // this.userIDList.push(data.ID);
     // this.userList.push({ mailingID: 0 , id: data.id, email: data.Email});

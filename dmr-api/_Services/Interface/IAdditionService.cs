@@ -13,8 +13,13 @@ namespace DMR_API._Services.Interface
         Task<object> GetAllByBuildingID(int buildingID);
         Task<List<BPFCStatusDto>> GetBPFCSchedulesByApprovalStatus();
         Task<List<IngredientDto>> GetAllChemical();
+        Task<List<RemarkDto>> GetAllRemark();
         Task<bool> AddRange(List<AdditionDto> model);
         Task<bool> UpdateRange(AdditionDto model);
+        Task<bool> UpdateRemark(RemarkDto model);
+        Task<bool> AddRemark(RemarkDto model);
+        Task<bool> DeleteRemark(int id);
+
         Task<bool> DeleteRange(List<int> model, int deleteBy);
     }
 }
