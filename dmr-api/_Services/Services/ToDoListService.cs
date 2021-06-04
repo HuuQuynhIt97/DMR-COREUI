@@ -1168,6 +1168,11 @@ namespace DMR_API._Services.Services
                                 if (validateChemical.Status == false) return validateChemical;
 
                                 var checmicalA = item.ChemicalA;
+                                if (checmicalA == null) return new ResponseDetail<object>
+                                {
+                                    Status = false,
+                                    Message = $"Không có hóa chất A , Vui lòng xem lại BPFC {item.BPFCID}!"
+                                };
                                 var hourlyOutput = item.HourlyOutput;
                                 var finishWorkingTime = item.FinishWorkingTime;
                                 double prepareTime = checmicalA.PrepareTime;

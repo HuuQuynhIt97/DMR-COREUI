@@ -750,8 +750,8 @@ namespace DMR_API._Services.Services
                     DateTime dt = DateTime.Now.ToLocalTime().ToRemoveSecond();
                     plan.CreatedDate = dt;
                     plan.CreateBy = userID;
-                    plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE LOCAL TEST
-                    //plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE RUN PRODUCT
+                    //plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE LOCAL TEST
+                    plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE RUN PRODUCT
                     _repoPlan.Add(plan);
                     await _repoPlan.SaveAll();
                     //var stationModel = await _stationService.GetAllByPlanID(plan.ID);

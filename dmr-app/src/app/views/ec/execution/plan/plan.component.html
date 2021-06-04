@@ -69,11 +69,11 @@
                 </ejs-dropdownlist>
               </ng-template>
               <ng-template let-data #template>
-                <ng-container *ngIf="data.bpfcEstablishID === BpfcIdStopLineFixed; else elseTemplate">
+                <ng-container *ngIf="data.modelName === modelNameStopLineFixed && data.modelNoName === modelNoStopLineFixed && data.articleName === articleNameStopLineFixed; else elseTemplate">
                   <span>#N/A</span>
                 </ng-container>
                 <ng-template #elseTemplate>
-                  {{data.bpfcName || '#N/A'}}
+                  {{data.bpfcName}}
                 </ng-template>
 
               </ng-template>
@@ -97,7 +97,13 @@
                 {{'Start Time' | translate}}
               </ng-template>
               <ng-template #template let-data>
-                {{data.startWorkingTime | date: 'HH:mm'}}
+                <ng-container *ngIf="data.modelName === modelNameStopLineFixed && data.modelNoName === modelNoStopLineFixed && data.articleName === articleNameStopLineFixed; else elseTemplate">
+                  <span>#N/A</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  {{data.startWorkingTime | date: 'HH:mm'}}
+                </ng-template>
+
               </ng-template>
               <ng-template #editTemplate let-data>
                 {{period.startTime | date: 'HH:mm'}}
@@ -110,12 +116,18 @@
                 {{'End Time' | translate}}
               </ng-template>
               <ng-template #template let-data>
-                <span *ngIf="data.isOffline === true; else elseOffline">
-                  {{data.updatedOffline | date: 'HH:mm'}}
-                </span>
-                <ng-template #elseOffline>
-                  {{data.finishWorkingTime | date: 'HH:mm'}}
+                <ng-container *ngIf="data.modelName === modelNameStopLineFixed && data.modelNoName === modelNoStopLineFixed && data.articleName === articleNameStopLineFixed; else elseTemplate">
+                  <span>#N/A</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span *ngIf="data.isOffline === true; else elseOffline">
+                    {{data.updatedOffline | date: 'HH:mm'}}
+                  </span>
+                  <ng-template #elseOffline>
+                    {{data.finishWorkingTime | date: 'HH:mm'}}
+                  </ng-template>
                 </ng-template>
+
               </ng-template>
               <ng-template #editTemplate let-data>
                 16:30
@@ -236,7 +248,7 @@
 <ng-template #stopLineModal let-modal>
   <div class="modal-header">
     <h4 class="modal-title">
-      <i class="fas fa-plus"></i> Stop Line
+      <i class="fas fa-plus"></i> Stop Line <b class="text-danger">(Lưu ý: Anh/Chị chỉ sử dụng chức năng này khi chuyền đó không hoạt động trong ngày)</b>
     </h4>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
@@ -261,7 +273,6 @@
           </e-columns>
         </ejs-grid>
       </div>
-
     </div>
   </div>
   <div class="modal-footer">

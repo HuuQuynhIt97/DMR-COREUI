@@ -122,6 +122,9 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   hourlyOutputRules = { required: true };
   elem: HTMLInputElement;
   BpfcIdStopLineFixed: number = 1507
+  modelNameStopLineFixed: string = "STOP"
+  modelNoStopLineFixed: string = "STOP"
+  articleNameStopLineFixed: string = "STOP"
   numericParams: IEditCell = {
     create: () => { // to create input element
       this.elem = document.createElement('input');
@@ -416,7 +419,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   }
   filterLineData(){
     const selectedRecords = this.grid.dataSource as any[];
-    console.log(selectedRecords);
     const data = selectedRecords;
     const building_name = data.map((item: any) => {
       return item.buildingName;
@@ -638,7 +640,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   actionBegin(args) {
-    this.filterLineData()
+    // this.filterLineData()
     if (args.requestType === 'add' && args.type === "actionBegin") {
       args.data.hourlyOutput = 120;
     }
@@ -859,6 +861,9 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           id: item.id,
           bpfcName: `${item.modelName} - ${item.modelNoName} - ${item.articleName} - ${item.processName}`,
           dueDate: item.dueDate,
+          modelName: item.modelName,
+          modelNoName: item.modelNoName,
+          articleName: item.articleName,
           createdDate: item.createdDate,
           hourlyOutput: item.hourlyOutput,
           buildingName: item.buildingName,
@@ -880,7 +885,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           isShowOvertimeOption: item.isShowOvertimeOption
         };
       });
-
     });
   }
   deleteRange(plans) {
@@ -1141,6 +1145,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       cancelCallback();
     });
   }
+
   offline(planID, cancelCallback) { // v102
     this.alertify.confirm2('Stop Line! <br>  Ngưng chuyền không!', 'Are you sure you want to stop line of this Plans ?<br> Bạn có chắc chắn muốn ngưng chuyền không?', () => {
       this.planService.offline(planID).subscribe(() => {
@@ -1161,6 +1166,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // }, (reason) => {
     // });
   }
+
   openChangeBPFCModalComponent(name, data) {
     this.planID = data.id;
     this.buildingNameForChangeModal = data.buildingName;
@@ -1184,6 +1190,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   onChangeBPFCModal(args) {
     this.changebpfcID = args.itemData.id;
   }
+
   startSteps(): void {
     this.introJS
       .setOptions({
@@ -1216,6 +1223,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       })
       .start();
   }
+
   created() { this.getAllBPFCForChangeModal(); }
   getAllBPFCForChangeModal() {
     // this.bPFCEstablishService.filterByApprovedStatus().subscribe((res: any) => {
