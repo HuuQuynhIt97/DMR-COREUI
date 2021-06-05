@@ -224,6 +224,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     const building_name = data.map((item: any) => {
       return item.buildingName;
     });
+
     for (const item of building_name) {
       for (var i = 0; i < this.lineStop.length; i++) {
         if (this.lineStop[i].name == item) {
