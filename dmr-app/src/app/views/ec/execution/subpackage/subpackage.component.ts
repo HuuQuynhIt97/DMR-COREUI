@@ -28,7 +28,7 @@ export class SubpackageComponent implements OnInit, OnDestroy {
   status: boolean;
   partNO: any;
   chemical: any;
-  can = '';
+  can = 0;
   public displayTextMethod: DisplayTextModel = {
     visibility: false
   };
@@ -57,10 +57,10 @@ export class SubpackageComponent implements OnInit, OnDestroy {
     this.checkQRCodeV110();
   }
   onkeypress(args) {
-    if (this.can.match(/^-?(0|[1-9]\d*)?$/) === null) {
-      this.alertify.warning('Chỉ được nhập số! <br> Only key in number!', true);
-      return;
-    }
+    // if (this.can.match(/^-?(0|[1-9]\d*)?$/) === null) {
+    //   this.alertify.warning('Chỉ được nhập số! <br> Only key in number!', true);
+    //   return;
+    // }
     this.generateSubpackageParams = {
       amountOfChemical: this.chemical.unit,
       buildingID: this.data.buildingID,
@@ -72,10 +72,10 @@ export class SubpackageComponent implements OnInit, OnDestroy {
     this.generateScanByNumber();
   }
   onkeypressV110(args) {
-    if (this.can.match(/^-?(0|[1-9]\d*)?$/) === null) {
-      this.alertify.warning('Chỉ được nhập số! <br> Only key in number!', true);
-      return;
-    }
+    // if (this.can.match(/^-?(0|[1-9]\d*)?$/) === null) {
+    //   this.alertify.warning('Chỉ được nhập số! <br> Only key in number!', true);
+    //   return;
+    // }
     this.subpackages = [];
     let position = this.subpackageLatestItem == null ? 0 : this.subpackageLatestItem.position;
     for (let i = 0; i <= +this.can - 1; i++) {

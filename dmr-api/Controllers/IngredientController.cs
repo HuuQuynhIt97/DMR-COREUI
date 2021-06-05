@@ -35,18 +35,6 @@ namespace DMR_API.Controllers
             return Ok(ingredients);
         }
 
-        //Update 08/04/2021 - Leo
-        [HttpPost]
-        public async Task<IActionResult> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity)
-        {
-            return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouseV1(entity));
-        }
-        [HttpPost]
-        public async Task<IActionResult> ScanQRCodeOutputV1(ScanQrCodeDto entity)
-        {
-            return Ok(await _ingredientService.ScanQRCodeOutputV1(entity));
-        }
-        //end update
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -171,6 +159,7 @@ namespace DMR_API.Controllers
             throw new Exception("Creating the brand failed on save");
         }
 
+
         [HttpPut]
         public async Task<IActionResult> Update(IngredientDto ingredientIngredientDto)
         {
@@ -193,17 +182,30 @@ namespace DMR_API.Controllers
             return Ok(await _ingredientService.ScanQRCode(qrCode));
         }
 
-        [HttpGet("{qrCode}/{building}/{userid}")]
+        [HttpPost("{qrCode}/{building}/{userid}")]
         public async Task<IActionResult> ScanQRCodeFromChemialWareHouse(string qrCode, string building, int userid)
         {
             return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouse(qrCode, building, userid));
         }
+        //Update 08/04/2021 - Leo
+        [HttpPost]
+        public async Task<IActionResult> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity)
+        {
+            return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouseV1(entity));
+        }
+        [HttpPost]
+        public async Task<IActionResult> ScanQRCodeOutputV1(ScanQrCodeDto entity)
+        {
+            return Ok(await _ingredientService.ScanQRCodeOutputV1(entity));
+        }
+        //end update
 
         [HttpGet("{qrCode}/{building}/{userid}")]
         public async Task<IActionResult> ScanQRCodeOutput(string qrCode, string building, int userid)
         {
             return Ok(await _ingredientService.ScanQRCodeOutput(qrCode, building, userid));
         }
+
 
         [HttpGet("{qrCode}/{start}/{end}")]
         public async Task<IActionResult> ScanQRCodeFromChemialWareHouseDate(string qrCode, string start, string end)

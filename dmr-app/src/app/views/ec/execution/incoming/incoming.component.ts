@@ -1,3 +1,4 @@
+import { async } from '@angular/core/testing';
 import { Component, OnInit, AfterViewInit, ViewChild, Renderer2, ElementRef, QueryList, HostListener, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertifyService } from 'src/app/_core/_service/alertify.service';
@@ -14,6 +15,7 @@ import { DropDownListComponent, FilteringEventArgs } from '@syncfusion/ej2-angul
 import { Query } from '@syncfusion/ej2-data/';
 import { EmitType } from '@syncfusion/ej2-base';
 import { BuildingService } from 'src/app/_core/_service/building.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 const BUILDING_LEVEL = 2;
 @Component({
   selector: 'app-incoming',
@@ -49,20 +51,50 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   filterSettings = { type: 'Excel' };
   subject = new Subject<IScanner>();
   subscription: Subscription[] = [];
+  subjectSpinner = new Subject<boolean>();
 
   buildings: IBuilding[];
   fieldsBuildings: object = { text: 'name', value: 'id' };
   buildingID = 0;
   buildingName = '';
   toggleColor = true;
+  isShow: boolean;
   constructor(
     public modalService: NgbModal,
     private alertify: AlertifyService,
     private datePipe: DatePipe,
+    private spinner: NgxSpinnerService,
     private buildingService: BuildingService,
     public ingredientService: IngredientService,
     private cdr: ChangeDetectorRef
   ) {
+  }
+  receiveMessage(isShow) {
+    const newEvent = isShow;
+    if (newEvent !== this.isShow) {
+      if (isShow === true) {
+        this.spinner.show();
+        // console.log('this.isShow === true', isShow, new Date().toISOString());
+        this.isShow = true;
+
+      } else if (isShow === false) {
+        // console.log('this.isShow === false', isShow);
+        this.isShow = false;
+        this.spinner.hide();
+      }
+    }
+    // const newEvent = isShow;
+    // if (newEvent !== this.isShow) {
+
+    //   if (newEvent === true) {
+
+    //     this.subjectSpinner.next(true);
+    //   } else if (newEvent === false){
+    //     console.log('this.isShow === false', isShow);
+
+    //     this.subjectSpinner.next(false);
+    //   }
+    // }
   }
   ngAfterViewInit(): void {
     this.cdr.detectChanges();
@@ -71,6 +103,17 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.forEach(item => item.unsubscribe());
   }
   public ngOnInit(): void {
+    this.subscription.push(this.subjectSpinner.pipe(debounceTime(50)).subscribe(async (show) => {
+      // if (show === true) {
+      //   console.log('this.isShow === true', show);
+      //   this.isShow = true;
+      //   this.spinner.show();
+      // } else if (show === false) {
+      //   console.log('this.isShow === false', show);
+      //   this.isShow = false;
+      //   this.spinner.hide();
+      // }
+    }));
     // this.getIngredientInfo();
     this.getBuilding(() => {
       this.buildingID = +localStorage.getItem('buildingID');
@@ -96,7 +139,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     query =
       e.text !== '' ? query.where('name', 'contains', e.text, true) : query;
     // pass the filter data source, filter query to updateData method.
-    e.updateData(this.buildings as any, query as any);
+    e.updateData(this.buildings as any, query);
   }
   onChangeBuilding(args) {
     localStorage.setItem('buildingID', this.buildingID + '');
@@ -105,15 +148,12 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.getAllIngredientInfoByBuilding();
 
   }
-
   NO(index) {
     return (this.ingredientinfoGrid.pageSettings.currentPage - 1) * this.ingredientinfoGrid.pageSettings.pageSize + Number(index) + 1;
   }
-
   dataBound() {
     this.ingredientinfoGrid.autoFitColumns();
   }
-
   OutputChange(args) {
     this.checkin = false;
     this.checkout = true;
@@ -127,7 +167,6 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.getAllIngredientInfoByBuilding();
     // this.qrcodeChange = null ;
   }
-
   toolbarClick(args): void {
     switch (args.item.text) {
       /* tslint:disable */
@@ -139,7 +178,6 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
     }
   }
-
   showPopupWindow(count, chemical) {
     this.alertify.$swal.fire({
       html: `<div class='d-flex justify-content-center align-items-center' style='Width:100%; height: 400px;'>
@@ -158,11 +196,20 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (res) => {
-        const input = res.QRCode.split('-') || [];
         // const commonPattern = /(\d+)-(\w+)-([\w\-\d]+)/g;
         const dateAndBatch = /(\d+)-(\w+)-/g;
         const validFormat = res.QRCode.match(dateAndBatch);
-        const qrcode = res.QRCode.replace(validFormat[0], '');
+        const array = [];
+        for (const item of res.QRCode.split('    ')) {
+          array.push(item);
+        }
+        // Update 08/04/2021 - Leo
+        const input = res.QRCode.split('    ') || [];
+        const qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
+        console.log(qrcode);
+        // End Update
+
+        // const qrcode = res.QRCode.replace(validFormat[0], '');
         const levels = [1, 0];
         const building = JSON.parse(localStorage.getItem('building'));
         let buildingName = building.name;
@@ -170,10 +217,17 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
           buildingName = 'E';
         }
         const chemical = this.findIngredientCode(qrcode);
+
         if (this.checkin === true) {
           if (this.checkCode === true) {
             const userID = JSON.parse(localStorage.getItem('user')).user.id;
-            this.ingredientService.scanQRCodeFromChemicalWareHouse(res.QRCode, this.buildingName, userID).subscribe((status: any) => {
+            const model = {
+              qrCode: res.QRCode,
+              building: this.buildingName,
+              userid: userID
+            };
+
+            this.ingredientService.scanQRCodeFromChemicalWareHouseV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
               if (status === true) {
                 this.getAllIngredientInfoByBuilding();
                 const count = this.findInputedIngredient(qrcode);
@@ -186,7 +240,13 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
           if (this.checkCode === true) {
             const userID = JSON.parse(localStorage.getItem('user')).user.id;
-            this.ingredientService.scanQRCodeOutput(res.QRCode, this.buildingName, userID).subscribe((status: any) => {
+            const model = {
+              qrCode: res.QRCode,
+              building: this.buildingName,
+              userid: userID
+            };
+
+            this.ingredientService.scanQRCodeOutputV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
               if (status === true) {
                 this.getAllIngredientInfoOutputByBuilding();
                 const count = this.findOutputedIngredient(qrcode);
@@ -229,7 +289,6 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.ConvertClass(res);
     });
   }
-
   getAllIngredientInfoByBuilding() {
     this.ingredientService.getAllIngredientInfoByBuilding(this.buildingName).subscribe((res: any) => {
       this.data = res;
@@ -243,11 +302,10 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.ConvertClass(res);
     });
   }
-
   // tim Qrcode dang scan co ton tai khong
   findIngredientCode(code) {
     for (const item of this.ingredients) {
-      if (item.materialNO === code) {
+      if (item.partNO === code) {
         // return true;
         this.checkCode = true;
         return item;
@@ -256,21 +314,19 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-
   findInputedIngredient(code) {
     let count = this.data.filter((item: any) => item.code === code && item.status === false).length;
     return count = count === 0 ? 1 : count + 1;
   }
-
   findOutputedIngredient(code) {
     let count = this.data.filter((item: any) => item.code === code && item.status === true).length;
     return count = count === 0 ? 1 : count + 1;
   }
-
   // lay toan bo Ingredient
   getAllIngredient() {
     this.ingredientService.getAllIngredient().subscribe((res: any) => {
       this.ingredients = res;
+      // console.log('Global Ingerdient: ', res);
     });
   }
 
@@ -299,5 +355,4 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
       this.alertify.success('Confirm Success');
     });
   }
-
 }

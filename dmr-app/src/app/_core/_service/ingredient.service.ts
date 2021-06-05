@@ -84,12 +84,20 @@ export class IngredientService {
     return this.http.get(this.baseUrl + 'ingredient/ScanQRCode/' + qrCode, {});
   }
   scanQRCodeFromChemicalWareHouse(qrCode, building, userid) {
-    return this.http.get(`${this.baseUrl}ingredient/ScanQRCodeFromChemialWareHouse/${qrCode}/${building}/${userid}`, {});
+    return this.http.post(`${this.baseUrl}ingredient/ScanQRCodeFromChemialWareHouse/${qrCode}/${building}/${userid}`, {});
   }
-
+  //Update 08/04/2021 - Leo
+  scanQRCodeFromChemicalWareHouseV1(model) {
+    return this.http.post(`${this.baseUrl}ingredient/ScanQRCodeFromChemialWareHouseV1/`, model);
+  }
+  scanQRCodeOutputV1(model) {
+    return this.http.post(`${this.baseUrl}ingredient/ScanQRCodeOutputV1/`, model);
+  }
+  //End Update
   scanQRCodeOutput(qrCode, building, userid) {
     return this.http.get(`${this.baseUrl}ingredient/ScanQRCodeOutput/${qrCode}/${building}/${userid}`, {});
   }
+
   getAllSupplier() {
     return this.http.get<ISupplier[]>(this.baseUrl + 'Suppier/GetAll', {});
   }

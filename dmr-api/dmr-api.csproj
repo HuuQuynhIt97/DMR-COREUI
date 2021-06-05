@@ -70,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CodeUtility">
-      <HintPath>C:\Users\leo.doan\Desktop\CodeUtility.dll</HintPath>
+      <HintPath>..\..\..\CodeUtility\CodeUtility\bin\Release\netcoreapp3.1\CodeUtility.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

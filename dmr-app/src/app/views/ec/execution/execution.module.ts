@@ -46,7 +46,6 @@ import { CountdownModule } from 'ngx-countdown';
 import { TimePickerModule } from '@progress/kendo-angular-dateinputs';
 import { QRCodeModule } from 'angularx-qrcode';
 import { ExecutionRoutingModule } from './execution.routing.module';
-import { NgxPrettyCheckboxModule } from 'ngx-pretty-checkbox';
 
 import {
   GlueHistoryComponent, IncomingComponent, MixingComponent,
@@ -82,7 +81,6 @@ loadCldr(
     DatePipe
   ],
   imports: [
-    NgxPrettyCheckboxModule,
     QRCodeModule,
     ButtonModule,
     CommonModule,
