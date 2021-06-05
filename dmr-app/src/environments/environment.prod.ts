@@ -18,6 +18,7 @@ export const environment = {
   apiUrl2: 'http://10.4.5.174:108/api/',
   hub: '/ec-hub',
   scalingHub: 'http://localhost:5001/ec-hub',
+  apiLocal: 'http://localhost:5003/api/',
   scalingHubLocal: 'http://localhost:5001/scalingHub',
   _mqtt: {
     server: 'mqtt.myweb.com',

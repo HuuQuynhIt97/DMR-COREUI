@@ -232,6 +232,14 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    // event click out side modal and close model
+    this.modalReference.result.then((result) => {
+      this.dataPicked = []
+    }, (reason) => {
+      this.dataPicked = []
+    });
+    // end event
   }
 
   saveStopLine(){
@@ -264,6 +272,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     });
     // this.planService.create(this.dataPicked)
   }
+
   rowSelected(args) {
     if (args.isHeaderCheckboxClicked) {
       for (const item of args.data) {
@@ -417,6 +426,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // pass the filter data source, filter query to updateData method.
     e.updateData(this.buildings as any, query);
   }
+
   filterLineData(){
     const selectedRecords = this.grid.dataSource as any[];
     const data = selectedRecords;

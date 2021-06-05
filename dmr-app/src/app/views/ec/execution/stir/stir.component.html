@@ -41,6 +41,7 @@
       [toolbar]='toolbarOptions' allowResizing='true' [rowHeight]='60' showColumnMenu='true'
       (toolbarClick)='toolbarClick($event)'>
       <e-columns>
+
         <e-column field='Seq.' textAlign='Center' headerText='Seq.' width='60'>
           <ng-template #headerTemplate>
             {{ 'SEQ_LABEL' | translate }}
@@ -50,23 +51,27 @@
               {{ 'SEQ_LABEL' | translate }} {{NO(data.index)}}</span>
           </ng-template>
         </e-column>
+
         <e-column field='glueType.title' textAlign='Center' headerText='Glue Type' width='100'>
           <ng-template #headerTemplate>
             {{ 'Glue Type' | translate }}
           </ng-template>
         </e-column>
+
         <e-column field='standardDuration' textAlign='Center' headerText='DUR' width='130'>
           <ng-template #headerTemplate>
             {{ 'Standard Duration' | translate }}
           </ng-template>
           <ng-template #template let-data>{{data.standardDuration}} s</ng-template>
         </e-column>
+
         <e-column field='actualDuration' textAlign='Center' headerText='Qty' width='130'>
           <ng-template #headerTemplate>
             {{ 'Actual Duration' | translate }}
           </ng-template>
           <ng-template #template let-data>{{data.actualDuration}} s</ng-template>
         </e-column>
+
         <e-column field='startTime' textAlign='Center' type='dateTime' format='hh:mm:ss' headerText='Start Time'
           width='100'>
           <ng-template #headerTemplate>
@@ -75,6 +80,7 @@
           <ng-template #template let-data>
             {{data.startTime !== "0001-01-01T00:00:00" ? (data.startTime | date: 'hh:mm:ss') : '#N/A'}}</ng-template>
         </e-column>
+
         <e-column field='endTime' textAlign='Center' type='dateTime' format='hh:mm:ss' headerText='End Time'
           width='100'>
           <ng-template #headerTemplate>
@@ -83,6 +89,7 @@
           <ng-template #template let-data>
             {{data.endTime !== "0001-01-01T00:00:00" ? (data.endTime | date: 'hh:mm:ss') : '#N/A'}}</ng-template>
         </e-column>
+
         <e-column field='status' textAlign='Center' headerText='Status' width='110'>
           <ng-template #headerTemplate>
             {{ 'STATUS_LABEL_STIR' | translate }}
@@ -92,6 +99,7 @@
               [class]="data.status === true ? 'badge badge-success' : 'badge badge-danger'">{{data.status === true ? 'Pass' : 'fail'}}</span>
           </ng-template>
         </e-column>
+
         <!-- <e-column field='option' textAlign='Center' headerText='Count Down' width='100'>
           <ng-template #template let-data>
             <countdown [config]="{leftTime: 180}"></countdown>
@@ -108,6 +116,7 @@
             </div>
           </ng-template>
         </e-column>
+
       </e-columns>
     </ejs-grid>
   </div>

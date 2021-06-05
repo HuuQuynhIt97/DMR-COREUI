@@ -14,6 +14,7 @@ const httpOptions = {
 })
 export class StirService {
   baseUrl = environment.apiUrlEC;
+  baseUrlLocal = environment.apiLocal;
   constructor(private http: HttpClient) { }
   getStirInfo(glueName) {
     return this.http.get(`${this.baseUrl}Stir/GetStirInfo/${glueName}`);
@@ -31,8 +32,16 @@ export class StirService {
   create(model: IStirForAdd) {
     return this.http.post(`${this.baseUrl}Stir/Create`, model);
   }
+
+  createLocal(model: IStirForAdd) {
+    return this.http.post(`${this.baseUrlLocal}Stir/Create`, model);
+  }
+
   update(model: IStirForUpdate) {
     return this.http.put(`${this.baseUrl}Stir/Update`, model);
+  }
+  updateLocal(model: IStirForUpdate) {
+    return this.http.put(`${this.baseUrlLocal}Stir/Update`, model);
   }
   scanMachine(buildingID: number, scanValue: string) {
     return this.http.get(`${this.baseUrl}Stir/scanMachine/${buildingID}/${scanValue}`, {} );

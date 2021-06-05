@@ -286,8 +286,8 @@ export class StirComponent implements OnInit, OnDestroy {
       this.alertify.error('QR Code invalid!', true);
     }
   }
-  async confirmData(item) {
 
+  async confirmData(item) {
     if (item.startScanTime as any === '0001-01-01T00:00:00') {
       this.alertify.error('Please scan the machine QR Code first! <br> Hãy quét mã QR của máy trước!', true);
       return;
@@ -357,11 +357,12 @@ export class StirComponent implements OnInit, OnDestroy {
     return this.stirService.scanMachine(buildingID, qrCode).toPromise();
   }
   create(model: IStirForAdd) {
-    return this.stirService.create(model).toPromise();
+    return this.stirService.createLocal(model).toPromise();
   }
   update(model: IStirForUpdate) {
-    return this.stirService.update(model).toPromise();
+    return this.stirService.updateLocal(model).toPromise();
   }
+
   getStirByMixingInfoID(mixingInfoID: number) {
     return this.stirService.getStirByMixingInfoID(mixingInfoID).toPromise();
   }

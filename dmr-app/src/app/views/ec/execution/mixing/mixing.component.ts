@@ -1238,6 +1238,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       this.makeGlueService.add(mixing).subscribe((glue: any) => {
         this.todolistService.setValue(false);
         this.back();
+        this.offSignalr();
         this.alertify.success('The Glue has been finished successfully');
       });
     }
