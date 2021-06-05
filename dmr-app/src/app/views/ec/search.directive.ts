@@ -75,9 +75,10 @@ export class SearchDirective implements AfterViewInit, OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   spaceEvent(event: any) {
-    event.preventDefault();
-    if (event.ctrlKey && event.keyCode === 74) {
+    if (event.ctrlKey && event.keyCode === 74 || event.keyCode === 13) {
+      event.preventDefault();
       this.host.nativeElement.value = this.host.nativeElement.value + '    ';
+      this.host.nativeElement.value = this.host.nativeElement.value.replaceAll('        ', '    ');
     }
   }
 }

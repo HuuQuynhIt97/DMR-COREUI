@@ -58,8 +58,9 @@ export class AutoSelectSubpackageDirective implements AfterViewInit, OnInit, OnD
   spaceEvent(event: any) {
     if (event.srcElement.id === 'scanner') {
       event.preventDefault();
-      if (event.ctrlKey && event.keyCode === 74) {
+      if (event.ctrlKey && event.keyCode === 74 || event.keyCode === 13) {
         this.host.nativeElement.value = this.host.nativeElement.value + '    ';
+        this.host.nativeElement.value = this.host.nativeElement.value.replaceAll('        ', '    ');
       }
     }
   }

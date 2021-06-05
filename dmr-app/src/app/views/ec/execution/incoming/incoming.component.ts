@@ -70,6 +70,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {
   }
   receiveMessage(isShow) {
+    console.log(isShow);
     const newEvent = isShow;
     if (newEvent !== this.isShow) {
       if (isShow === true) {
@@ -103,7 +104,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.forEach(item => item.unsubscribe());
   }
   public ngOnInit(): void {
-    this.subscription.push(this.subjectSpinner.pipe(debounceTime(50)).subscribe(async (show) => {
+    this.subscription.push(this.subjectSpinner.pipe(debounceTime(500)).subscribe(async (show) => {
       // if (show === true) {
       //   console.log('this.isShow === true', show);
       //   this.isShow = true;
@@ -264,6 +265,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // sau khi scan input thay doi
   async onNgModelChangeScanQRCode(args) {
+    console.log(args);
     if (this.buildingID === 0) {
       this.alertify.warning('Vui lòng chọn tòa nhà trước!', true);
     } else {

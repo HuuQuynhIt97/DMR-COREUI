@@ -18,7 +18,7 @@ namespace DMR_API
                 });
             //.ConfigureWebHost(config =>
             //{
-            //   config.UseUrls("http://*:5002/");
+            //    config.UseUrls("http://*:5002/");
             //})
             //.UseWindowsService();
     }
