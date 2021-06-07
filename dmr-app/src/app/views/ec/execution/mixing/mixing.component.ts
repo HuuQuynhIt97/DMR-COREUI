@@ -82,6 +82,7 @@ export class MixingComponent implements OnInit, OnDestroy {
   scaleStatus = true;
   checkedSmallScale: boolean;
   tab: string;
+  status: boolean = false
   BUIDLING_ID = 0;
   constructor(
     private route: ActivatedRoute,
@@ -105,13 +106,12 @@ export class MixingComponent implements OnInit, OnDestroy {
     }).catch((err) => {
       console.log('Mixing service can not stopped connection', err);
     });
-    CONNECTION_WEIGHING_SCALE_HUB.stop().then((result) => {
-      console.log('stopped connection');
-    }).catch((err) => {
-    });
+    // CONNECTION_WEIGHING_SCALE_HUB.stop().then((result) => {
+    //   console.log('stopped connection');
+    // }).catch((err) => {
+    // });
   }
   ngOnInit() {
-    this.mixingService.connect();
     this.checkQRCode();
     this.checkedSmallScale = false;
     const BUIDLING: IBuilding = JSON.parse(localStorage.getItem('building'));
@@ -148,6 +148,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.scalingKG = 'g';
   }
   private checkQRCode() {
+    this.mixingService.connect();
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (arg) => {
@@ -165,6 +166,7 @@ export class MixingComponent implements OnInit, OnDestroy {
           this.qrCode = '';
           this.errorScan();
           this.offSignalr();
+          this.status = true
           return;
         }
         if (qr !== null) {
@@ -174,6 +176,7 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
               this.errorScan();
+              this.status = true
               this.offSignalr();
               return;
             }
@@ -182,6 +185,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (this.qrCode !== item.materialNO) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
+              this.status = true
               this.errorScan();
               this.offSignalr();
               return;
@@ -190,7 +194,7 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.stdcon = this.scalingKG === SMALL_MACHINE_UNIT ? this.stdcon * 1000 : this.stdcon;
               this.changeExpected('A', this.stdcon);
               this.checkedSmallScale = true;
-              this.offSignalr();
+              // this.offSignalr();
               this.startTime = new Date();
             }
             // const checkIncoming = await this.checkIncoming(item.name, this.level.name, input[1]);
@@ -209,6 +213,7 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.alertify.error('Hóa chất này đã bị khóa!<br>This chemical has been locked!');
               this.qrCode = '';
               this.errorScan();
+              this.status = true
               this.offSignalr();
               return;
             }
@@ -219,7 +224,9 @@ export class MixingComponent implements OnInit, OnDestroy {
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
-              this.mixingService.connect();
+              if (this.status) {
+                this.mixingService.connect();
+              }
               this.signal();
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
@@ -233,6 +240,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             // chuyển vị trí quét khi scan
             switch (this.position) {
               case 'A':
+
                 this.changeScanStatusByPosition('A', false);
                 this.changeScanStatusByPosition('B', true);
                 break;
@@ -243,18 +251,15 @@ export class MixingComponent implements OnInit, OnDestroy {
               case 'C':
                 this.changeScanStatusByPosition('C', false);
                 // Update by Leo 3/1/2021
-                this.mixingService.connect();
                 this.changeScanStatusByPosition('D', true);
                 break;
               case 'D':
                 this.changeScanStatusByPosition('D', false);
                 // Update by Leo 3/1/2021
-                this.mixingService.connect();
                 this.changeScanStatusByPosition('E', true);
                 break;
               case 'E':
                 // Update by Leo 3/1/2021
-                this.mixingService.connect();
                 this.changeScanStatusByPosition('H', true);
                 break;
             }
@@ -685,7 +690,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.changeReal(ingredient.code, +args);
   }
   private offSignalr() {
-    CONNECTION_WEIGHING_SCALE_HUB.off('Welcom');
+    // CONNECTION_WEIGHING_SCALE_HUB.off('Welcom');
     this.mixingService.offWeighingScale();
   }
   private onSignalr() {
@@ -789,7 +794,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     });
   }
   private signal() {
-    this.mixingService.receiveAmount.subscribe(res => {
+    this.subscription.push(this.mixingService.receiveAmount.subscribe(res => {
       const unit = res.unit;
       const scalingMachineID = res.weighingScaleID;
       const message = res.amount;
@@ -836,7 +841,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             break;
         }
       }
-    });
+    }));
     // if (CONNECTION_WEIGHING_SCALE_HUB.state === HubConnectionState.Connected) {
     //   CONNECTION_WEIGHING_SCALE_HUB.on(
     //     'Welcom',

@@ -46,6 +46,7 @@ export class MixingService implements OnDestroy {
     this.setSignalrClientMethods();
     try {
       await this.hubConnection.start();
+
       console.log('MixingService connected hub');
 
     } catch (error) {
