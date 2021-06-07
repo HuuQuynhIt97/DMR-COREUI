@@ -112,6 +112,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     // });
   }
   ngOnInit() {
+    this.mixingService.connect();
     this.checkQRCode();
     this.checkedSmallScale = false;
     const BUIDLING: IBuilding = JSON.parse(localStorage.getItem('building'));
@@ -148,7 +149,6 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.scalingKG = 'g';
   }
   private checkQRCode() {
-    this.mixingService.connect();
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (arg) => {
@@ -165,8 +165,8 @@ export class MixingComponent implements OnInit, OnDestroy {
           this.alertify.warning(`Mã QR không hợp lệ!<br>The QR Code invalid!`);
           this.qrCode = '';
           this.errorScan();
-          this.offSignalr();
           this.status = true
+          this.offSignalr();
           return;
         }
         if (qr !== null) {
@@ -185,8 +185,8 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (this.qrCode !== item.materialNO) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
-              this.status = true
               this.errorScan();
+              this.status = true
               this.offSignalr();
               return;
             }
@@ -194,7 +194,8 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.stdcon = this.scalingKG === SMALL_MACHINE_UNIT ? this.stdcon * 1000 : this.stdcon;
               this.changeExpected('A', this.stdcon);
               this.checkedSmallScale = true;
-              // this.offSignalr();
+
+              //this.offSignalr();
               this.startTime = new Date();
             }
             // const checkIncoming = await this.checkIncoming(item.name, this.level.name, input[1]);
@@ -224,9 +225,8 @@ export class MixingComponent implements OnInit, OnDestroy {
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
-              if (this.status) {
-                this.mixingService.connect();
-              }
+
+              this.status = false ;
               this.signal();
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
@@ -237,6 +237,7 @@ export class MixingComponent implements OnInit, OnDestroy {
                 this.changeFocusStatus(code, false, false);
               }
             }
+
             // chuyển vị trí quét khi scan
             switch (this.position) {
               case 'A':
@@ -326,6 +327,12 @@ export class MixingComponent implements OnInit, OnDestroy {
       ingredient: item
     };
     this.subject.next(scanner);
+    console.log(this.status);
+    if (this.status) {
+      setTimeout(() => {
+        this.mixingService.connect();
+      }, 500);
+    }
   }
   // api
   scanQRCode(): Promise<any> {
@@ -801,7 +808,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       if (unit === this.scalingKG) {
         this.volume = parseFloat(message);
         this.unit = unit;
-        console.log('Unit', unit, message, scalingMachineID);
+        // console.log('Unit', unit, message, scalingMachineID);
         /// update real A sau do show real B, tinh lai expected
         switch (this.position) {
           case 'A':
