@@ -151,16 +151,15 @@ export class MixingComponent implements OnInit, OnDestroy {
 
   // khi scan qr-code
   async onNgModelChangeScanQRCode(args, item) {
-
     const scanner: IScanner = {
       QRCode: args,
       ingredient: item
     };
     this.subject.next(scanner);
+
   }
 
   private checkQRCode() {
-
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (arg) => {
@@ -294,60 +293,63 @@ export class MixingComponent implements OnInit, OnDestroy {
       const unit = res.unit;
       const scalingMachineID = res.weighingScaleID;
       const message = res.amount;
-      if (unit === this.scalingKG) {
-        this.volume = parseFloat(message);
-        this.unit = unit;
-        console.log('Unit', unit, message, scalingMachineID);
-        /// update real A sau do show real B, tinh lai expected
-        switch (this.position) {
-          case 'A':
-            this.volumeA = this.volume;
-            break;
-          case 'B':
-            if (this.status) {
-              if (unit !== SMALL_MACHINE_UNIT) {
-                // update realA
-                this.volumeB = this.volume;
-                this.changeActualByPosition('A', this.volumeB, unit);
-                this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-              } else {
-                this.volumeB = this.volume;
-                this.changeActualByPosition('A', this.volumeB, unit);
-                this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+      setTimeout(() => {
+        if (unit === this.scalingKG) {
+          this.volume = parseFloat(message);
+          this.unit = unit;
+          // console.log('Unit', unit, message, scalingMachineID);
+          /// update real A sau do show real B, tinh lai expected
+          console.log(this.position);
+          switch (this.position) {
+            case 'A':
+              this.volumeA = this.volume;
+              break;
+            case 'B':
+              if (this.status) {
+                if (unit !== SMALL_MACHINE_UNIT) {
+                  // update realA
+                  this.volumeB = this.volume;
+                  this.changeActualByPosition('A', this.volumeB, unit);
+                  this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+                } else {
+                  this.volumeB = this.volume;
+                  this.changeActualByPosition('A', this.volumeB, unit);
+                  this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+                }
+                break;
               }
-              break;
-            }
-          case 'C':
-            if (this.status) {
-              this.volumeC = this.volume;
-              this.changeActualByPosition('B', this.volumeC, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeC);
-              break;
-            }
-          case 'D':
-            if (this.status) {
-              this.volumeD = this.volume;
-              this.changeActualByPosition('C', this.volumeD, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeD);
-              break;
-            }
-          case 'E':
-            if (this.status) {
-              this.volumeE = this.volume;
-              this.changeActualByPosition('D', this.volumeE, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeE);
-              break;
-            }
-          case 'H':
-            if (this.status) {
-              this.volumeH = this.volume;
-              this.changeActualByPosition('E', this.volumeH, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeH);
-              break;
-            }
+            case 'C':
+              if (this.status) {
+                this.volumeC = this.volume;
+                this.changeActualByPosition('B', this.volumeC, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volumeC);
+                break;
+              }
+            case 'D':
+              if (this.status) {
+                this.volumeD = this.volume;
+                this.changeActualByPosition('C', this.volumeD, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volumeD);
+                break;
+              }
+            case 'E':
+              if (this.status) {
+                this.volumeE = this.volume;
+                this.changeActualByPosition('D', this.volumeE, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volumeE);
+                break;
+              }
+            case 'H':
+              if (this.status) {
+                this.volumeH = this.volume;
+                this.changeActualByPosition('E', this.volumeH, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volumeH);
+                break;
+              }
+          }
+          // console.log(this.volumeA);
         }
-        // console.log(this.volumeA);
-      }
+      }, 500);
     });
   }
 
