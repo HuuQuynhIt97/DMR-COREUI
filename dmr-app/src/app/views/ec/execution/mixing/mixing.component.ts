@@ -235,11 +235,11 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.status = true
               if(this.status) {
                 setTimeout(() => {
-                  this.mixingService.connect();
+                  // this.mixingService.connect();
+                  this.signal();
                 }, 500);
               } else {
               }
-              this.signal();
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
                 this.changeFocusStatus(ingredient.code, false, true);
@@ -297,7 +297,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       if (unit === this.scalingKG) {
         this.volume = parseFloat(message);
         this.unit = unit;
-        // console.log('Unit', unit, message, scalingMachineID);
+        console.log('Unit', unit, message, scalingMachineID);
         /// update real A sau do show real B, tinh lai expected
         switch (this.position) {
           case 'A':
@@ -459,7 +459,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       if (this.ingredients[key].scanStatus) {
         const element = this.ingredients[key];
         this.changeInfo('error-scan', element.code);
-        this.offSignalr()
+        // this.offSignalr()
       }
     }
   }
