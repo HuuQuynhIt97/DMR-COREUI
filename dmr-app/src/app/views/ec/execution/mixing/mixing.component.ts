@@ -82,7 +82,7 @@ export class MixingComponent implements OnInit, OnDestroy {
   scaleStatus = true;
   checkedSmallScale: boolean;
   tab: string;
-  status: boolean = false
+  status: boolean = true
   BUIDLING_ID = 0;
   constructor(
     private route: ActivatedRoute,
@@ -106,10 +106,10 @@ export class MixingComponent implements OnInit, OnDestroy {
     }).catch((err) => {
       console.log('Mixing service can not stopped connection', err);
     });
-    // CONNECTION_WEIGHING_SCALE_HUB.stop().then((result) => {
-    //   console.log('stopped connection');
-    // }).catch((err) => {
-    // });
+    CONNECTION_WEIGHING_SCALE_HUB.stop().then((result) => {
+      console.log('stopped connection');
+    }).catch((err) => {
+    });
   }
   ngOnInit() {
     this.mixingService.connect();
@@ -148,7 +148,19 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.unit = 'g';
     this.scalingKG = 'g';
   }
+
+  // khi scan qr-code
+  async onNgModelChangeScanQRCode(args, item) {
+
+    const scanner: IScanner = {
+      QRCode: args,
+      ingredient: item
+    };
+    this.subject.next(scanner);
+  }
+
   private checkQRCode() {
+
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (arg) => {
@@ -164,9 +176,8 @@ export class MixingComponent implements OnInit, OnDestroy {
         if (qr === null) {
           this.alertify.warning(`Mã QR không hợp lệ!<br>The QR Code invalid!`);
           this.qrCode = '';
+          this.status = false;
           this.errorScan();
-          this.status = true
-          this.offSignalr();
           return;
         }
         if (qr !== null) {
@@ -175,9 +186,8 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (qrcode !== qr[0]) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
+              this.status = false;
               this.errorScan();
-              this.status = true
-              this.offSignalr();
               return;
             }
             this.qrCode = qr[0];
@@ -185,17 +195,15 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (this.qrCode !== item.materialNO) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
+              this.status = false;
               this.errorScan();
-              this.status = true
-              this.offSignalr();
               return;
             }
             if (item.position === 'A') {
               this.stdcon = this.scalingKG === SMALL_MACHINE_UNIT ? this.stdcon * 1000 : this.stdcon;
               this.changeExpected('A', this.stdcon);
               this.checkedSmallScale = true;
-
-              //this.offSignalr();
+              // this.offSignalr();
               this.startTime = new Date();
             }
             // const checkIncoming = await this.checkIncoming(item.name, this.level.name, input[1]);
@@ -213,9 +221,8 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (checkLock === true) {
               this.alertify.error('Hóa chất này đã bị khóa!<br>This chemical has been locked!');
               this.qrCode = '';
+              this.status = false;
               this.errorScan();
-              this.status = true
-              this.offSignalr();
               return;
             }
 
@@ -225,8 +232,13 @@ export class MixingComponent implements OnInit, OnDestroy {
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
-
-              this.status = false ;
+              this.status = true
+              if(this.status) {
+                setTimeout(() => {
+                  this.mixingService.connect();
+                }, 500);
+              } else {
+              }
               this.signal();
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
@@ -237,11 +249,10 @@ export class MixingComponent implements OnInit, OnDestroy {
                 this.changeFocusStatus(code, false, false);
               }
             }
-
             // chuyển vị trí quét khi scan
+            console.log('chuyển vị trí quét khi scan', this.position);
             switch (this.position) {
               case 'A':
-
                 this.changeScanStatusByPosition('A', false);
                 this.changeScanStatusByPosition('B', true);
                 break;
@@ -252,15 +263,18 @@ export class MixingComponent implements OnInit, OnDestroy {
               case 'C':
                 this.changeScanStatusByPosition('C', false);
                 // Update by Leo 3/1/2021
+                // this.mixingService.connect();
                 this.changeScanStatusByPosition('D', true);
                 break;
               case 'D':
                 this.changeScanStatusByPosition('D', false);
                 // Update by Leo 3/1/2021
+                // this.mixingService.connect();
                 this.changeScanStatusByPosition('E', true);
                 break;
               case 'E':
                 // Update by Leo 3/1/2021
+                // this.mixingService.connect();
                 this.changeScanStatusByPosition('H', true);
                 break;
             }
@@ -274,6 +288,70 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
       ));
   }
+
+  private signal() {
+    this.mixingService.receiveAmount.subscribe(res => {
+      const unit = res.unit;
+      const scalingMachineID = res.weighingScaleID;
+      const message = res.amount;
+      if (unit === this.scalingKG) {
+        this.volume = parseFloat(message);
+        this.unit = unit;
+        // console.log('Unit', unit, message, scalingMachineID);
+        /// update real A sau do show real B, tinh lai expected
+        switch (this.position) {
+          case 'A':
+            this.volumeA = this.volume;
+            break;
+          case 'B':
+            if (this.status) {
+              if (unit !== SMALL_MACHINE_UNIT) {
+                // update realA
+                this.volumeB = this.volume;
+                this.changeActualByPosition('A', this.volumeB, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+              } else {
+                this.volumeB = this.volume;
+                this.changeActualByPosition('A', this.volumeB, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+              }
+              break;
+            }
+          case 'C':
+            if (this.status) {
+              this.volumeC = this.volume;
+              this.changeActualByPosition('B', this.volumeC, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volumeC);
+              break;
+            }
+          case 'D':
+            if (this.status) {
+              this.volumeD = this.volume;
+              this.changeActualByPosition('C', this.volumeD, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volumeD);
+              break;
+            }
+          case 'E':
+            if (this.status) {
+              this.volumeE = this.volume;
+              this.changeActualByPosition('D', this.volumeE, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volumeE);
+              break;
+            }
+          case 'H':
+            if (this.status) {
+              this.volumeH = this.volume;
+              this.changeActualByPosition('E', this.volumeH, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volumeH);
+              break;
+            }
+        }
+        // console.log(this.volumeA);
+      }
+    });
+  }
+
+
 
   onRouteChange() {
     this.route.data.subscribe(data => {
@@ -320,20 +398,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       });
   }
 
-  // khi scan qr-code
-  async onNgModelChangeScanQRCode(args, item) {
-    const scanner: IScanner = {
-      QRCode: args,
-      ingredient: item
-    };
-    this.subject.next(scanner);
-    console.log(this.status);
-    if (this.status) {
-      setTimeout(() => {
-        this.mixingService.connect();
-      }, 500);
-    }
-  }
+
   // api
   scanQRCode(): Promise<any> {
     return this.ingredientService.scanQRCode(this.qrCode).toPromise();
@@ -394,6 +459,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       if (this.ingredients[key].scanStatus) {
         const element = this.ingredients[key];
         this.changeInfo('error-scan', element.code);
+        this.offSignalr()
       }
     }
   }
@@ -697,7 +763,6 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.changeReal(ingredient.code, +args);
   }
   private offSignalr() {
-    // CONNECTION_WEIGHING_SCALE_HUB.off('Welcom');
     this.mixingService.offWeighingScale();
   }
   private onSignalr() {
@@ -800,110 +865,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       setTimeout(() => this.startScalingHub(), 5000);
     });
   }
-  private signal() {
-    this.subscription.push(this.mixingService.receiveAmount.subscribe(res => {
-      const unit = res.unit;
-      const scalingMachineID = res.weighingScaleID;
-      const message = res.amount;
-      if (unit === this.scalingKG) {
-        this.volume = parseFloat(message);
-        this.unit = unit;
-        // console.log('Unit', unit, message, scalingMachineID);
-        /// update real A sau do show real B, tinh lai expected
-        switch (this.position) {
-          case 'A':
-            this.volumeA = this.volume;
-            break;
-          case 'B':
-            if (unit !== SMALL_MACHINE_UNIT) {
-              // update realA
-              this.volumeB = this.volume;
-              this.changeActualByPosition('A', this.volumeB, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-            } else {
-              this.volumeB = this.volume;
-              this.changeActualByPosition('A', this.volumeB, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-            }
-            break;
-          case 'C':
-            this.volumeC = this.volume;
-            this.changeActualByPosition('B', this.volumeC, unit);
-            this.checkValidPosition(this.ingredientsTamp, this.volumeC);
-            break;
-          case 'D':
-            this.volumeD = this.volume;
-            this.changeActualByPosition('C', this.volumeD, unit);
-            this.checkValidPosition(this.ingredientsTamp, this.volumeD);
-            break;
-          case 'E':
-            this.volumeE = this.volume;
-            this.changeActualByPosition('D', this.volumeE, unit);
-            this.checkValidPosition(this.ingredientsTamp, this.volumeE);
-            break;
-          case 'H':
-            this.volumeH = this.volume;
-            this.changeActualByPosition('E', this.volumeH, unit);
-            this.checkValidPosition(this.ingredientsTamp, this.volumeH);
-            break;
-        }
-      }
-    }));
-    // if (CONNECTION_WEIGHING_SCALE_HUB.state === HubConnectionState.Connected) {
-    //   CONNECTION_WEIGHING_SCALE_HUB.on(
-    //     'Welcom',
-    //     (scalingMachineID, message, unit) => {
-    //       if (this.scalingSetting.includes(+scalingMachineID)) {
-    //         if (unit === this.scalingKG) {
-    //           this.volume = parseFloat(message);
-    //           this.unit = unit;
-    //           console.log('Unit', unit, message, scalingMachineID);
-    //           /// update real A sau do show real B, tinh lai expected
-    //           switch (this.position) {
-    //             case 'A':
-    //               this.volumeA = this.volume;
-    //               break;
-    //             case 'B':
-    //               if (unit !== SMALL_MACHINE_UNIT) {
-    //                 // update realA
-    //                 this.volumeB = this.volume;
-    //                 this.changeActualByPosition('A', this.volumeB, unit);
-    //                 this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-    //               } else {
-    //                 this.volumeB = this.volume;
-    //                 this.changeActualByPosition('A', this.volumeB, unit);
-    //                 this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-    //               }
-    //               break;
-    //             case 'C':
-    //               this.volumeC = this.volume;
-    //               this.changeActualByPosition('B', this.volumeC, unit);
-    //               this.checkValidPosition(this.ingredientsTamp, this.volumeC);
-    //               break;
-    //             case 'D':
-    //               this.volumeD = this.volume;
-    //               this.changeActualByPosition('C', this.volumeD, unit);
-    //               this.checkValidPosition(this.ingredientsTamp, this.volumeD);
-    //               break;
-    //             case 'E':
-    //               this.volumeE = this.volume;
-    //               this.changeActualByPosition('D', this.volumeE, unit);
-    //               this.checkValidPosition(this.ingredientsTamp, this.volumeE);
-    //               break;
-    //             case 'H':
-    //               this.volumeH = this.volume;
-    //               this.changeActualByPosition('E', this.volumeH, unit);
-    //               this.checkValidPosition(this.ingredientsTamp, this.volumeH);
-    //               break;
-    //           }
-    //         }
-    //       }
-    //     }
-    //   );
-    // } else {
-    //   this.startScalingHub();
-    // }
-  }
+
   // event
   showArrow(item): boolean {
     if (item.position === 'A' && item.scanStatus === true) {
@@ -1183,6 +1145,7 @@ export class MixingComponent implements OnInit, OnDestroy {
 
   // api
   back() {
+    this.offSignalr();
     this.router.navigate([
       `/ec/execution/todolist-2/${this.tab}`
     ]);
