@@ -98,8 +98,8 @@ export class MixingComponent implements OnInit, OnDestroy {
   ) {
   }
   ngOnDestroy(): void {
-    this.subscription.forEach(item => item.unsubscribe());
-    this.offSignalr();
+    // this.subscription.forEach(item => item.unsubscribe());
+    // this.offSignalr();
     this.mixingService.numberOfAttempts = 5;
     this.mixingService.close().then((result) => {
       console.log('Mixing service stopped connection');
@@ -107,6 +107,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       console.log('Mixing service can not stopped connection', err);
     });
   }
+
   ngOnInit() {
     this.mixingService.connect();
     this.checkQRCode();
@@ -121,22 +122,9 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.startTime = new Date();
     this.getScalingSetting();
     this.onRouteChange();
-    // this.start();
   }
-  start() {
-    CONNECTION_WEIGHING_SCALE_HUB.start().then(() => {
 
-      CONNECTION_WEIGHING_SCALE_HUB.on('UserConnected', (conId) => {
-      });
-      CONNECTION_WEIGHING_SCALE_HUB.on('UserDisconnected', (conId) => {
-
-      });
-    }).catch((err) => {
-      setTimeout(() => this.start(), 5000);
-    });
-  }
   onChangeScale(args) {
-    const scaleName = args.target.value;
     this.checkedSmallScale = true;
     this.unit = 'g';
     this.scalingKG = 'g';
@@ -183,7 +171,6 @@ export class MixingComponent implements OnInit, OnDestroy {
               return;
             }
             this.qrCode = qr[0];
-            // const result = await this.scanQRCode();
             if (this.qrCode !== item.materialNO) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
@@ -195,16 +182,9 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.stdcon = this.scalingKG === SMALL_MACHINE_UNIT ? this.stdcon * 1000 : this.stdcon;
               this.changeExpected('A', this.stdcon);
               this.checkedSmallScale = true;
-              // this.offSignalr();
               this.startTime = new Date();
             }
-            // const checkIncoming = await this.checkIncoming(item.name, this.level.name, input[1]);
-            // if (checkIncoming === false) {
-            //   this.alertify.error(`Invalid!`);
-            //   this.qrCode = '';
-            //   this.errorScan();
-            //   return;
-            // }
+
             const checkLock = await this.hasLock(
               item.name,
               this.building.name,
@@ -219,15 +199,13 @@ export class MixingComponent implements OnInit, OnDestroy {
             }
 
             /// Khi quét qr-code thì chạy signal
+            this.signal();
 
             const code = item.code;
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
               this.status = true
-              if(this.status) {
-                this.signal();
-              }
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
                 this.changeFocusStatus(ingredient.code, false, true);
@@ -237,6 +215,7 @@ export class MixingComponent implements OnInit, OnDestroy {
                 this.changeFocusStatus(code, false, false);
               }
             }
+
             // chuyển vị trí quét khi scan
             switch (this.position) {
               case 'A':
@@ -250,18 +229,15 @@ export class MixingComponent implements OnInit, OnDestroy {
               case 'C':
                 this.changeScanStatusByPosition('C', false);
                 // Update by Leo 3/1/2021
-                // this.mixingService.connect();
                 this.changeScanStatusByPosition('D', true);
                 break;
               case 'D':
                 this.changeScanStatusByPosition('D', false);
                 // Update by Leo 3/1/2021
-                // this.mixingService.connect();
                 this.changeScanStatusByPosition('E', true);
                 break;
               case 'E':
                 // Update by Leo 3/1/2021
-                // this.mixingService.connect();
                 this.changeScanStatusByPosition('H', true);
                 break;
             }
@@ -284,34 +260,19 @@ export class MixingComponent implements OnInit, OnDestroy {
       if (unit === this.scalingKG) {
         this.volume = parseFloat(message);
         this.unit = unit;
-        // console.log('Unit', unit, message, scalingMachineID);
         console.log(this.position);
         switch (this.position) {
           case 'A':
-            this.volumeA = this.volume;
             this.changeActualByPosition('A', this.volume, unit);
             this.checkValidPosition(this.ingredientsTamp, this.volume);
             break;
           case 'B':
             if (this.status) {
-              // if (unit !== SMALL_MACHINE_UNIT) {
-              //   // update realA
-              //   this.volumeB = this.volume;
-              //   this.changeActualByPosition('A', this.volumeB, unit);
-              //   this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-              // } else {
-              //   this.volumeB = this.volume;
-              //   this.changeActualByPosition('A', this.volumeB, unit);
-              //   this.checkValidPosition(this.ingredientsTamp, this.volumeB);
-              // }
-
               if (unit !== SMALL_MACHINE_UNIT) {
                 // update realA
-                this.volumeB = this.volume;
                 this.changeActualByPosition('B', this.volume, unit);
                 this.checkValidPosition(this.ingredientsTamp, this.volume);
               } else {
-                this.volumeB = this.volume;
                 this.changeActualByPosition('B', this.volume, unit);
                 this.checkValidPosition(this.ingredientsTamp, this.volume);
               }
@@ -319,57 +280,32 @@ export class MixingComponent implements OnInit, OnDestroy {
             }
           case 'C':
             if (this.status) {
-              // this.volumeC = this.volume;
-              // this.changeActualByPosition('B', this.volumeC, unit);
-              // this.checkValidPosition(this.ingredientsTamp, this.volumeC);
-
-              this.volumeC = this.volume;
               this.changeActualByPosition('C', this.volume, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'D':
             if (this.status) {
-              // this.volumeD = this.volume;
-              // this.changeActualByPosition('C', this.volumeD, unit);
-              // this.checkValidPosition(this.ingredientsTamp, this.volumeD);
-
-              this.volumeD = this.volume;
               this.changeActualByPosition('D', this.volume, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'E':
             if (this.status) {
-              // this.volumeE = this.volume;
-              // this.changeActualByPosition('D', this.volumeE, unit);
-              // this.checkValidPosition(this.ingredientsTamp, this.volumeE);
-
-              this.volumeE = this.volume;
               this.changeActualByPosition('E', this.volume, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'H':
             if (this.status) {
-              // this.volumeH = this.volume;
-              // this.changeActualByPosition('E', this.volumeH, unit);
-              // this.checkValidPosition(this.ingredientsTamp, this.volumeH);
-
-              this.volumeH = this.volume;
               this.changeActualByPosition('E', this.volumeH, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volumeH);
               break;
             }
         }
-
-        // console.log(this.volumeA);
       }
-
     });
   }
-
-
 
   onRouteChange() {
     this.route.data.subscribe(data => {
@@ -381,6 +317,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       this.getGlueWithIngredientByGlueID();
     });
   }
+
   getGlueWithIngredientByGlueID() {
     this.spinner.show();
     this.makeGlueService
@@ -416,11 +353,11 @@ export class MixingComponent implements OnInit, OnDestroy {
       });
   }
 
-
   // api
   scanQRCode(): Promise<any> {
     return this.ingredientService.scanQRCode(this.qrCode).toPromise();
   }
+
   // helpers
   private findIngredientCode(code) {
     for (const item of this.ingredients) {
@@ -429,6 +366,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private setBatch(item, batch) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].id === item.id) {
@@ -437,6 +375,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private changeScanStatus(code, scanStatus) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].code === code) {
@@ -445,6 +384,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private changeFocusStatus(code, focusReal, focusExpected) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].code === code) {
@@ -454,6 +394,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private changeValidStatus(code, validStatus) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].code === code) {
@@ -462,6 +403,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private changeScanStatusByPosition(position, scanStatus) {
     // this.position = position;
     for (const i in this.ingredients) {
@@ -472,31 +414,34 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private errorScan() {
     for (const key in this.ingredients) {
       if (this.ingredients[key].scanStatus) {
         const element = this.ingredients[key];
         this.changeInfo('error-scan', element.code);
-        //this.offSignalr()
       }
     }
   }
+
   private changeInfo(info, code) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].code === code) {
         this.ingredients[i].info = info;
-        break; // Stop this loop, we found it!
+        break; // Stop this loop, found it!
       }
     }
   }
+
   private changeScanStatusFocus(position, status) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].position === position) {
         this.ingredients[i].scanStatus = status;
-        break; // Stop this loop, we found it!
+        break; // Stop this loop, found it!
       }
     }
   }
+
   private findIngredient(position) {
     for (const item of this.ingredients) {
       if (item.position === position) {
@@ -504,13 +449,16 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private calculatorIngredient(weight, percentage) {
     const result = (weight * percentage) / 100;
     return result * 1000 ?? 0;
   }
+
   private toFixedIfNecessary(value, dp) {
     return +parseFloat(value).toFixed(dp);
   }
+
   private changeExpectedRange(args, position) {
     const positionArray = ['A', 'B', 'C', 'D', 'E'];
     if (positionArray.includes(position)) {
@@ -551,13 +499,13 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   private changeExpected(position, expected) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].position === position) {
         const expectedResult = expected;
-        // const expectedResult = this.toFixedIfNecessary(expected, 2);
         this.ingredients[i].expected = expectedResult;
-        break; // Stop this loop, we found it!
+        break; // Stop this loop, found it!
       }
     }
   }
@@ -568,10 +516,11 @@ export class MixingComponent implements OnInit, OnDestroy {
         this.ingredients[i].real = actual;
         this.ingredients[i].unit = unit;
         this.ingredients[i].time_start = new Date(); // leo update
-        break; // Stop this loop, we found it!
+        break; // Stop this loop, found it!
       }
     }
   }
+
   onBlur(data: IIngredient) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].position === data.position) {
@@ -581,12 +530,9 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
     this.signal();
-    // if (CONNECTION_WEIGHING_SCALE_HUB.state === HubConnectionState.Connected) {
-    //   this.signal();
-    // } else {
-    //   this.startScalingHub();
-    // }
+
   }
+
   checkValidPosition(ingredient, args) {
     let min;
     let max;
@@ -780,108 +726,20 @@ export class MixingComponent implements OnInit, OnDestroy {
     }
     this.changeReal(ingredient.code, +args);
   }
+
   private offSignalr() {
     this.mixingService.offWeighingScale();
   }
-  private onSignalr() {
-    // CONNECTION_WEIGHING_SCALE_HUB.on('Welcom', () => {});
-  }
-  private changeScanStatusByLength(length, item) {
-    switch (length) {
-      case 2:
-        this.offSignalr();
-        break;
-      case 3:
-        if (item.position === 'B') {
-          this.changeScanStatusByPosition('B', false);
-          this.changeScanStatusByPosition('C', true);
-          this.offSignalr();
-        } else {
-          this.changeScanStatusByPosition('B', false);
-          this.changeScanStatusByPosition('C', false);
-          this.offSignalr();
-        }
-        break; // Focus C
-      case 4:
-        if (item.position === 'B') {
-          this.changeScanStatusByPosition('B', false);
-          this.changeScanStatusByPosition('C', true);
-          this.offSignalr();
-        } else if (item.position === 'C') {
-          this.changeScanStatusByPosition('C', false);
-          this.changeScanStatusByPosition('D', true);
-          this.offSignalr();
-        } else {
-          this.changeScanStatusByPosition('C', false);
-          this.changeScanStatusByPosition('D', false);
-          this.offSignalr();
-        }
-        break; // Focus D
-      case 5:
-        if (item.position === 'B') {
-          this.changeScanStatusByPosition('B', false);
-          this.changeScanStatusByPosition('C', true);
-          this.offSignalr();
-        } else if (item.position === 'C') {
-          this.changeScanStatusByPosition('C', false);
-          this.changeScanStatusByPosition('D', true);
-          this.offSignalr();
-        } else if (item.position === 'D') {
-          this.changeScanStatusByPosition('D', false);
-          this.changeScanStatusByPosition('E', true);
-          this.offSignalr();
-        } else {
-          this.changeScanStatusByPosition('D', false);
-          this.changeScanStatusByPosition('E', false);
-          this.offSignalr();
-        }
-        break; // Focus E
-    }
-  }
-  private setActualByExpectedRange(i) {
-    const ingredient = this.ingredients[i];
-    if (ingredient.allow > 0) {
-      const expectedRange = this.ingredients[i].expected.split('-');
-      const min = parseFloat(expectedRange[0]);
-      const max = parseFloat(expectedRange[1]);
-      const actual = this.ingredients[i].real;
-      if (actual >= min && actual <= max) {
-        const length = this.ingredients.length ?? 0;
-        this.changeScanStatusByLength(length, ingredient);
-      }
-    } else {
-      const expected = this.ingredients[i].expected;
-      const actual = this.ingredients[i].real;
-      if (actual === +expected) {
-        const length = this.ingredients.length ?? 0;
-        this.changeScanStatusByLength(length, ingredient);
-      }
-    }
-  }
+
   private changeReal(code, real) {
     for (const i in this.ingredients) {
       if (this.ingredients[i].code === code) {
         if (this.ingredients[i].position !== 'A') {
-          // this.setActualByExpectedRange(i);
         }
         this.ingredients[i].real = this.toFixedIfNecessary(real, 3);
-        break; // Stop this loop, we found it!
+        break; // Stop this loop, found it!
       }
     }
-  }
-  private startScalingHub() {
-    CONNECTION_WEIGHING_SCALE_HUB.start().then(() => {
-      CONNECTION_WEIGHING_SCALE_HUB.on('Scaling Hub UserConnected', (conId) => {
-        console.log('Scaling Hub UserConnected', conId);
-        this.signal();
-      });
-      CONNECTION_WEIGHING_SCALE_HUB.on('Scaling Hub User Disconnected', (conId) => {
-        console.log('Scaling Hub User Disconnected', conId);
-      });
-      console.log('Scaling Hub Signalr connected');
-    }).catch((err) => {
-      setTimeout(() => this.startScalingHub(), 5000);
-    });
   }
 
   // event
@@ -897,6 +755,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     }
     return false;
   }
+
   checkValidPositionForRealEvent(ingredient, data) {
     let min;
     let max;
@@ -1095,29 +954,23 @@ export class MixingComponent implements OnInit, OnDestroy {
     }
     this.changeReal(ingredient.code, args);
   }
+
   realClass(item) {
     const validClass = item.valid === true ? ' warning-focus' : '';
     const className = item.info + validClass;
     return className;
   }
+
   lockClass(item) {
     return item.scanCode === true ? '' : 'lock';
   }
+
   onKeyupReal(ingredient, args) {
     if (args.keyCode === 13) {
       this.checkValidPositionForRealEvent(ingredient, args);
-      // this.checkValidPosition(item, args);
-      // const buildingName = this.building.name;
-      // this.UpdateConsumption(item.code, item.batch, item.real);
-      // const obj = {
-      //   qrCode: ingredient.code,
-      //   batch: ingredient.batch,
-      //   consump: ingredient.real,
-      //   buildingName,
-      // };
-      // this.UpdateConsumptionWithBuilding(obj);
     }
   }
+
   onDblClicked(ingredient, args) {
     const item = this.ingredients.filter(x => x.position === ingredient.position)[0];
     if (item.scanCode !== '') {
@@ -1131,6 +984,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       return;
     }
   }
+
   onKeyupExpected(item, args) {
     if (args.keyCode === 13) {
       if (item.position === 'A') {
@@ -1153,6 +1007,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   resetFocusExpectedAndActual() {
     let i;
     for (i = 0; i < this.ingredients.length; i++) {
@@ -1168,20 +1023,24 @@ export class MixingComponent implements OnInit, OnDestroy {
       `/ec/execution/todolist-2/${this.tab}`
     ]);
   }
+
   private getScalingSetting() {
     this.buildingID = this.BUIDLING_ID;
     this.settingService.getMachineByBuilding(this.buildingID).subscribe((data: any) => {
       this.scalingSetting = data.map(item => item.machineID);
     });
   }
+
   private getMixingDetail() {
     this.todolistService.getMixingDetail(this.glueName).subscribe(detail => {
       this.detail = detail;
     });
   }
+
   reloadPage() {
     window.location.reload();
   }
+
   hasLock(ingredient, building, batch): Promise<any> {
     let buildingName = building;
     if (this.IsAdmin) {
@@ -1198,6 +1057,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       );
     });
   }
+
   Finish() {
     if (this.IsAdmin) {
       this.alertify.warning(`Only the workers are able to press "Finished" button!<br> Chỉ có công nhân mới được nhấn "Hoàn Thành!"`, true);
@@ -1235,8 +1095,9 @@ export class MixingComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   convertDate(date: Date) {
-    const tzoffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const tzoffset = date.getTimezoneOffset() * 60000;
     const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
     return localISOTime;
   }
