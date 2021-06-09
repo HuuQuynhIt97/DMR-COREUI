@@ -106,10 +106,6 @@ export class MixingComponent implements OnInit, OnDestroy {
     }).catch((err) => {
       console.log('Mixing service can not stopped connection', err);
     });
-    CONNECTION_WEIGHING_SCALE_HUB.stop().then((result) => {
-      console.log('stopped connection');
-    }).catch((err) => {
-    });
   }
   ngOnInit() {
     this.mixingService.connect();
@@ -131,13 +127,10 @@ export class MixingComponent implements OnInit, OnDestroy {
     CONNECTION_WEIGHING_SCALE_HUB.start().then(() => {
 
       CONNECTION_WEIGHING_SCALE_HUB.on('UserConnected', (conId) => {
-        console.log('CONNECTION_WEIGHING_SCALE_HUB UserConnected', conId);
       });
       CONNECTION_WEIGHING_SCALE_HUB.on('UserDisconnected', (conId) => {
-        console.log('CONNECTION_WEIGHING_SCALE_HUB UserDisconnected', conId);
 
       });
-      console.log('Signalr CONNECTION_WEIGHING_SCALE_HUB connected');
     }).catch((err) => {
       setTimeout(() => this.start(), 5000);
     });
@@ -234,10 +227,6 @@ export class MixingComponent implements OnInit, OnDestroy {
               this.status = true
               if(this.status) {
                 this.signal();
-                // setTimeout(() => {
-                //   // this.mixingService.connect();
-                // }, 500);
-              } else {
               }
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
@@ -249,7 +238,6 @@ export class MixingComponent implements OnInit, OnDestroy {
               }
             }
             // chuyển vị trí quét khi scan
-            console.log('chuyển vị trí quét khi scan', this.position);
             switch (this.position) {
               case 'A':
                 this.changeScanStatusByPosition('A', false);
@@ -297,59 +285,87 @@ export class MixingComponent implements OnInit, OnDestroy {
         this.volume = parseFloat(message);
         this.unit = unit;
         // console.log('Unit', unit, message, scalingMachineID);
-        /// update real A sau do show real B, tinh lai expected
         console.log(this.position);
         switch (this.position) {
           case 'A':
             this.volumeA = this.volume;
+            this.changeActualByPosition('A', this.volume, unit);
+            this.checkValidPosition(this.ingredientsTamp, this.volume);
             break;
           case 'B':
             if (this.status) {
+              // if (unit !== SMALL_MACHINE_UNIT) {
+              //   // update realA
+              //   this.volumeB = this.volume;
+              //   this.changeActualByPosition('A', this.volumeB, unit);
+              //   this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+              // } else {
+              //   this.volumeB = this.volume;
+              //   this.changeActualByPosition('A', this.volumeB, unit);
+              //   this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+              // }
+
               if (unit !== SMALL_MACHINE_UNIT) {
                 // update realA
                 this.volumeB = this.volume;
-                this.changeActualByPosition('A', this.volumeB, unit);
-                this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+                this.changeActualByPosition('B', this.volume, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volume);
               } else {
                 this.volumeB = this.volume;
-                this.changeActualByPosition('A', this.volumeB, unit);
-                this.checkValidPosition(this.ingredientsTamp, this.volumeB);
+                this.changeActualByPosition('B', this.volume, unit);
+                this.checkValidPosition(this.ingredientsTamp, this.volume);
               }
               break;
             }
           case 'C':
             if (this.status) {
+              // this.volumeC = this.volume;
+              // this.changeActualByPosition('B', this.volumeC, unit);
+              // this.checkValidPosition(this.ingredientsTamp, this.volumeC);
+
               this.volumeC = this.volume;
-              this.changeActualByPosition('B', this.volumeC, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeC);
+              this.changeActualByPosition('C', this.volume, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'D':
             if (this.status) {
+              // this.volumeD = this.volume;
+              // this.changeActualByPosition('C', this.volumeD, unit);
+              // this.checkValidPosition(this.ingredientsTamp, this.volumeD);
+
               this.volumeD = this.volume;
-              this.changeActualByPosition('C', this.volumeD, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeD);
+              this.changeActualByPosition('D', this.volume, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'E':
             if (this.status) {
+              // this.volumeE = this.volume;
+              // this.changeActualByPosition('D', this.volumeE, unit);
+              // this.checkValidPosition(this.ingredientsTamp, this.volumeE);
+
               this.volumeE = this.volume;
-              this.changeActualByPosition('D', this.volumeE, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeE);
+              this.changeActualByPosition('E', this.volume, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'H':
             if (this.status) {
+              // this.volumeH = this.volume;
+              // this.changeActualByPosition('E', this.volumeH, unit);
+              // this.checkValidPosition(this.ingredientsTamp, this.volumeH);
+
               this.volumeH = this.volume;
               this.changeActualByPosition('E', this.volumeH, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volumeH);
               break;
             }
         }
+
         // console.log(this.volumeA);
       }
-      setTimeout(() => {
-      }, 500);
+
     });
   }
 
@@ -447,7 +463,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     }
   }
   private changeScanStatusByPosition(position, scanStatus) {
-    this.position = position;
+    // this.position = position;
     for (const i in this.ingredients) {
       if (this.ingredients[i].position === position) {
         this.ingredients[i].scanStatus = scanStatus;
@@ -461,7 +477,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       if (this.ingredients[key].scanStatus) {
         const element = this.ingredients[key];
         this.changeInfo('error-scan', element.code);
-        // this.offSignalr()
+        //this.offSignalr()
       }
     }
   }
@@ -1210,7 +1226,6 @@ export class MixingComponent implements OnInit, OnDestroy {
       endTime: this.endTime.toISOString(),
       details
     };
-
     if (mixing) {
       this.makeGlueService.add(mixing).subscribe((glue: any) => {
         this.todolistService.setValue(false);
