@@ -199,13 +199,13 @@ export class MixingComponent implements OnInit, OnDestroy {
             }
 
             /// Khi quét qr-code thì chạy signal
-            this.signal();
 
             const code = item.code;
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
               this.status = true
+              this.signal();q
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
                 this.changeFocusStatus(ingredient.code, false, true);
