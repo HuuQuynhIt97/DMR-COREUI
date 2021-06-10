@@ -731,34 +731,33 @@ namespace DMR_API._Services.Services
                 {
                     var plan = _mapper.Map<Plan>(item);
 
-                    //var checkExist = await _repoPlan.FindAll()
-                    //    .OrderByDescending(x => x.CreatedDate)
-                    //    .FirstOrDefaultAsync(x =>
-                    //    x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1507
-                    //    && x.DueDate.Date == item.DueDate.Date);
-
                     var checkExist = await _repoPlan.FindAll()
                         .OrderByDescending(x => x.CreatedDate)
                         .FirstOrDefaultAsync(x =>
-                        x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1511
+                        x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1507
                         && x.DueDate.Date == item.DueDate.Date);
+
+                    //var checkExist = await _repoPlan.FindAll()
+                    //    .OrderByDescending(x => x.CreatedDate)
+                    //    .FirstOrDefaultAsync(x =>
+                    //    x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1511
+                    //    && x.DueDate.Date == item.DueDate.Date);
                     // Neu ton tai thi kiem tra xem co phai la ngung chuyen khong
                     if (checkExist != null)
                     {
-                        if (checkExist.IsOffline)
-                        {
-                            plan.StartWorkingTime = DateTime.Now.ToRemoveSecond();
-                        }
-                        else
-                        { // Khong phai la ngung chuyen thi thong bao da ton tại
-                            return false;
-                        }
+                         return false;
                     }
+
+                    var startTime = item.DueDate.Date.Add(new TimeSpan(07, 30, 0)).ToRemoveSecond();
+                    var endTime = item.DueDate.Date.Add(new TimeSpan(16, 30, 0)).ToRemoveSecond();
+
+                    plan.StartWorkingTime = startTime;
+                    plan.FinishWorkingTime = endTime;
                     DateTime dt = DateTime.Now.ToLocalTime().ToRemoveSecond();
                     plan.CreatedDate = dt;
                     plan.CreateBy = userID;
-                    //plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE LOCAL TEST
-                    plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE RUN PRODUCT
+                    plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE LOCAL TEST
+                    //plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE RUN PRODUCT
                     _repoPlan.Add(plan);
                     await _repoPlan.SaveAll();
                     //var stationModel = await _stationService.GetAllByPlanID(plan.ID);

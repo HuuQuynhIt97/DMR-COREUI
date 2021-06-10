@@ -218,13 +218,14 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   showModal(importModal) {
+
     this.modalReference = this.modalService.open(importModal, { size: 'lg'});
     const selectedRecords = this.grid.dataSource as any[];
     const data = selectedRecords.filter(x => x.isGenerate || x.isOffline);
     const building_name = data.map((item: any) => {
       return item.buildingName;
     });
-
+    console.log(this.endDate);
     for (const item of building_name) {
       for (var i = 0; i < this.lineStop.length; i++) {
         if (this.lineStop[i].name == item) {
@@ -237,8 +238,10 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     // event click out side modal and close model
     this.modalReference.result.then((result) => {
       this.dataPicked = []
+      this.getAllLine(this.buildingID);
     }, (reason) => {
       this.dataPicked = []
+      this.getAllLine(this.buildingID);
     });
     // end event
   }
@@ -246,7 +249,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   saveStopLine(){
     const obj = {
       buildingID: this.buildingID,
-      dueDate: new Date(),
+      dueDate: this.endDate,
       startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
       finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
       listAdd: this.dataPicked
@@ -285,7 +288,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           IsOffline: true,
           hourlyOutput: 0,
           workingHour: 0,
-          dueDate: new Date(),
+          dueDate: this.endDate,
           startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
           finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
           startTime: {
@@ -308,7 +311,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         IsOffline: true,
         hourlyOutput: 0,
         workingHour: 0,
-        dueDate: new Date(),
+        dueDate: this.endDate,
         startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
         finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
         startTime: {
@@ -378,39 +381,10 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     } else {
       this.getBuilding(() => {
         this.buildingID = buildingId;
-        // this.getAll();
-        // this.getStartTimeFromPeriod();
+
       });
     }
-    // Nếu là admin, suppervisor, staff thì hiện cả todo va dispatch
-    // switch (this.role.id) {
-    //   case RoleConstant.ADMIN:
-    //   case RoleConstant.SUPERVISOR:
-    //   case RoleConstant.SUPER_ADMIN:
-    //   case RoleConstant.STAFF:
-    //   case RoleConstant.WORKER: // Chỉ hiện todolist
-    //     this.IsAdmin = true;
-    //     const buildingId = +localStorage.getItem('buildingID');
-    //     if (buildingId === 0) {
-    //       this.getBuilding(() => {
-    //         this.alertify.message('Please select a building!', true);
-    //       });
-    //     } else {
-    //       this.getBuilding(() => {
-    //         this.buildingID = buildingId;
-    //         // this.getAll();
-    //         // this.getStartTimeFromPeriod();
-    //       });
-    //     }
-    //     break;
-    //   case RoleConstant.DISPATCHER: // Chỉ hiện dispatchlist
-    //     this.building = JSON.parse(localStorage.getItem('building'));
-    //     this.getBuilding(() => {
-    //       this.buildingID = this.building[0].id;
-    //       // this.getAll();
-    //     });
-    //     break;
-    // }
+
   }
 
   ngOnDestroy() {
@@ -446,7 +420,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   getAllLine(buildingID) {
     this.planService.getLines(buildingID).subscribe((res: any) => {
       this.lines = res;
-
       this.lineStop = res;
     });
   }

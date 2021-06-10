@@ -135,11 +135,7 @@ namespace DMR_API.Controllers
             //    return BadRequest(period.Message);
             //}
             //var start = period.Data.StartTime;
-            var startTime = create.DueDate.Date.Add(new TimeSpan(07, 30, 0)).ToRemoveSecond();
-            var endTime = create.DueDate.Date.Add(new TimeSpan(16, 30, 0)).ToRemoveSecond();
-
-            create.StartWorkingTime = startTime;
-            create.FinishWorkingTime = endTime;
+            
 
             var model = await _planService.CreateForStopLine(create);
             if (model)

@@ -217,6 +217,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             }
 
             // chuyển vị trí quét khi scan
+
             switch (this.position) {
               case 'A':
                 this.changeScanStatusByPosition('A', false);
