@@ -161,6 +161,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
 
   @ViewChild('gridStopLine')
   public gridStopLine: GridComponent;
+
   constructor(
     private alertify: AlertifyService,
     public modalService: NgbModal,
@@ -351,6 +352,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
 
   onTimeChange(agrs) {
   }
+
   public onFiltering: EmitType<FilteringEventArgs> = (
     e: FilteringEventArgs
   ) => {

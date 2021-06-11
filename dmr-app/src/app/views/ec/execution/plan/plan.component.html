@@ -160,6 +160,43 @@
               </ng-template>
             </e-column>
 
+            <e-column field='createdDate' [visible]='false' type='date' format='MM-dd-yyyy HH:mm'
+              headerText="{{'Created Date' | translate}}" width='138' textAlign='Center'>
+              <ng-template #headerTemplate let-data>
+                {{'Created Date' | translate}}
+              </ng-template>
+            </e-column>
+
+            <e-column field='updatedTime' [visible]='false' type='date' format='MM-dd-yyyy HH:mm'
+              headerText="{{'Updated Time'| translate}}" width='138' textAlign='Center'>
+              <ng-template #headerTemplate>
+                {{'Updated Time'| translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                {{data.updatedTime === null ? 'N/A' : data.updatedTime| date: 'MM-dd-yyyy HH:mm'}}
+              </ng-template>
+            </e-column>
+
+            <e-column field='updatedOffline' [visible]='false' type='date' format='MM-dd-yyyy HH:mm'
+              headerText="{{'Updated Offline'| translate}}" width='138' textAlign='Center'>
+              <ng-template #headerTemplate>
+                {{'Updated Offline'| translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                {{data.updatedOffline === null ? 'N/A' : data.updatedOffline| date: 'MM-dd-yyyy HH:mm'}}
+              </ng-template>
+            </e-column>
+
+            <e-column field='updatedOvertime' [visible]='false' type='date' format='MM-dd-yyyy HH:mm'
+              headerText="{{'Updated Overtime'| translate}}" width='138' textAlign='Center'>
+              <ng-template #headerTemplate>
+                {{'Updated Overtime'| translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                {{data.updatedOvertime === null ? 'N/A' : data.updatedOvertime| date: 'MM-dd-yyyy HH:mm'}}
+              </ng-template>
+            </e-column>
+
             <e-column field='Inactive' type='date' format='MM-dd-yyyy HH:mm' headerText="{{'Inactive'| translate}}"
               width='138' textAlign='Center'>
               <ng-template #headerTemplate let-data>
@@ -192,6 +229,7 @@
                 Option
               </ng-template>
             </e-column>
+
             <e-column field='Change BPFC' textAlign='Center' headerText=" {{ 'Change BPFC' | translate }}" width='120'>
               <ng-template #headerTemplate>
                 {{ 'Change BPFC' | translate }}
@@ -212,6 +250,7 @@
                 Option
               </ng-template>
             </e-column>
+
           </e-columns>
         </ejs-grid>
       </div>
