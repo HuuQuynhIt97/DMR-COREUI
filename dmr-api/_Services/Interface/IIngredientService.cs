@@ -22,8 +22,8 @@ namespace DMR_API._Services.Interface
         Task<bool> UpdatePrint(QrPrintDto entity);
         Task<IngredientDto> ScanQRCode(string qrCode);
         Task<List<IngredientInfoDto>> GetAllIngredientInfoAsync();
-        Task<List<IngredientInfoDto>> GetAllIngredientInfoByBuildingAsync(string building);
-        Task<List<IngredientInfoDto>> GetAllIngredientInfoOutputByBuildingAsync(string building);
+        Task<List<IngredientInfoDto>> GetAllIngredientInfoByBuildingAsync(string building , DateTime min, DateTime max);
+        Task<List<IngredientInfoDto>> GetAllIngredientInfoOutputByBuildingAsync(string building , DateTime min, DateTime max);
 
         Task<List<IngredientInfoDto>> GetAllIngredientInfoOutputAsync();
         Task<List<IngredientInfoDto>> GetAllIngredientInfoByBuildingNameAsync(string name);
@@ -33,7 +33,7 @@ namespace DMR_API._Services.Interface
         Task<object> GetAllIngredientReportByRangeWithBuilding(DateTime min, DateTime max, string name);
         Task<List<GlueType>> GetAllGlueTypeAsync();
         Task<object> ScanQRCodeFromChemialWareHouse(string qrCode, string building, int userid);
-         Task<object> ScanQRCodeOutput(string qrCode, string building, int userid);
+         Task<object> ScanQRCodeOutput(string qrCode, string building, int userid, DateTime min, DateTime max);
         Task<object> ScanQRCodeFromChemialWareHouseDate(string qrCode, string start , string end);
         Task<bool> UpdateConsumptionChemialWareHouse(string qrCode , int consump);
 

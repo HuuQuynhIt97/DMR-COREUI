@@ -146,28 +146,7 @@ namespace DMR_API._Services.Services
             {
                 lines = await _repoBuilding.FindAll(x => x.ParentID == building).Select(x => x.ID).ToListAsync();
             }
-            // sua ngay 3/15/2021 2:28pm
-            //return await _repoPlan.FindAll()
-            //    .Where(x => x.DueDate.Date >= min.Date && x.DueDate.Date <= max.Date && lines.Contains(x.BuildingID))
-            //    .Include(x => x.Building)
-            //        .ThenInclude(x => x.LunchTime)
-            //        .ThenInclude(x => x.Periods)
-            //    .Include(x => x.ToDoList)
-            //    .Include(x => x.BPFCEstablish)
-            //        .ThenInclude(x => x.Glues)
-            //    .Include(x => x.BPFCEstablish)
-            //        .ThenInclude(x => x.ModelName)
-            //    .Include(x => x.BPFCEstablish)
-            //        .ThenInclude(x => x.ModelNo)
-            //    .Include(x => x.BPFCEstablish)
-            //        .ThenInclude(x => x.ArticleNo)
-            //    .Include(x => x.BPFCEstablish)
-            //        .ThenInclude(x => x.ArtProcess)
-            //        .ThenInclude(x => x.Process)
-            //    .ProjectTo<PlanDto>(_configMapper)
-            //    .OrderByDescending(x => x.BuildingName)
-            //    .ToListAsync();
-            // sua ngay 3/15/2021 2:28pm
+
             return await _repoPlan.FindAll()
               .Where(x => x.DueDate.Date >= min.Date && x.DueDate.Date <= max.Date && lines.Contains(x.BuildingID))
               .Include(x => x.Building)
@@ -1827,6 +1806,7 @@ namespace DMR_API._Services.Services
                      x.Amount,
                      x.CreatedTime.Date,
                      x.LineID,
+                     x.Remark,
                      Line = x.Building.Name,
                      GlueName = x.Ingredient.Name,
                      ModelName = x.BPFCEstablish.ModelName.Name,
@@ -1847,6 +1827,7 @@ namespace DMR_API._Services.Services
                     ModelNo = item.ModelNo,
                     ArticleNo = item.ArticleNo,
                     Process = item.Process,
+                    Remark = item.Remark,
                     Line = item.Line,
                     Glue = item.GlueName,
                     Std = std,
@@ -1871,6 +1852,7 @@ namespace DMR_API._Services.Services
                     ArticleNo = t.FirstOrDefault().ArticleNo,
                     Process = t.FirstOrDefault().Process,
                     Line = t.FirstOrDefault().Line,
+                    Remark = t.FirstOrDefault().Remark,
                     Glue = t.FirstOrDefault().Glue,
                     Std = t.Sum(ta => ta.Std),
                     ID = t.FirstOrDefault().ID,
@@ -2677,7 +2659,7 @@ namespace DMR_API._Services.Services
                     ws.Cells.Style.Font.Name = "Calibri";
                     var headers = new string[]{
                         "Line", "Model Name", "Model No.", "Article No.",
-                        "Process", "Glue", "Std.(g)"
+                        "Process", "Glue","Remark", "Std.(g)"
                     };
 
                     int headerRowIndex = 1;
@@ -2710,6 +2692,7 @@ namespace DMR_API._Services.Services
                         ws.Cells[rowIndex, colIndex++].Value = body.ArticleNo;
                         ws.Cells[rowIndex, colIndex++].Value = body.Process;
                         ws.Cells[rowIndex, colIndex++].Value = body.Glue;
+                        ws.Cells[rowIndex, colIndex++].Value = body.Remark;
                         ws.Cells[rowIndex, colIndex++].Value = body.Std;
                         
                     }

@@ -55,6 +55,8 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   buildingID = 0;
   buildingName = '';
   toggleColor = true;
+  startDate: Date;
+  endDate: Date;
   constructor(
     public modalService: NgbModal,
     private alertify: AlertifyService,
@@ -70,8 +72,11 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.subscription.forEach(item => item.unsubscribe());
   }
+
   public ngOnInit(): void {
     // this.getIngredientInfo();
+    this.endDate = new Date();
+    this.startDate = new Date();
     this.getBuilding(() => {
       this.buildingID = +localStorage.getItem('buildingID');
       if (this.buildingID === 0) {
@@ -79,9 +84,25 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     this.getAllIngredient();
-
     this.checkQRCode();
   }
+
+  onClickDefault() {
+    this.startDate = new Date();
+    this.endDate = new Date();
+    this.getAllIngredientInfoByBuilding()
+  }
+
+  startDateOnchange(args) {
+    this.startDate = (args.value as Date);
+    this.getAllIngredientInfoByBuilding()
+  }
+
+  endDateOnchange(args) {
+    this.endDate = (args.value as Date);
+    this.getAllIngredientInfoByBuilding()
+  }
+
   getBuilding(callback): void {
     this.buildingService.getBuildings().subscribe(async (buildingData) => {
       this.buildings = buildingData.filter(item => item.level === BUILDING_LEVEL);
@@ -118,7 +139,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkin = false;
     this.checkout = true;
     // this.qrcodeChange = null ;
-    this.getAllIngredientInfoOutputByBuilding();
+    this.getAllIngredientInfoByBuilding();
   }
 
   InputChange(args) {
@@ -186,7 +207,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
           if (this.checkCode === true) {
             const userID = JSON.parse(localStorage.getItem('user')).user.id;
-            this.ingredientService.scanQRCodeOutput(res.QRCode, this.buildingName, userID).subscribe((status: any) => {
+            this.ingredientService.scanQRCodeOutput(res.QRCode, this.buildingName, userID, this.startDate.toDateString(), this.endDate.toDateString()).subscribe((status: any) => {
               if (status === true) {
                 this.getAllIngredientInfoOutputByBuilding();
                 const count = this.findOutputedIngredient(qrcode);
@@ -226,19 +247,17 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   getIngredientInfoOutput() {
     this.ingredientService.getAllIngredientInfoOutput().subscribe((res: any) => {
       this.data = res;
-      // this.ConvertClass(res);
     });
   }
 
   getAllIngredientInfoByBuilding() {
-    this.ingredientService.getAllIngredientInfoByBuilding(this.buildingName).subscribe((res: any) => {
+    this.ingredientService.getAllIngredientInfoByBuilding(this.buildingName,this.startDate.toDateString(), this.endDate.toDateString()).subscribe((res: any) => {
       this.data = res;
-      // this.ConvertClass(res);
     });
   }
 
   getAllIngredientInfoOutputByBuilding() {
-    this.ingredientService.getAllIngredientInfoOutputByBuilding(this.buildingName).subscribe((res: any) => {
+    this.ingredientService.getAllIngredientInfoOutputByBuilding(this.buildingName,this.startDate.toDateString(), this.endDate.toDateString()).subscribe((res: any) => {
       this.data = res;
       // this.ConvertClass(res);
     });

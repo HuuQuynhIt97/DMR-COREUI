@@ -139,6 +139,7 @@ namespace DMR_API._Services.Services
             return true;
 
         }
+
         public async Task<object> ScanQRCodeOutputV1(ScanQrCodeDto enity)
         {
 
@@ -545,7 +546,7 @@ namespace DMR_API._Services.Services
             return true;
         }
 
-        public async Task<object> ScanQRCodeOutput(string qrCode, string building, int userid)
+        public async Task<object> ScanQRCodeOutput(string qrCode, string building, int userid, DateTime min, DateTime max)
         {
 
             var dayAndBatch = string.Empty;
@@ -572,12 +573,11 @@ namespace DMR_API._Services.Services
 
             var currentDay = DateTime.Now;
 
-
             // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
             if (await _repoIngredientInfo.CheckBarCodeExists(Barcode))
             {
                 // check tiep trong bang ingredientReport xem co du lieu chua 
-                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == Barcode && x.BuildingName == building && x.Batch == Batch && x.CreatedDate.Date == currentDay.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
+                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == Barcode && x.BuildingName == building && x.Batch == Batch && x.CreatedDate.Date >= min.Date && x.CreatedDate.Date <= max.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
                 // nếu khác Null thi update lai
                 if (checkStatus != null)
                 {
@@ -609,48 +609,7 @@ namespace DMR_API._Services.Services
 
         public Task<object> ScanQRCodeFromChemialWareHouseDate(string qrCode, string start, string end)
         {
-            // var supModel = _repoSupplier.GetAll();
-            // var modelID = _repoIngredient.FindAll().FirstOrDefault(x => x.Code.Equals(qrCode) && x.isShow == true).ID;
-            // var model = _repoIngredient.FindById(modelID);
-            // var resultStart = DateTime.Now;
-            // var resultEnd = DateTime.Now;
-            // if (await _repoIngredientInfo.CheckBarCodeExists(qrCode))
-            // {
-            //     var result = _repoIngredientInfo.FindAll().FirstOrDefault(x => x.Code == qrCode && x.CreatedDate <= resultEnd.Date && x.CreatedDate >= resultStart.Date);
-
-            //     if (result != null)
-            //     {
-            //         result.Qty = model.Unit.ToInt() + result.Qty;
-            //         await UpdateIngredientInfo(result);
-            //     }
-            //     else
-            //     {
-            //         var data = await CreateIngredientInfo(new IngredientInfo
-            //         {
-
-            //             Name = model.Name,
-            //             ExpiredTime = model.ExpiredTime,
-            //             ManufacturingDate = model.ManufacturingDate,
-            //             SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
-            //             Qty = model.Unit.ToInt(),
-            //             Consumption = "0",
-            //             Code = model.Code
-            //         });
-            //     }
-            // }
-            // else
-            // {
-            //     var data = await CreateIngredientInfo(new IngredientInfo
-            //     {
-            //         Name = model.Name,
-            //         ExpiredTime = model.ExpiredTime,
-            //         ManufacturingDate = model.ManufacturingDate,
-            //         SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
-            //         Qty = model.Unit.ToInt(),
-            //         Consumption = "0",
-            //         Code = model.Code
-            //     });
-            // }
+            
             throw new NotImplementedException();
         }
 
@@ -839,13 +798,13 @@ namespace DMR_API._Services.Services
 
         // them boi henry
 
-        public async Task<List<IngredientInfoDto>> GetAllIngredientInfoByBuildingAsync(string building)
+        public async Task<List<IngredientInfoDto>> GetAllIngredientInfoByBuildingAsync(string building, DateTime min, DateTime max)
         {
             var resultStart = DateTime.Now;
             var resultEnd = DateTime.Now;
             return await _repoIngredientInfo.FindAll()
-                                            .Where(x => x.CreatedDate.Date >= resultStart.Date 
-                                                        && x.CreatedDate.Date <= resultEnd.Date
+                                            .Where(x => x.CreatedDate.Date >= min.Date 
+                                                        && x.CreatedDate.Date <= max.Date
                                                         && x.BuildingName == building
                                                         )
                                             .ProjectTo<IngredientInfoDto>(_configMapper)
@@ -853,13 +812,13 @@ namespace DMR_API._Services.Services
                                             .ToListAsync();
         }
 
-        public async Task<List<IngredientInfoDto>> GetAllIngredientInfoOutputByBuildingAsync(string building)
+        public async Task<List<IngredientInfoDto>> GetAllIngredientInfoOutputByBuildingAsync(string building, DateTime min, DateTime max)
         {
             var resultStart = DateTime.Now;
             var resultEnd = DateTime.Now;
             return await _repoIngredientInfo.FindAll()
-                                            .Where(x => x.CreatedDate.Date >= resultStart.Date 
-                                                     && x.CreatedDate.Date <= resultEnd.Date
+                                            .Where(x => x.CreatedDate.Date >= min.Date 
+                                                     && x.CreatedDate.Date <= max.Date
                                                      && x.BuildingName == building
                                                      )
                                             .ProjectTo<IngredientInfoDto>(_configMapper)

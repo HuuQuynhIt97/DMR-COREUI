@@ -22,9 +22,11 @@
                   [allowFiltering]='true' [value]="buildingID" (filtering)='onFilteringBuilding($event)'
                   (change)='onChangeBuilding($event)' placeholder="{{'Select a building' | translate}}">
                 </ejs-dropdownlist>
+
                 <button class="btn btn-sm btn-secondary" (click)='onClickDefault()'>
                   <i class="fa fa-times"></i>
                 </button>
+
                 <h4 class="font-weight-bold px-3 text-danger">{{planInfo.text}}</h4>
                 <div class="div">
                   <ul class="list-unstyled">

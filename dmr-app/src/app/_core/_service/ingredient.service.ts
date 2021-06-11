@@ -87,8 +87,8 @@ export class IngredientService {
     return this.http.get(`${this.baseUrl}ingredient/ScanQRCodeFromChemialWareHouse/${qrCode}/${building}/${userid}`, {});
   }
 
-  scanQRCodeOutput(qrCode, building, userid) {
-    return this.http.get(`${this.baseUrl}ingredient/ScanQRCodeOutput/${qrCode}/${building}/${userid}`, {});
+  scanQRCodeOutput(qrCode, building, userid, min, max) {
+    return this.http.get(`${this.baseUrl}ingredient/ScanQRCodeOutput/${qrCode}/${building}/${userid}/${min}/${max}`, {});
   }
   getAllSupplier() {
     return this.http.get<ISupplier[]>(this.baseUrl + 'Suppier/GetAll', {});
@@ -188,11 +188,11 @@ export class IngredientService {
   }
 
 
-  getAllIngredientInfoByBuilding(building) {
-    return this.http.get(this.baseUrl + `ingredient/GetAllIngredientInfoByBuilding/${building}`, {});
+  getAllIngredientInfoByBuilding(building ,min,max) {
+    return this.http.get(this.baseUrl + `ingredient/GetAllIngredientInfoByBuilding/${building}/${min}/${max}`, {});
   }
 
-  getAllIngredientInfoOutputByBuilding(building) {
-    return this.http.get(this.baseUrl + `ingredient/GetAllIngredientInfoOutputByBuilding/${building}`, {});
+  getAllIngredientInfoOutputByBuilding(building,min,max) {
+    return this.http.get(this.baseUrl + `ingredient/GetAllIngredientInfoOutputByBuilding/${building}/${min}/${max}`, {});
   }
 }

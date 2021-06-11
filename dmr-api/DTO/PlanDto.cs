@@ -90,6 +90,7 @@ namespace DMR_API.DTO
         public string ArticleNo { get; set; }
         public string Process { get; set; }
         public string Glue { get; set; }
+        public string Remark { get; set; }
         public float Std { get; set; }
         public int Qty { get; set; }
         public string Line { get; set; }

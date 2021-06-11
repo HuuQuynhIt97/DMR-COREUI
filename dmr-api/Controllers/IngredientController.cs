@@ -61,12 +61,20 @@ namespace DMR_API.Controllers
             return Ok(ingredients);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetAllIngredientInfo()
         {
             var ingredientsInfo = await _ingredientService.GetAllIngredientInfoAsync();
             return Ok(ingredientsInfo);
         }
+
+        //[HttpGet("{building}/{min}/{max}")]
+        //public async Task<IActionResult> GetAllIngredientInfo()
+        //{
+        //    var ingredientsInfo = await _ingredientService.GetAllIngredientInfoAsync();
+        //    return Ok(ingredientsInfo);
+        //}
 
         [HttpGet]
         public async Task<IActionResult> GetAllIngredientInfoOutPut()
@@ -199,10 +207,10 @@ namespace DMR_API.Controllers
             return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouse(qrCode, building, userid));
         }
 
-        [HttpGet("{qrCode}/{building}/{userid}")]
-        public async Task<IActionResult> ScanQRCodeOutput(string qrCode, string building, int userid)
+        [HttpGet("{qrCode}/{building}/{userid}/{min}/{max}")]
+        public async Task<IActionResult> ScanQRCodeOutput(string qrCode, string building, int userid , DateTime min, DateTime max)
         {
-            return Ok(await _ingredientService.ScanQRCodeOutput(qrCode, building, userid));
+            return Ok(await _ingredientService.ScanQRCodeOutput(qrCode, building, userid, min,max));
         }
 
         [HttpGet("{qrCode}/{start}/{end}")]
@@ -431,17 +439,17 @@ namespace DMR_API.Controllers
         }
         // them boi henry
 
-        [HttpGet("{building}")]
-        public async Task<IActionResult> GetAllIngredientInfoByBuilding(string building)
+        [HttpGet("{building}/{min}/{max}")]
+        public async Task<IActionResult> GetAllIngredientInfoByBuilding(string building , DateTime min, DateTime max)
         {
-            var ingredientsInfo = await _ingredientService.GetAllIngredientInfoByBuildingAsync(building);
+            var ingredientsInfo = await _ingredientService.GetAllIngredientInfoByBuildingAsync(building ,min ,max);
             return Ok(ingredientsInfo);
         }
 
-        [HttpGet("{building}")]
-        public async Task<IActionResult> GetAllIngredientInfoOutputByBuilding(string building)
+        [HttpGet("{building}/{min}/{max}")]
+        public async Task<IActionResult> GetAllIngredientInfoOutputByBuilding(string building , DateTime min, DateTime max)
         {
-            var ingredientsInfo = await _ingredientService.GetAllIngredientInfoOutputByBuildingAsync(building);
+            var ingredientsInfo = await _ingredientService.GetAllIngredientInfoOutputByBuildingAsync(building,min,max);
             return Ok(ingredientsInfo);
         }
     }

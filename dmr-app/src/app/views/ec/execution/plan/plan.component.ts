@@ -417,6 +417,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   getAllLine(buildingID) {
     this.planService.getLines(buildingID).subscribe((res: any) => {
       this.lines = res;
