@@ -162,22 +162,23 @@ namespace DMR_API._Services.Services
 
         public async Task<bool> Transfer(List<ToDoListTransferDto> model)
         {
-            foreach (var item in model)
+          
+            try
             {
-                try
+                foreach (var item in model)
                 {
                     var transfer = _repoToDoList.FindById(item.TodolistID);
                     transfer.BuildingID = item.BuildingID;
 
                     _repoToDoList.Update(transfer);
                     await _repoToDoList.SaveAll();
-                    return true;
                 }
-                catch (Exception)
-                {
-                    return false;
-                    throw;
-                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
             }
             throw new NotImplementedException();
         }
@@ -445,17 +446,18 @@ namespace DMR_API._Services.Services
                        && x.BuildingID == buildingID)
                    .ToListAsync();
 
-                var lines = await _repoBuildingUser.FindAll().Include(x => x.Building).Where(x => x.Building.ParentID == buildingID).Select(x => x.BuildingID).ToListAsync();
-                if (lines.Count > 0)
-                {
-                    model = model.Where(x => lines.Contains(x.LineID)).ToList();
-                }
-                else
-                {
-                    var allLines = await _repoBuilding.FindAll().Where(x => x.ParentID == buildingID).Select(x => x.ID).ToListAsync();
-                    model = model.Where(x => allLines.Contains(x.LineID)).ToList();
-                }
+                //var lines = await _repoBuildingUser.FindAll().Include(x => x.Building).Where(x => x.Building.ParentID == buildingID).Select(x => x.BuildingID).ToListAsync();
+                //if (lines.Count > 0)
+                //{
+                //    model = model.Where(x => lines.Contains(x.LineID)).ToList();
+                //}
+                //else
+                //{
+                //    var allLines = await _repoBuilding.FindAll().Where(x => x.ParentID == buildingID).Select(x => x.ID).ToListAsync();
+                //    model = model.Where(x => allLines.Contains(x.LineID)).ToList();
+                //}
                 // map dto
+
                 var result = MapToTodolistDto(model);
 
                 // filter by Middle of the day

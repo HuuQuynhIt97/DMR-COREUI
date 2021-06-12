@@ -100,6 +100,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   fieldsBuildings: object = { text: 'name', value: 'id' };
   setFocus: any;
   data: IToDoList[];
+  dataTransfer: IToDoList[];
   EVAUVData: any;
   doneData: IToDoList[] = [];
   building: IBuilding[] = [];
@@ -147,7 +148,8 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   glueNameIDDispatch: any;
   isSTF: boolean;
   bondingGapData: any = [];
-  dataPicked: any;
+  selectedRecords: any[];
+  buildingTransfer: IBuilding[];
   @HostListener('fullscreenchange', ['$event']) fullscreenchange(e) {
     // if (document.fullscreenElement) {
     //   this.fullscreenBtn.iconCss = 'fas fa-compress-arrows-alt';
@@ -160,8 +162,12 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('transferModal', { static: true })
   transferModal: TemplateRef<any>;
-
-  transferEntity = []
+  @ViewChild('transfer')
+  transfer: GridComponent;
+  DataTransfer = []
+  DataPicked = []
+  checked: boolean = false
+  status_building: boolean = true
   constructor(
     private planService: PlanService,
     private buildingService: BuildingService,
@@ -207,101 +213,111 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }));
   }
+
   public changeHandler(args, data): void {
-    console.log(data);
     if(args.checked) {
-
-    }
-  }
-  onChangeBuildingTransfer(args) {
-    console.log(args);
-
-  }
-
-  transferModals(model) {
-    this.modalReference = this.modalService.open(model, { size: 'xl'});
-
-    // event click out side modal and close model
-    this.modalReference.result.then((result) => {
-      this.dataPicked = []
-      // this.getAllLine(this.buildingID);
-    }, (reason) => {
-      this.dataPicked = []
-      // this.getAllLine(this.buildingID);
-    });
-    // end event
-  }
-  ConfirmTransfer() {
-    console.log('aaaa');
-  }
-
-  rowSelected(args) {
-    console.log(args);
-    if (args.isHeaderCheckboxClicked) {
-      for (const item of args.data) {
-        // this.modalStopLine = {
-        //   id: 0,
-        //   buildingID: item.id,
-        //   BPFCEstablishID: 0,
-        //   BPFCName: '',
-        //   IsOffline: true,
-        //   hourlyOutput: 0,
-        //   workingHour: 0,
-        //   dueDate: this.endDate,
-        //   startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
-        //   finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
-        //   startTime: {
-        //     hour: 7,
-        //     minute: 0
-        //   },
-        //   endTime: {
-        //     hour: 16,
-        //     minute: 30
-        //   },
-        // };
-        // this.dataPicked.push(this.modalStopLine);
-      }
-    }else {
-      // this.modalStopLine = {
-      //   id: 0,
-      //   buildingID: args.data.id,
-      //   BPFCEstablishID: 0,
-      //   BPFCName: '',
-      //   IsOffline: true,
-      //   hourlyOutput: 0,
-      //   workingHour: 0,
-      //   dueDate: this.endDate,
-      //   startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
-      //   finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
-      //   startTime: {
-      //     hour: 7,
-      //     minute: 0
-      //   },
-      //   endTime: {
-      //     hour: 16,
-      //     minute: 30
-      //   },
-      // };
-      // this.dataPicked.push(this.modalStopLine);
-    }
-  }
-
-  rowDeselected(args) {
-    if (args.isHeaderCheckboxClicked) {
-      for (const item of args.data) {
-        for (var i = 0; i < this.dataPicked.length; i++) {
-          if (this.dataPicked[i].buildingID == item.id) {
-            this.dataPicked.splice(i, 1);
+      for (const item of this.selectedRecords) {
+        for (var i = 0; i < this.selectedRecords.length; i++) {
+          if (item.id === data.id) {
+            const model = {
+              TodolistID: item.id,
+              BuildingID: item.buildingID
+            }
+            this.DataPicked.push(model)
             break;
           }
         }
       }
-    }else {
-      for (var i = 0; i < this.dataPicked.length; i++) {
-        if (this.dataPicked[i].buildingID == args.data.id) {
-          this.dataPicked.splice(i, 1);
+    } else {
+      for (var i = 0; i < this.DataPicked.length; i++) {
+        if (this.DataPicked[i].TodolistID == data.id) {
+          this.DataPicked.splice(i, 1);
           break;
         }
+      }
+    }
+  }
+
+  onChangeBuildingTransfer(data,args) {
+    // this.selectedRecords = this.gridTodo.dataSource as any[];
+
+    for (const item of this.selectedRecords) {
+      for (var i = 0; i < this.selectedRecords.length; i++) {
+        if (item.id === data.id) {
+          item.buildingID = args.value;
+          break;
+        }
+      }
+    }
+
+    for (const item of this.DataPicked) {
+      for (var i = 0; i < this.DataPicked.length; i++) {
+        if (item.TodolistID === data.id) {
+            item.BuildingID = args.value;
+          break;
+        }
+      }
+    }
+  }
+
+  transferModals(model) {
+    this.modalReference = this.modalService.open(model, { size: 'xl'});
+    this.buildingTransfer = this.buildings
+    this.selectedRecords = this.gridTodo.dataSource as any[];
+    // this.filterBuilding()
+    // event click out side modal and close model
+    this.modalReference.result.then((result) => {
+      this.selectedRecords = []
+      this.DataPicked = []
+    }, (reason) => {
+      this.selectedRecords = []
+      this.DataPicked = []
+    });
+    // end event
+  }
+
+  filterBuilding() {
+    for (var i = 0; i < this.buildingTransfer.length; i++) {
+      if (this.buildingTransfer[i].name === this.buildingName) {
+        this.buildingTransfer.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  ConfirmTransfer() {
+    // const data = this.DataPicked.filter(x => x.BuildingID !== this.buildingID);
+    this.statusBuilding(this.DataPicked)
+    if (this.DataPicked.length > 0 ) {
+      if (this.status_building) {
+        this.alertify.confirm2('TransFer! <br>Chuyển đổi!', 'Are you sure you want to transfer these chemicals to another building ?<br> Bạn có chắc chắn muốn chuyển những hóa chất này nhờ tòa nhà khác pha hộ?', () => {
+          this.todolistService.transfer(this.DataPicked).subscribe(res => {
+            if(res) {
+              this.alertify.success('Thành công!<br>Success!', true);
+              this.todo();
+              this.modalReference.dismiss();
+            }
+          })
+        }, () => {
+          // cancelCallback();
+        });
+      } else {
+        this.alertify.error('Vui lòng chọn tòa nhà khác tòa nhà hiện tại cho hóa chất cần chuyển giao !<br>Please select a different building than the current building for the chemical to be transferred!', true);
+      }
+    } else {
+      this.alertify.error('Vui lòng chọn  hóa chất cần chuyển giao !<br>Please select  the chemical to be transferred!', true);
+    }
+  }
+
+  statusBuilding(data) {
+    for (const item of data) {
+      for (var i = 0; i < data.length; i++) {
+        if (item.BuildingID === this.buildingID) {
+            this.status_building = false;
+          } else {
+            this.status_building = true;
+          }
+        break;
       }
     }
   }
@@ -403,6 +419,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.alertify.success('Xóa thành công! <br> Success!');
     });
   }
+
   cancel(todo: IToDoList): void {
     this.alertify.confirm('Cancel', 'Bạn có chắc chắn muốn hủy keo này không? Are you sure you want to get rid of this data?', () => {
       const model: IToDoListForCancel = {
@@ -599,6 +616,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.spinner.show();
     this.todolistService.todo(this.buildingID).subscribe(res => {
       this.data = res.data;
+      this.dataTransfer = res.data;
       this.todoTotal = res.todoTotal;
       this.doneTotal = res.doneTotal;
       this.total = res.total;

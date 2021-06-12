@@ -93,7 +93,7 @@
           <e-item id='done' prefixIcon='fa fa-check' text=" {{ 'Done' | translate }} ({{doneTotal}})"></e-item>
           <e-item id='bondingGap' prefixIcon='fa fa-plus-square' text=" {{ 'Addition2' | translate }} "></e-item>
 
-          <!-- <e-item id='transfer' prefixIcon='fa fa-exchange' text="Transfer"></e-item> -->
+          <e-item id='transfer' prefixIcon='fa fa-exchange' text="Transfer"></e-item>
 
           <e-item align='right'>
             <ng-template #template>
@@ -764,14 +764,14 @@
     <div class="modal-body">
       <div class="row">
         <div class="col-md-12">
-          <ejs-grid #transferModal [dataSource]='data'  showColumnMenu='true' [allowSelection]="true"
+          <ejs-grid #transfer [dataSource]='selectedRecords'  showColumnMenu='true' [allowSelection]="true"
             [allowExcelExport]='true' allowPaging='true' allowSorting='true' allowResizing='true'
             [showColumnChooser]='true' gridLines='Both' [selectionSettings]="{ persistSelection: true }"
             [pageSettings]='pageSettings'  >
             <e-columns>
               <e-column  isPrimaryKey='true' headerText='Select' textAlign='Center' width='80'>
                 <ng-template #template let-data>
-                  <p-checkbox color="success" (change)="changeHandler($event,data)" animation="pulse" shape="curve" bigger="true">
+                  <p-checkbox color="success"  (change)="changeHandler($event,data)" animation="pulse" shape="curve" bigger="true">
                     <i p-icon class="material-icons">done</i>
                   </p-checkbox>
                 </ng-template>
@@ -837,8 +837,8 @@
 
                 <ng-template #template let-data>
 
-                  <ejs-dropdownlist #ddlelement [dataSource]='buildings' [fields]='fieldsBuildings' [allowFiltering]='true'
-                     (filtering)='onFilteringBuilding($event)' (change)='onChangeBuildingTransfer($event)'
+                  <ejs-dropdownlist #ddlelement [dataSource]='buildingTransfer' [fields]='fieldsBuildings' [allowFiltering]='true'
+                     (filtering)='onFilteringBuilding($event)' (change)='onChangeBuildingTransfer(data ,$event)'
                     placeholder="{{'Select a building' | translate}}">
                   </ejs-dropdownlist>
                 </ng-template>
