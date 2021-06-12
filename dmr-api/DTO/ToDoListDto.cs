@@ -91,6 +91,11 @@ namespace DMR_API.DTO
         public string GlueName { get; set; }
         public Ingredient ChemicalA { get; set; }
     }
+    public class ToDoListTransferDto
+    {
+        public int TodolistID { get; set; }
+        public int BuildingID { get; set; }
+    }
     public class ToDoListForReturnDto
     {
         public ToDoListForReturnDto()

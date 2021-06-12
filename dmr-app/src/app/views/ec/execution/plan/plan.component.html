@@ -43,13 +43,19 @@
           [allowExcelExport]='true' allowPaging='true' allowSorting='true' allowResizing='true'
           [showColumnChooser]='true' gridLines='Both' (actionBegin)="actionBegin($event)"
           (actionComplete)="actionComplete($event)" (rowDataBound)="rowDataBound($event)" (dataBound)='dataBound()'
-          (queryCellInfo)='tooltip($event)' [toolbar]='toolbarOptions' [selectionSettings]="selectOptions"
+           [toolbar]='toolbarOptions' [selectionSettings]="selectOptions"
           [sortSettings]="sortSettings" (actionFailure)='actionFailure($event)' (toolbarClick)='toolbarClick($event)'
           [pageSettings]='pageSettings' (recordDoubleClick)='onDoubleClick($event)' [editSettings]='editSettings'>
           <e-columns>
             <e-column field='buildingName' headerText="{{'LINE_LABEL' | translate}}" width='92' textAlign='Center'>
               <ng-template #headerTemplate let-data>
                 {{'LINE_LABEL' | translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                <ejs-tooltip #tooltips class="fix-css" position='RightCenter'
+                  (beforeRender)="onBeforeRenderLine($event, data, data.index)" [content]="data.lineKind">
+                  {{data.buildingName}}
+                </ejs-tooltip>
               </ng-template>
               <ng-template #editTemplate let-data>
                 <ejs-dropdownlist #buildingNameDropdownlist id="buildingNameDropdownlist" [dataSource]='lines'
@@ -62,6 +68,12 @@
             <e-column field='bpfcName' headerText="{{'BPFC_NAME_LABEL' | translate}}" width='344' textAlign='Left'>
               <ng-template #headerTemplate let-data>
                 {{'BPFC_NAME_LABEL' | translate}}
+              </ng-template>
+              <ng-template #template let-data>
+                <ejs-tooltip #tooltip class="fix-css" position='RightCenter'
+                   [content]="tooltipContext(data.glues)">
+                  {{data.bpfcName}}
+                </ejs-tooltip>
               </ng-template>
               <ng-template #editTemplate let-data>
                 <ejs-dropdownlist #bpfcDropdownlist id="bpfcDropdownlist" [dataSource]='BPFCs' [value]="data.bpfcEstablishID"

@@ -301,6 +301,7 @@ namespace DMR_API._Services.Services
                         glue.ExpiredTime = model.GlueIngredientForMapDto.FirstOrDefault(x => x.Position == "A").ExpiredTime;
                         glue.GlueNameID = glueNameItem.ID;
                         glue.Name = glueName;
+                        _repoGlue.Update(glue);
                         _repoGlue.Save();
 
                     }
@@ -310,6 +311,7 @@ namespace DMR_API._Services.Services
                         glue.ExpiredTime = model.GlueIngredientForMapDto.FirstOrDefault(x => x.Position == "A").ExpiredTime;
                         glue.Name = glueName;
                         glue.GlueNameID = glueNameModal.ID;
+                        _repoGlue.Update(glue);
                         _repoGlue.Save();
                     }
                     foreach (var glueIngredient in glueIngredients)
@@ -336,6 +338,7 @@ namespace DMR_API._Services.Services
                             item.Percentage = glueIngredient.Percentage;
                             item.Allow = glueIngredient.Allow;
                             item.Position = glueIngredient.Position;
+                            _repoGlueIngredient.Update(item);
                             _repoGlueIngredient.Save();
                         }
 

@@ -92,6 +92,9 @@
           <e-item type='Separator'></e-item>
           <e-item id='done' prefixIcon='fa fa-check' text=" {{ 'Done' | translate }} ({{doneTotal}})"></e-item>
           <e-item id='bondingGap' prefixIcon='fa fa-plus-square' text=" {{ 'Addition2' | translate }} "></e-item>
+
+          <!-- <e-item id='transfer' prefixIcon='fa fa-exchange' text="Transfer"></e-item> -->
+
           <e-item align='right'>
             <ng-template #template>
               <div class="e-toolbar-item e-search-wrapper e-toolbar-right" aria-disabled="false" title="Search">
@@ -132,6 +135,7 @@
               </ejs-tooltip>
             </ng-template>
           </e-column>
+
           <e-column field='lines' headerText='Line' width='300' textAlign='Left'>
             <ng-template #headerTemplate>
               {{ 'Line' | translate }}
@@ -140,6 +144,7 @@
               {{data.lineNames.join(', ')}}
             </ng-template>
           </e-column>
+
           <e-column field="estimatedStartTime" type="date" format="HH:mm" headerText="EST" width="100"
             textAlign="Center">
             <ng-template #headerTemplate>
@@ -647,7 +652,7 @@
             </e-column>
             <e-column field='lineName' headerText="{{'Line' | translate}}" width='150' textAlign='Center'>
             </e-column>
-  
+
             <e-column field='bpfcEstablishName' headerText="{{'BPFC Name' | translate}}" width='350' textAlign='Center'>
             </e-column>
             <e-column field='remark' headerText="{{'Remark' | translate}}" width='200' textAlign='Center'>
@@ -658,11 +663,11 @@
     </ejs-grid>
       </div>
       <!-- End Bonding Gap -->
-  
+
 
   </div>
 
-  <!-- Thêm bởi Quỳnh (Leo 1/28/2021 11:46) -->
+  <!-- Thêm bởi Quỳnh (1/28/2021 11:46) -->
   <ng-template #addition let-modal>
     <div class="modal-header">
       <h4 class="modal-title">Addition</h4>
@@ -688,34 +693,6 @@
               </ejs-dropdownlist>
             </ng-template>
           </e-column>
-<!--
-          <e-column field="startTime" type="date" headerText="Start Working Time" width="120" textAlign="Center">
-            <ng-template #headerTemplate let-data>
-              {{ "Start Time" | translate }}
-            </ng-template>
-            <ng-template #template let-data>
-              {{ data.startWorkingTime | date: "HH:mm" }}
-            </ng-template>
-            <ng-template #editTemplate let-data>
-              <kendo-timepicker style="width: 100px" [disabled]="true" [(ngModel)]="startWorkingTime"
-                [format]="'HH:mm'">
-              </kendo-timepicker>
-            </ng-template>
-          </e-column>
-
-          <e-column field="endTime" type="date" headerText="Finish Working Time" width="120" textAlign="Center">
-            <ng-template #headerTemplate let-data>
-              {{ "End Time" | translate }}
-            </ng-template>
-            <ng-template #template let-data>
-              {{ data.finishWorkingTime | date: "HH:mm" }}
-            </ng-template>
-            <ng-template #editTemplate let-data>
-              <kendo-timepicker style="width: 100px" [disabled]="true" [(ngModel)]="finishWorkingTime"
-                [format]="'HH:mm'">
-              </kendo-timepicker>
-            </ng-template>
-          </e-column> -->
         </e-columns>
       </ejs-grid>
     </div>
@@ -726,7 +703,7 @@
     </div>
   </ng-template>
 
-  <!--Thêm bởi Quỳnh (Leo 2/2/2021 11:46)-->
+  <!--Thêm bởi Quỳnh (2/2/2021 11:46)-->
   <ng-template #historyMixed let-modal>
     <div class="modal-header">
       <h3 class="modal-title" style="color: red">Mix {{glueMix_name}} - Total Amount: {{total_amount}}kg</h3>
@@ -773,6 +750,114 @@
     </div>
   </ng-template>
 
+  <!--Thêm bởi Quỳnh (11/06/2021)-->
+  <ng-template #transferModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="fas fa-plus"></i> Transfer
+        <!-- <b class="text-danger">(Lưu ý: Anh/Chị chỉ sử dụng chức năng này khi chuyền đó không hoạt động trong ngày)</b> -->
+      </h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <ejs-grid #transferModal [dataSource]='data'  showColumnMenu='true' [allowSelection]="true"
+            [allowExcelExport]='true' allowPaging='true' allowSorting='true' allowResizing='true'
+            [showColumnChooser]='true' gridLines='Both' [selectionSettings]="{ persistSelection: true }"
+            [pageSettings]='pageSettings'  >
+            <e-columns>
+              <e-column  isPrimaryKey='true' headerText='Select' textAlign='Center' width='80'>
+                <ng-template #template let-data>
+                  <p-checkbox color="success" (change)="changeHandler($event,data)" animation="pulse" shape="curve" bigger="true">
+                    <i p-icon class="material-icons">done</i>
+                  </p-checkbox>
+                </ng-template>
+              </e-column>
+
+              <e-column field='supplier' headerText='Supplier' width='100' textAlign='Center'>
+                <ng-template #headerTemplate>
+                  {{ 'Supplier' | translate }}
+                </ng-template>
+              </e-column>
+
+              <e-column field='glueName' headerText='Glue' width='170' textAlign='Left'>
+                <ng-template #headerTemplate>
+                  {{ 'Glue' | translate }}
+                </ng-template>
+                <ng-template #template let-data>
+                  <ejs-tooltip #tooltip class="fix-css" position='RightCenter'
+                    (beforeRender)="onBeforeRender($event, data, data.index)" content="loading...">
+                    {{data.glueName}}
+                  </ejs-tooltip>
+                </ng-template>
+              </e-column>
+
+              <e-column field='lines' headerText='Line' width='300' textAlign='Left'>
+                <ng-template #headerTemplate>
+                  {{ 'Line' | translate }}
+                </ng-template>
+                <ng-template #template let-data>
+                  {{data.lineNames.join(', ')}}
+                </ng-template>
+              </e-column>
+
+              <e-column field="estimatedStartTime" type="date" format="HH:mm" headerText="EST" width="100"
+                textAlign="Center">
+                <ng-template #headerTemplate>
+                  <ejs-tooltip [content]="'EST_Tooltip' | translate">
+                    {{ "EST" | translate }}
+                  </ejs-tooltip>
+                </ng-template>
+                <ng-template #template let-data>
+                  <div *ngIf="data.abnormalStatus">{{'Addition' | translate}}</div>
+                  <div *ngIf="!data.abnormalStatus">{{data.estimatedStartTime | date: "HH:mm"}}</div>
+                </ng-template>
+              </e-column>
+
+              <e-column field="estimatedFinishTime" type="date" format="HH:mm" headerText="EFT" width="100"
+                textAlign="Center">
+                <ng-template #headerTemplate>
+                  <ejs-tooltip [content]="'EFT_Tooltip' | translate">
+                    {{ "EFT" | translate }}
+                  </ejs-tooltip>
+                </ng-template>
+                <ng-template #template let-data>
+                  <div *ngIf="data.abnormalStatus">{{'Addition' | translate}}</div>
+                  <div *ngIf="!data.abnormalStatus">{{data.estimatedFinishTime | date: "HH:mm"}}</div>
+                </ng-template>
+              </e-column>
+
+              <e-column  headerText='Building' width='200' textAlign='Center'>
+                <ng-template #headerTemplate let-data>
+                  {{'Building' | translate}}
+                </ng-template>
+
+                <ng-template #template let-data>
+
+                  <ejs-dropdownlist #ddlelement [dataSource]='buildings' [fields]='fieldsBuildings' [allowFiltering]='true'
+                     (filtering)='onFilteringBuilding($event)' (change)='onChangeBuildingTransfer($event)'
+                    placeholder="{{'Select a building' | translate}}">
+                  </ejs-dropdownlist>
+                </ng-template>
+
+                <ng-template #editTemplate let-data>
+
+                </ng-template>
+              </e-column>
+
+            </e-columns>
+          </ejs-grid>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+      <button type="submit" (click)='ConfirmTransfer()' class="btn btn-primary">Confirm</button>
+    </div>
+  </ng-template>
 
     <ng-template #additionDispatch let-modal>
       <div class="modal-header">

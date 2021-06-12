@@ -32,6 +32,15 @@ namespace DMR_API.Controllers
             _hubContext = hubContext;
         }
 
+     
+        [HttpPut]
+        public async Task<IActionResult> Transfer(List<ToDoListTransferDto> model)
+        {
+            var status = await _toDoList.Transfer(model);
+            return Ok(status);
+
+        }
+
         // Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
         [HttpGet("{MixingInfoID}")]
         public async Task<IActionResult> MixedHistory(int MixingInfoID)

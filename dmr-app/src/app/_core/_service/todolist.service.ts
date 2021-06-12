@@ -28,7 +28,9 @@ export class TodolistService {
   addition(glueNameID, mixingID, start, end) {
     return this.http.get(`${this.baseUrl}ToDoList/addition/${glueNameID}/${mixingID}/${start}/${end}`);
   }
-
+  transfer(model) {
+    return this.http.put(`${this.baseUrl}ToDoList/transfer`, model);
+  }
   additionDispatch(glueNameID) {
     return this.http.get(`${this.baseUrl}ToDoList/additionDispatch/${glueNameID}`);
   }

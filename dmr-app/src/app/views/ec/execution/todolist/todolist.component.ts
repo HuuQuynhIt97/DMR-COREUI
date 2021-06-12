@@ -82,6 +82,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('gridEVAUV') gridEVAUV: GridComponent;
   @ViewChild('gridDone') gridDone: GridComponent;
   @ViewChild('gridAdditionDispatch') gridAdditionDispatch: GridComponent;
+
   @ViewChildren('tooltip') tooltip: QueryList<any>;
 
   @ViewChild('gridTodo') gridTodo: GridComponent;
@@ -146,6 +147,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   glueNameIDDispatch: any;
   isSTF: boolean;
   bondingGapData: any = [];
+  dataPicked: any;
   @HostListener('fullscreenchange', ['$event']) fullscreenchange(e) {
     // if (document.fullscreenElement) {
     //   this.fullscreenBtn.iconCss = 'fas fa-compress-arrows-alt';
@@ -155,6 +157,11 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     //   this.fullscreenBtn.content = 'FullScreen';
     // }
   }
+
+  @ViewChild('transferModal', { static: true })
+  transferModal: TemplateRef<any>;
+
+  transferEntity = []
   constructor(
     private planService: PlanService,
     private buildingService: BuildingService,
@@ -183,6 +190,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {
   }
+
   ngOnInit() {
     this.focusDone = this.TODO;
     this.isShowTab = this.TODO;
@@ -199,6 +207,105 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }));
   }
+  public changeHandler(args, data): void {
+    console.log(data);
+    if(args.checked) {
+
+    }
+  }
+  onChangeBuildingTransfer(args) {
+    console.log(args);
+
+  }
+
+  transferModals(model) {
+    this.modalReference = this.modalService.open(model, { size: 'xl'});
+
+    // event click out side modal and close model
+    this.modalReference.result.then((result) => {
+      this.dataPicked = []
+      // this.getAllLine(this.buildingID);
+    }, (reason) => {
+      this.dataPicked = []
+      // this.getAllLine(this.buildingID);
+    });
+    // end event
+  }
+  ConfirmTransfer() {
+    console.log('aaaa');
+  }
+
+  rowSelected(args) {
+    console.log(args);
+    if (args.isHeaderCheckboxClicked) {
+      for (const item of args.data) {
+        // this.modalStopLine = {
+        //   id: 0,
+        //   buildingID: item.id,
+        //   BPFCEstablishID: 0,
+        //   BPFCName: '',
+        //   IsOffline: true,
+        //   hourlyOutput: 0,
+        //   workingHour: 0,
+        //   dueDate: this.endDate,
+        //   startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
+        //   finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
+        //   startTime: {
+        //     hour: 7,
+        //     minute: 0
+        //   },
+        //   endTime: {
+        //     hour: 16,
+        //     minute: 30
+        //   },
+        // };
+        // this.dataPicked.push(this.modalStopLine);
+      }
+    }else {
+      // this.modalStopLine = {
+      //   id: 0,
+      //   buildingID: args.data.id,
+      //   BPFCEstablishID: 0,
+      //   BPFCName: '',
+      //   IsOffline: true,
+      //   hourlyOutput: 0,
+      //   workingHour: 0,
+      //   dueDate: this.endDate,
+      //   startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
+      //   finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
+      //   startTime: {
+      //     hour: 7,
+      //     minute: 0
+      //   },
+      //   endTime: {
+      //     hour: 16,
+      //     minute: 30
+      //   },
+      // };
+      // this.dataPicked.push(this.modalStopLine);
+    }
+  }
+
+  rowDeselected(args) {
+    if (args.isHeaderCheckboxClicked) {
+      for (const item of args.data) {
+        for (var i = 0; i < this.dataPicked.length; i++) {
+          if (this.dataPicked[i].buildingID == item.id) {
+            this.dataPicked.splice(i, 1);
+            break;
+          }
+        }
+      }
+    }else {
+      for (var i = 0; i < this.dataPicked.length; i++) {
+        if (this.dataPicked[i].buildingID == args.data.id) {
+          this.dataPicked.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
   onEventHub() {
     if (signalr.CONNECTION_HUB.state === HubConnectionState.Connected) {
       signalr.CONNECTION_HUB.on('ReloadTodo', () => {
@@ -217,6 +324,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
   }
+
   onRouteChange() {
     this.route.data.subscribe(data => {
       if (this.route.snapshot.params.glueName !== undefined) {
@@ -262,6 +370,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
+
   getBuilding(callback): void {
     this.buildingService.getBuildings()
       .pipe(
@@ -280,6 +389,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     }, err => {
     });
   }
+
   cancelRange(): void {
     const data = this.gridTodo.getSelectedRecords() as IToDoList[];
     const model: IToDoListForCancel[] = data.map(item => {
@@ -306,6 +416,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
 
     });
   }
+
   onFilteringBuilding: EmitType<FilteringEventArgs> = (
     e: FilteringEventArgs
   ) => {
@@ -316,6 +427,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     // pass the filter data source, filter query to updateData method.
     e.updateData(this.buildings as any, query);
   }
+
   onChangeBuilding(args) {
     this.buildingID = args.itemData.id;
     this.buildingName = args.itemData.name;
@@ -327,6 +439,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.building = [args.itemData];
     this.loadData();
   }
+
   onSelectBuildingToDo(args: any): void {
     this.buildingID = args.itemData.id;
     this.buildingName = args.itemData.name;
@@ -338,6 +451,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isSTF = args.itemData.isSTF;
     this.loadData();
   }
+
   onSelectBuildingDelay(args: any): void {
     this.buildingID = args.itemData.id;
     this.buildingName = args.itemData.name;
@@ -875,17 +989,20 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     const target: HTMLElement = (args.originalEvent.target as HTMLElement).closest('button'); // find clicked button
     this.glueName = '';
     switch (target?.id) {
+      case 'transfer':
+        this.transferModals(this.transferModal)
+        break;
       case 'addition':
         this.openAddition();
         break;
-        case 'bondingGap':
-          this.bondingGap();
-          this.isShowTab = this.BONDING_GAP;
-          this.focusDone = this.BONDING_GAP;
-          this.router.navigate([
-            `/ec/execution/todolist-2/${this.BONDING_GAP}`,
-          ]);
-          break;
+      case 'bondingGap':
+        this.bondingGap();
+        this.isShowTab = this.BONDING_GAP;
+        this.focusDone = this.BONDING_GAP;
+        this.router.navigate([
+          `/ec/execution/todolist-2/${this.BONDING_GAP}`,
+        ]);
+        break;
       case 'done':
         this.isShowTab = this.DONE;
         this.focusDone = this.DONE;

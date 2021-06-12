@@ -44,6 +44,7 @@
               </ng-template>
             </e-column>
             <e-column field="email" textAlign='Center' headerText="Email"> </e-column>
+
             <e-column field="role" textAlign='Center' headerText="{{ 'Role' | translate}}">
               <ng-template #editTemplate let-data>
                 <ejs-dropdownlist #positionDropdownlist [dataSource]='roles' [value]="data.role"
@@ -52,6 +53,7 @@
                 </ejs-dropdownlist>
               </ng-template>
             </e-column>
+
             <e-column field="option" width="100" textAlign='Center' headerText="{{ 'Option' | translate}}">
               <ng-template #template let-data>
                 <div class="btn-group">

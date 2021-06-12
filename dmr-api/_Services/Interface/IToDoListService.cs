@@ -186,6 +186,7 @@ namespace DMR_API._Services.Interface
         Task<ResponseDetail<object>> AdditionDispatch(int glueNameID);
         //Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
         Task<object> MixedHistory(int MixingInfoID);
+        Task<bool> Transfer(List<ToDoListTransferDto> model);
         //Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
 
         Task<List<DispatchListDto>> GetDispatchListDetail(int glueNameID, string estimatedStartTime, string estimatedFinishTime);

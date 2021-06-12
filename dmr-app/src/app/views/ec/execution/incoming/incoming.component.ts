@@ -307,8 +307,9 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   delete(item) {
     this.ingredientService.deleteIngredientInfo(item.id, item.code, item.qty, item.batch).subscribe(() => {
       this.alertify.success('Delete Success!');
-      this.getIngredientInfo();
-      this.getIngredientInfoOutput();
+      this.getAllIngredientInfoByBuilding()
+      // this.getIngredientInfo();
+      // this.getIngredientInfoOutput();
     });
   }
 

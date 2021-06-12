@@ -114,6 +114,7 @@
     "popper.js": "1.12.9",
     "pretty-checkbox": "^3.0.3",
     "rxjs": "^6.6.6",
+    "material-icons": "^0.3.1",
     "safe-pipe": "^1.0.3",
     "simple-line-icons": "^2.5.5",
     "sweetalert2": "^9.17.2",

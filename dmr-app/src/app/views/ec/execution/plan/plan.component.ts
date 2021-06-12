@@ -1,7 +1,7 @@
 import { BaseComponent } from 'src/app/_core/_component/base.component';
 import { PlanService } from './../../../../_core/_service/plan.service';
 import { BPFC, IPlan, ITime, Plan } from './../../../../_core/_model/plan';
-import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
 import { AlertifyService } from 'src/app/_core/_service/alertify.service';
 import {
   PageSettingsModel, GridComponent,
@@ -92,7 +92,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     }
 
   };
-
+  @ViewChildren('tooltips') tooltips: QueryList<any>;
   modalStopLine: any
   public queryString: string;
   buildingNameForChangeModal = '';
@@ -226,7 +226,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     const building_name = data.map((item: any) => {
       return item.buildingName;
     });
-    console.log(this.endDate);
     for (const item of building_name) {
       for (var i = 0; i < this.lineStop.length; i++) {
         if (this.lineStop[i].name == item) {
@@ -1058,7 +1057,9 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   tooltipContext(data) {
+
     if (data) {
+
       const array = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
       const glues = [];
       for (const item of data) {
@@ -1066,12 +1067,28 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           glues.push(item);
         }
       }
+      if (glues.length === 0) {
+        return 'N/A';
+      }
       return glues.join('<br>');
     } else {
-      return '';
+      return 'N/A';
     }
   }
+  onBeforeRenderBPFC(args, data, i) {
+    const t = this.tooltips.filter((item, index) => index === +i)[0];
 
+    t.content = this.tooltipContext(data.glues);
+    console.log(t.content);
+    t.dataBind();
+
+  }
+  onBeforeRenderLine(args, data, i) {
+    console.log(data);
+    const t = this.tooltips.filter((item, index) => index === +i)[0];
+    t.content = data.lineKind;
+    t.dataBind();
+  }
   tooltip(args: QueryCellInfoEventArgs) {
     if (args.column.field === 'bpfcName') {
       const data = args.data as any;

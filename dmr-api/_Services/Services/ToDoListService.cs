@@ -159,6 +159,29 @@ namespace DMR_API._Services.Services
             return dispatchListResult;
         }
 
+
+        public async Task<bool> Transfer(List<ToDoListTransferDto> model)
+        {
+            foreach (var item in model)
+            {
+                try
+                {
+                    var transfer = _repoToDoList.FindById(item.TodolistID);
+                    transfer.BuildingID = item.BuildingID;
+
+                    _repoToDoList.Update(transfer);
+                    await _repoToDoList.SaveAll();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                    throw;
+                }
+            }
+            throw new NotImplementedException();
+        }
+
         public async Task<ToDoListForReturnDto> Done(int buildingID)
         {
             // Lấy tất cả nhiệm vụ đã hoàn thành, nhiệm vụ đã giao theo quyền hạn
@@ -5174,6 +5197,8 @@ namespace DMR_API._Services.Services
                .FirstOrDefaultAsync();
             return plansModel.Building.KindID > 0;
         }
+
+       
 
         #endregion
 

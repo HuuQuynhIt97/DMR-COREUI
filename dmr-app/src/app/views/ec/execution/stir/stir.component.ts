@@ -366,6 +366,7 @@ export class StirComponent implements OnInit, OnDestroy {
   create(model: IStirForAdd) {
     return this.stirService.create(model).toPromise();
   }
+
   update(model: IStirForUpdate) {
     return this.stirService.update(model).toPromise();
   }
@@ -373,6 +374,7 @@ export class StirComponent implements OnInit, OnDestroy {
   getStirByMixingInfoID(mixingInfoID: number) {
     return this.stirService.getStirByMixingInfoID(mixingInfoID).toPromise();
   }
+
   //
   goToTodolist() {
     return this.router.navigate([`/ec/execution/todolist-2/${this.tab}/${this.glueName}`]);
