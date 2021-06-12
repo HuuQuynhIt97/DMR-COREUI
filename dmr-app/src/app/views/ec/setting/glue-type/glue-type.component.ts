@@ -66,15 +66,15 @@ export class GlueTypeComponent extends BaseComponent implements OnInit {
       });
   }
   toolbarClick(args) {
-    switch (args.item.text) {
-      case 'Add':
+    switch (args.item.id) {
+      case 'grid_gridcontrol_add':
         args.cancel = true;
         this.openMainModal();
         break;
       case 'PDF Export':
         this.treeGridObj.pdfExport({ hierarchyExportMode: 'All' });
         break;
-      case 'Excel Export':
+      case 'grid_gridcontrol_excelexport':
         this.treeGridObj.excelExport({ hierarchyExportMode: 'All' });
         break;
       default:

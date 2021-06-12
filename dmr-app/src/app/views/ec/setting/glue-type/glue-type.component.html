@@ -7,7 +7,7 @@
     <!-- /.card-header -->
 
     <div class="card-body table-responsive p-0">
-      <ejs-treegrid #treegrid [dataSource]="data"
+      <ejs-treegrid #treegrid id="grid" [dataSource]="data"
                     (contextMenuClick)='contextMenuClick($event)'
                     (contextMenuOpen)='contextMenuOpen($event)'
                     (toolbarClick)='toolbarClick($event)'

@@ -821,6 +821,7 @@ namespace DMR_API._Services.Services
                     await _repoPlan.SaveAll();
                     //throw new Exception();
                     // Nếu cập nhật lại finishworkingtime thì xóa những cái sau thời gian cập nhật ở bảng todolist và dispatch
+
                     if (model.FinishWorkingTime.ToRemoveSecond() != oldPlan.FinishWorkingTime.ToRemoveSecond())
                     {
                         var timeOfDay = model.FinishWorkingTime.ToRemoveSecond().TimeOfDay;
