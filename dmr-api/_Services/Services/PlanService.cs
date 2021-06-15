@@ -1892,7 +1892,7 @@ namespace DMR_API._Services.Services
             //var buildingGlueModel = await _repoBuildingGlue.FindAll(x => x.CreatedDate.Date >= startDate && x.CreatedDate.Date <= endDate && lines.Contains(x.BuildingID)).Include(x => x.MixingInfo).ToListAsync();
             var dispatchModel = await _repoDispatch.FindAll(x => x.EstimatedFinishTime.Date >= startDate && x.EstimatedFinishTime.Date <= endDate && lines.Contains(x.LineID))
                 .Include(x => x.MixingInfo).ToListAsync();
-            var model = await _repoPlan.FindAll()
+            var model = await _repoPlan.FindAll(x => lines.Contains(x.BuildingID) && x.DueDate.Date >= startDate && x.DueDate.Date <= endDate)
                  .Include(x => x.BPFCEstablish)
                  .ThenInclude(x => x.Glues)
                  .Include(x => x.BPFCEstablish)
@@ -1921,7 +1921,7 @@ namespace DMR_API._Services.Services
                      Process = x.BPFCEstablish.ArtProcess.Process.Name,
                      Plans = x.BPFCEstablish.Plans,
                      Glues = x.BPFCEstablish.Glues.ToList()
-                 }).Where(x => x.Plans.Any(x => lines.Contains(x.BuildingID)) && x.Date >= startDate && x.Date <= endDate)
+                 })
                  .ToListAsync();
             var list = new List<ConsumtionDto>();
             foreach (var item in model)
@@ -3205,7 +3205,8 @@ namespace DMR_API._Services.Services
         public async Task<ResponseDetail<Byte[]>> ExportExcelWorkPlanWholeBuilding(int buildingID, DateTime startDate, DateTime endDate)
         {
             var buildingModel = await _repoBuilding.FindAll().FirstOrDefaultAsync(x => x.ID == buildingID);
-            var _buildings = await _repoBuilding.FindAll().Where(x => x.BuildingTypeID == buildingModel.BuildingTypeID).OrderBy(x => x.Name).ToListAsync();
+            var _buildings = await _repoBuilding.FindAll().Where(x => x.BuildingTypeID == buildingModel.BuildingTypeID)
+                .OrderBy(x => x.Name).ToListAsync();
             var data = new List<ExportExcelPlanDto>();
             foreach (var building in _buildings)
             {

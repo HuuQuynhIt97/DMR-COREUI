@@ -588,7 +588,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
         this.router.navigate([`/ec/establish/bpfc-schedule/${this.tab}`]);
         this.getAll();
         break;
-      case 'grid_Excel Export':
+      case 'grid_excelexport':
         const data = this.data.filter(x => x.modelName !== "STOP" && x.modelNo !== "STOP").map((item) => {
           return {
             approvedBy: item.approvedBy,

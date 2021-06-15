@@ -51,6 +51,8 @@ namespace DMR_API._Services.Services
         {
             try
             {
+                model.ParentID = model.ParentID == 0 ? null : model.ParentID;
+                model.Level = 1;
                 _repoGlueType.Add(model);
 
                 return await _repoGlueType.SaveAll();
