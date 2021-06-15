@@ -98,6 +98,7 @@ namespace DMR_API.Helpers.AutoMapper
             CreateMap<BPFCEstablish, BPFCEstablishDto>()
                 .ForMember(d => d.DueDateStatus, o => o.MapFrom(x => x.ArtProcess.Process.Name == "ASY" ? false : DateTime.Now.Date > x.DueDate.Value.Date))
                 .ForMember(d => d.ModelName, o => o.MapFrom(x => x.ModelName.Name))
+                .ForMember(d => d.LatestComment, o => o.MapFrom(x => x.Comments.Count > 0 || x.Comments != null ? x.Comments.OrderByDescending(x => x.ID).First().Content : ""))
                 .ForMember(d => d.ModelNo, o => o.MapFrom(x => x.ModelNo.Name))
                 .ForMember(d => d.ArticleNo, o => o.MapFrom(x => x.ArticleNo.Name))
                 .ForMember(d => d.ArtProcess, o => o.MapFrom(x => x.ArtProcess.Process.Name));

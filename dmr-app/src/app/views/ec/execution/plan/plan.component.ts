@@ -347,8 +347,6 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   onTimeChange(agrs) {
   }
 
@@ -382,10 +380,8 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     } else {
       this.getBuilding(() => {
         this.buildingID = buildingId;
-
       });
     }
-
   }
 
   ngOnDestroy() {
@@ -506,9 +502,11 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.pageSettings = { pageCount: 20, pageSizes: true, pageSize: 12 };
     this.editparams = { params: { popupHeight: '300px' } };
   }
+
   count(index) {
     return Number(index) + 1;
   }
+
   onDoubleClick(args: any): void {
     this.setFocus = args.column; // Get the column from Double click event
   }
@@ -520,6 +518,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       callback();
     });
   }
+
   getBuilding(callback): void {
     const userID = +JSON.parse(localStorage.getItem('user')).user.id;
     this.authService.getBuildingUserByUserID(userID).subscribe((res) => {
@@ -531,12 +530,12 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     //   callback();
     // });
   }
+
   achievementRate() {
     this.planService.achievementRate(this.buildingID).subscribe((res: any) => {
       this.planInfo = res.data;
     });
   }
-
 
   onChangeLine(args, data) {
     this.lineID = args.itemData?.id || 0;
@@ -601,20 +600,25 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   convertTimeToDatetime(time: { hour: number, minute: number }) {
     const date = new Date().toDateString() + ` ${time.hour}:${time.minute}`;
     return date;
   }
+
   convertDatetimeToTime(date: Date) {
     const value = date;
     const time = { hour: value.getHours(), minute: value.getMinutes() };
     return time;
   }
+
   dataBound() {
     this.grid.autoFitColumns();
   }
+
   rowDataBound(args) {
   }
+
   onChangeStartTime(value: Date) {
     // this.startTime = { hour: value.getHours(), minute: value.getMinutes() };
     // this.modalPlan.startTime = { hour: value.getHours(), minute: value.getMinutes() };

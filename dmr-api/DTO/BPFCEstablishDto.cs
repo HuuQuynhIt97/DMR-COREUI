@@ -24,6 +24,8 @@ namespace DMR_API.DTO
         public int CreatedBy { get; set; }
 
         public string Season { get; set; }
+        public string LatestComment { get; set; }
+        public List<Comment> Comments { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime? ModifiedDate { get; set; }

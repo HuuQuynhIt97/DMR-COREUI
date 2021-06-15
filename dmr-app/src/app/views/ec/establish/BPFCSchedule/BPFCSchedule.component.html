@@ -14,7 +14,7 @@
           (rowDataBound)='rowDB($event)' [pageSettings]='pageSettings' allowFiltering='true'
           [filterSettings]='filterSettings' [sortSettings]="sortSettings" [editSettings]='editSettings'
           [toolbar]='toolbarOptions' [enablePersistence]='true' [allowExcelExport]='true' allowResizing='true' (created)="createdSearch($event)"
-          gridLines='Both' showColumnMenu='true' (dataBound)='dataBound($event)' (toolbarClick)='toolbarClick($event)'
+          gridLines='Both' showColumnMenu='true' (dataBound)='dataBound($event)' (toolbarClick)='toolbarClick($event)' (rowSelected)='rowSelected($event)'
           (actionBegin)='actionBegin($event)' [searchSettings]='searchOptions'>
           <e-columns>
             <e-column field='#' isPrimaryKey='true' textAlign='Center' headerText='#' width=40>
@@ -56,6 +56,14 @@
               headerText='Approval By Supervisor'>
             </e-column>
             <e-column field='season' textAlign='Center' width=100 headerText='Season'></e-column>
+
+            <e-column field='latestComment' textAlign='Center' width=200   headerText='Latest Comment'>
+              <ng-template #template let-data>
+                {{data.latestComment}}
+              </ng-template>
+
+            </e-column>
+
             <e-column field='option' textAlign='Center' headerText='-- Option --'
               width=170>
               <ng-template #template let-data>

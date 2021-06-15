@@ -82,6 +82,7 @@ namespace DMR_API._Services.Services
         {
             var model = await _repoBPFCEstablish
                 .FindAll(x => !x.IsDelete)
+                .Include(x => x.Comments)
                 .Include(x => x.ModelName)
                 .Include(x => x.ModelNo)
                 .Include(x => x.ArticleNo)
@@ -105,6 +106,7 @@ namespace DMR_API._Services.Services
         {
             var model = await _repoBPFCEstablish
                .FindAll(x => !x.IsDelete)
+               .Include(x => x.Comments)
                .Include(x => x.ModelName)
                .Include(x => x.ModelNo)
                .Include(x => x.ArticleNo)
@@ -178,6 +180,7 @@ namespace DMR_API._Services.Services
         {
             return await _repoBPFCEstablish
                 .FindAll(x => !x.IsDelete)
+                .Include(x => x.Comments)
                 .Include(x => x.ModelName)
                 .Include(x => x.ModelNo)
                 .Include(x => x.ArticleNo)

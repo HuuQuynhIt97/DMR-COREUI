@@ -12,6 +12,7 @@ export class PermissionDirective implements OnInit {
 
   constructor(private el: ElementRef, private route: ActivatedRoute, private authService: AuthenticationService) {
   }
+
   ngOnInit() {
     const loggedInUser = this.authService.loggedIn();
     if (loggedInUser) {

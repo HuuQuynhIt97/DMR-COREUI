@@ -199,7 +199,9 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
       }
     });
   }
-
+  rowSelected(args) {
+    console.log(args);
+  }
   getAllBPFC() {
     this.bPFCEstablishService.filterByApprovedStatus().subscribe((res: any) => {
       // console.log('Nếu là thành hình thì chỉ lấy những mẫu giầy của thành hình, ngược lại lấy của xưởng đế!');
@@ -528,6 +530,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
   }
 
   actionBegin(args) {
+    console.log(args);
     if (args.requestType === 'searching') {
       this.textSearch = args.searchString;
     }
@@ -707,6 +710,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
           createdBy: item.createdBy,
           artProcess: item.artProcess,
           season: item.season,
+          latestComment: item.latestComment,
         };
       });
       this.spinner.hide();
@@ -738,6 +742,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
           createdBy: item.createdBy,
           artProcess: item.artProcess,
           season: item.season,
+          latestComment: item.latestComment,
         };
       });
       this.percentageOfDoneData = res.percentageOfDone;
@@ -772,6 +777,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
             ?.username,
           createdBy: item.createdBy,
           artProcess: item.artProcess,
+          latestComment: item.latestComment,
           season: item.season,
         };
       });

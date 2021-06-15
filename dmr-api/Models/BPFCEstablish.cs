@@ -39,5 +39,6 @@ namespace DMR_API.Models
         public ArticleNo ArticleNo { get; set; }
         public ICollection<Plan> Plans { get; set; }
         public ICollection<Glue> Glues { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

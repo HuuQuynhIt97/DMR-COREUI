@@ -12,6 +12,6 @@ namespace DMR_API.Models
         public int BPFCEstablishID { get; set; }
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
-
+        public virtual BPFCEstablish BPFCEstablish { get; set; }
     }
 }
