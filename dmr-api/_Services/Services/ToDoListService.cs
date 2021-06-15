@@ -1347,6 +1347,7 @@ namespace DMR_API._Services.Services
                 }
             }
         }
+
         // 3/17/2021
         private async Task AddDispatchList_v105(List<int> plans)
         {
@@ -1497,6 +1498,7 @@ namespace DMR_API._Services.Services
             }
             catch (Exception)
             {
+
             }
         }
         private async Task AddDispatchList(List<int> plans)

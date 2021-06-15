@@ -27,7 +27,7 @@ export class PlanService {
     return this.http.get<Plan[]>(this.baseUrl + 'Plan/GetBatchByIngredientID/' + id, {});
   }
   getBPFCByGlue(glue) {
-    return this.http.post(`${this.baseUrl}Plan/GetBPFCByGlue/`, {glue});
+    return this.http.post(`${this.baseUrl}Plan/GetBPFCByGlue/`, glue);
   }
   getAll() {
     return this.http.get<Plan[]>(this.baseUrl + 'Plan/GetAll', {});

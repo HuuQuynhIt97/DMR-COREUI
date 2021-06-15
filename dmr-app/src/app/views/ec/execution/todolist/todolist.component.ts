@@ -188,6 +188,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.building = JSON.parse(localStorage.getItem('building'));
     this.buildingID = +localStorage.getItem('buildingID');
   }
+
   ngOnDestroy() {
     this.subscription.forEach(subscription => subscription.unsubscribe());
     if (signalr.CONNECTION_HUB.state === HubConnectionState.Connected) {
@@ -558,6 +559,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
+
   EVA_UVList() {
     this.spinner.show();
     this.bottomFactoryService.EVAUVList(this.buildingID).subscribe((res: any) => {
@@ -576,6 +578,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   dispatchList() {
     this.spinner.show();
     this.todolistService.dispatchList(this.buildingID).subscribe((res: any) => {
@@ -594,6 +597,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   dispatchListDelay() {
     this.spinner.show();
     this.todolistService.dispatchListDelay(this.buildingID).subscribe((res: any) => {
@@ -612,6 +616,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   todo() {
     this.spinner.show();
     this.todolistService.todo(this.buildingID).subscribe(res => {
@@ -631,6 +636,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   todoAddition() {
     this.todolistService.todoAddition(this.buildingID).subscribe(res => {
       //  Thêm bởi Quỳnh (Leo 1/28/2021 11:46)
@@ -650,6 +656,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     });
   }
+
   dispatchAddition() {
     this.todolistService.dispatchAddition(this.buildingID).subscribe(res => {
       //  Thêm bởi Quỳnh (Leo 1/28/2021 11:46)
@@ -667,6 +674,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     });
   }
+
   delay() {
     this.spinner.show();
     this.todolistService.delay(this.buildingID).subscribe(res => {
@@ -686,6 +694,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   bondingGap() {
     this.spinner.show();
     this.additionService.getAllByBuildingID(this.buildingID).subscribe(data => {
@@ -1212,8 +1221,9 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     const t = this.tooltip.filter((item, index) => index === +i)[0];
     t.content = 'Loading...';
     t.dataBind();
+    const model = { glue : data.glueName , planID: data.planID , buildingID: this.buildingID};
     this.planService
-      .getBPFCByGlue(data.glueName)
+      .getBPFCByGlue(model)
       .subscribe((res: any) => {
         t.content = res.join('<br>');
         t.dataBind();

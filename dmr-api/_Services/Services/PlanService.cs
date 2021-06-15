@@ -212,7 +212,9 @@ namespace DMR_API._Services.Services
         {
             var name = tooltip.Glue.Trim().ToSafetyString();
             var results = new List<string>();
+            var line = await _repoBuilding.FindAll(x=>x.ParentID== tooltip.BuildingID).Select(x => x.ID).ToListAsync();
             var plans = await _repoPlan.FindAll()
+                                .Include(x => x.Building)
                                 .Include(x => x.BPFCEstablish)
                                     .ThenInclude(x => x.ModelName)
                                 .Include(x => x.BPFCEstablish)
@@ -227,9 +229,9 @@ namespace DMR_API._Services.Services
                                 .Where(x => x.DueDate.Date == DateTime.Now.Date && !x.BPFCEstablish.IsDelete).ToListAsync();
             foreach (var plan in plans)
             {
-                foreach (var glue in plan.BPFCEstablish.Glues.Where(x => x.isShow == true && x.Name.Trim().Equals(name)))
+                foreach (var glue in plan.BPFCEstablish.Glues.Where(x => line.Contains(plan.BuildingID) && x.isShow == true && x.Name.Trim().Equals(name)))
                 {
-                    var bpfc = $"{plan.BPFCEstablish.ModelName.Name} -> {plan.BPFCEstablish.ModelNo.Name} -> {plan.BPFCEstablish.ArticleNo.Name} -> {plan.BPFCEstablish.ArtProcess.Process.Name}";
+                    var bpfc = $"{plan.Building.Name} | {plan.BPFCEstablish.ModelName.Name} -> {plan.BPFCEstablish.ModelNo.Name} -> {plan.BPFCEstablish.ArticleNo.Name} -> {plan.BPFCEstablish.ArtProcess.Process.Name}";
                     results.Add(bpfc);
                 }
             }
@@ -1882,7 +1884,7 @@ namespace DMR_API._Services.Services
             //var buildingGlueModel = await _repoBuildingGlue.FindAll(x => x.CreatedDate.Date >= startDate && x.CreatedDate.Date <= endDate && lines.Contains(x.BuildingID)).Include(x => x.MixingInfo).ToListAsync();
             var dispatchModel = await _repoDispatch.FindAll(x => x.EstimatedFinishTime.Date >= startDate && x.EstimatedFinishTime.Date <= endDate && lines.Contains(x.LineID))
                 .Include(x => x.MixingInfo).ToListAsync();
-            var model = await _repoPlan.FindAll()
+            var model = await _repoPlan.FindAll(x => lines.Contains(x.BuildingID) && x.DueDate.Date >= startDate && x.DueDate.Date <= endDate)
                  .Include(x => x.BPFCEstablish)
                  .ThenInclude(x => x.Glues)
                  .Include(x => x.BPFCEstablish)
@@ -1911,7 +1913,7 @@ namespace DMR_API._Services.Services
                      Process = x.BPFCEstablish.ArtProcess.Process.Name,
                      Plans = x.BPFCEstablish.Plans,
                      Glues = x.BPFCEstablish.Glues.ToList()
-                 }).Where(x => x.Plans.Any(x => lines.Contains(x.BuildingID)) && x.Date >= startDate && x.Date <= endDate)
+                 })
                  .ToListAsync();
             var list = new List<ConsumtionDto>();
             foreach (var item in model)

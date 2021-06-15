@@ -1,7 +1,7 @@
 import { FooterComponent } from './views/layout/footer/footer.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy, CommonModule } from '@angular/common';
+import { LocationStrategy, HashLocationStrategy, CommonModule, PathLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -159,7 +159,9 @@ export function tokenGetter() {
       useClass: HashLocationStrategy
     },
     IconSetService,
-    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
+    // Location,
+    // {provide: LocationStrategy, useClass: PathLocationStrategy}
   ],
   bootstrap: [ AppComponent ]
 })

@@ -22,7 +22,8 @@ export class PermissionDirective implements OnInit {
       const functionCode = this.route.snapshot.data.functionCode;
       const permissions = [].concat.apply([], childrenTemp).filter(x => x.functionCode === functionCode);
       if (permissions && permissions.filter(x => {
-        return x.functionCode === this.appFunction && x.code === this.appAction;
+         return x.functionCode === this.appFunction && x.code === this.appAction;
+        // return x.functionCode === this.appFunction ;
       }).length > 0) {
         this.el.nativeElement.style.display = '';
       } else {

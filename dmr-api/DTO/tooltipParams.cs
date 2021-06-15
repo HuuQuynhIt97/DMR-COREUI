@@ -8,6 +8,8 @@ namespace DMR_API.DTO
     public class TooltipParams
     {
         public string Glue { get; set; }
-      
+        public int PlanID { get; set; }
+        public int BuildingID { get; set; }
+
     }
 }
