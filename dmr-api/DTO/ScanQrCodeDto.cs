@@ -10,5 +10,7 @@ namespace DMR_API.DTO
         public string qrCode { get; set; }
         public string building { get; set; }
         public int userid { get; set; }
+        public DateTime min { get; set; }
+        public DateTime max { get; set; }
     }
 }

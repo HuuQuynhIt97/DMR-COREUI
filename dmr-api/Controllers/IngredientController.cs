@@ -35,6 +35,17 @@ namespace DMR_API.Controllers
             return Ok(ingredients);
         }
 
+        [HttpGet("{qrCode}/{building}/{userid}")]
+        public async Task<IActionResult> ScanQRCodeFromChemialWareHouse(string qrCode, string building, int userid)
+        {
+            return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouse(qrCode, building, userid));
+        }
+
+        [HttpGet("{qrCode}/{building}/{userid}/{min}/{max}")]
+        public async Task<IActionResult> ScanQRCodeOutput(string qrCode, string building, int userid, DateTime min, DateTime max)
+        {
+            return Ok(await _ingredientService.ScanQRCodeOutput(qrCode, building, userid, min, max));
+        }
         //Update 08/04/2021 - Leo
         [HttpPost]
         public async Task<IActionResult> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity)
@@ -201,17 +212,7 @@ namespace DMR_API.Controllers
             return Ok(await _ingredientService.ScanQRCode(qrCode));
         }
 
-        [HttpGet("{qrCode}/{building}/{userid}")]
-        public async Task<IActionResult> ScanQRCodeFromChemialWareHouse(string qrCode, string building, int userid)
-        {
-            return Ok(await _ingredientService.ScanQRCodeFromChemialWareHouse(qrCode, building, userid));
-        }
-
-        [HttpGet("{qrCode}/{building}/{userid}/{min}/{max}")]
-        public async Task<IActionResult> ScanQRCodeOutput(string qrCode, string building, int userid , DateTime min, DateTime max)
-        {
-            return Ok(await _ingredientService.ScanQRCodeOutput(qrCode, building, userid, min,max));
-        }
+        
 
         [HttpGet("{qrCode}/{start}/{end}")]
         public async Task<IActionResult> ScanQRCodeFromChemialWareHouseDate(string qrCode, string start, string end)

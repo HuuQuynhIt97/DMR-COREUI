@@ -60,6 +60,157 @@ namespace DMR_API._Services.Services
             _repoGlue = repoGlue;
             _repoMixingInfo = repoMixingInfo;
         }
+
+        public async Task<object> ScanQRCodeFromChemialWareHouse(string qrCode, string building, int userid)
+        {
+            var dayAndBatch = string.Empty;
+            var pattern = @"((\d*)-(\w*)-)*";
+            var obj = new string[] { };
+            Regex r = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            Match m = r.Match(qrCode);
+            if (m.Success)
+            {
+                dayAndBatch = m.Groups[1].ToSafetyString();
+                obj = dayAndBatch.Split('-');
+            }
+
+            var Barcode = qrCode.Replace(dayAndBatch, "");
+            var ProductionDate = obj[0];
+            var Batch = obj[1];
+            var model = _repoIngredient.FindAll().FirstOrDefault(x => x.MaterialNO.Equals(Barcode));
+            var supModel = _repoSupplier.GetAll();
+            var ProductionDates = Convert.ToDateTime(ProductionDate.Substring(0, 4) + "/" + ProductionDate.Substring(4, 2) + "/" + ProductionDate.Substring(6, 2));
+            var exp = ProductionDates.AddMonths(3);
+            var currentDate = DateTime.Now;
+            var data = await CreateIngredientInfo(new IngredientInfo
+            {
+                Name = model.Name,
+                ExpiredTime = exp.Date,
+                ManufacturingDate = ProductionDates.Date,
+                SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
+                Qty = model.Unit.ToInt(),
+                Batch = Batch,
+                Consumption = "0",
+                Code = model.MaterialNO,
+                IngredientID = model.ID,
+                UserID = userid,
+                BuildingName = building
+
+            });
+
+            // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
+            if (await _repoIngredientInfoReport.CheckBarCodeExists(Barcode))
+            {
+                // check tiep trong bang ingredientReport xem co du lieu chua 
+                var result = _repoIngredientInfoReport.FindAll().FirstOrDefault(x => x.Code == Barcode && x.Batch == Batch && x.CreatedDate.Date == currentDate.Date);
+
+                // nếu khác Null thi update lai
+                if (result != null)
+                {
+                    result.Qty = model.Unit.ToInt() + result.Qty;
+                    await UpdateIngredientInfoReport(result);
+                }
+
+                // nếu bằng null thì tạo mới IngredientReport
+                else
+                {
+                    await CreateIngredientInfoReport(new IngredientInfoReport
+                    {
+                        Name = model.Name,
+                        ExpiredTime = ProductionDates.Date.AddMonths(3),
+                        ManufacturingDate = ProductionDates.Date,
+                        SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
+                        Qty = model.Unit.ToInt(),
+                        Consumption = "0",
+                        Code = model.MaterialNO,
+                        Batch = Batch,
+                        IngredientInfoID = data.ID,
+                        UserID = userid,
+                        BuildingName = building
+                    });
+                }
+            }
+
+            // nếu chưa tồn tại thì thêm mới
+            else
+                await CreateIngredientInfoReport(new IngredientInfoReport
+                {
+                    Name = model.Name,
+                    ExpiredTime = ProductionDates.Date.AddMonths(3),
+                    ManufacturingDate = ProductionDates.Date,
+                    SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
+                    Qty = model.Unit.ToInt(),
+                    Batch = Batch,
+                    Consumption = "0",
+                    Code = model.MaterialNO,
+                    IngredientInfoID = data.ID,
+                    UserID = userid,
+                    BuildingName = building
+                });
+            return true;
+        }
+
+        public async Task<object> ScanQRCodeOutput(string qrCode, string building, int userid, DateTime min, DateTime max)
+        {
+
+            var dayAndBatch = string.Empty;
+            var pattern = @"((\d*)-(\w*)-)*";
+            var obj = new string[] { };
+            Regex r = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            Match m = r.Match(qrCode);
+            if (m.Success)
+            {
+                dayAndBatch = m.Groups[1].ToSafetyString();
+                obj = dayAndBatch.Split('-');
+            }
+            // load tat ca supplier
+            var supModel = _repoSupplier.GetAll();
+            // lay gia tri "barcode" trong chuỗi qrcode được chuyền lên
+            var Barcode = qrCode.Replace(dayAndBatch, "");
+            // tim ID của ingredient
+            var ingredientID = _repoIngredient.FindAll().FirstOrDefault(x => x.MaterialNO.Equals(Barcode)).ID;
+            // Find ingredient theo ingredientID vừa tìm được ở trên
+            var model = _repoIngredient.FindById(ingredientID);
+            // lấy giá trị "Batch" trong chuỗi qrcode được chuyền lên
+            var Batch = obj[1];
+
+            var currentDay = DateTime.Now;
+
+            // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
+            if (await _repoIngredientInfo.CheckBarCodeExists(Barcode))
+            {
+                // check tiep trong bang ingredientReport xem co du lieu chua 
+                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == Barcode && x.BuildingName == building && x.Batch == Batch && x.CreatedDate.Date >= min.Date && x.CreatedDate.Date <= max.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
+                // nếu khác Null thi update lai
+                if (checkStatus != null)
+                {
+                    checkStatus.Status = true;
+                    await UpdateIngredientInfo(checkStatus);
+                }
+                else
+                {
+                    return new
+                    {
+                        status = false,
+                        message = "Đã dùng hết !"
+                    };
+                }
+            }
+
+            // nếu chưa tồn tại thì thêm mới
+            else
+            {
+                return new
+                {
+                    status = false,
+                    message = "Hãy scan QR Code hàng nhập trước :) !"
+                };
+            }
+
+            return true;
+        }
         //Update 08/04/2021 - Leo
         public async Task<object> ScanQRCodeFromChemialWareHouseV1(ScanQrCodeDto entity)
         {
@@ -140,30 +291,9 @@ namespace DMR_API._Services.Services
 
         }
 
-        public async Task<object> ScanQRCodeOutputV1(ScanQrCodeDto enity)
+        public async Task<object> ScanQRCodeOutputV1(ScanQrCodeDto entity)
         {
-
-            //var dayAndBatch = string.Empty;
-            //var pattern = @"((\d*)-(\w*)-)*";
-            //var obj = new string[] { };
-            //Regex r = new Regex(pattern, RegexOptions.IgnoreCase);
-
-            //Match m = r.Match(qrCode);
-            //if (m.Success)
-            //{
-            //    dayAndBatch = m.Groups[1].ToSafetyString();
-            //    obj = dayAndBatch.Split('-');
-            //}
-
-            var results = enity.qrCode.Split("    ");
-            //var partNo = results[2].Split(":")[1].Trim();
-            //var Batch = results[4].Split(":")[1].Trim();
-            //var model = _repoIngredient.FindAll().FirstOrDefault(x => x.PartNO.Equals(partNo));
-            //var supModel = _repoSupplier.GetAll();
-            //var ProductionDates = results[5].Split(":")[1].Trim().ToDateTime();
-            //var exp = ProductionDates.AddMonths(3);
-            //var currentDate = DateTime.Now;
-
+            var results = entity.qrCode.Split("    ");
             // load tat ca supplier
             var supModel = _repoSupplier.GetAll();
             // lay gia tri "barcode" trong chuỗi qrcode được chuyền lên
@@ -182,7 +312,7 @@ namespace DMR_API._Services.Services
             if (await _repoIngredientInfo.CheckBarCodeExists(partNo))
             {
                 // check tiep trong bang ingredientReport xem co du lieu chua 
-                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == partNo && x.BuildingName == enity.building && x.Batch == Batch && x.CreatedDate.Date == currentDay.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
+                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == partNo && x.BuildingName == entity.building && x.Batch == Batch && x.CreatedDate.Date >= entity.min.Date && x.CreatedDate.Date <= entity.max.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
                 // nếu khác Null thi update lai
                 if (checkStatus != null)
                 {
@@ -456,156 +586,7 @@ namespace DMR_API._Services.Services
             return result;
         }
 
-        public async Task<object> ScanQRCodeFromChemialWareHouse(string qrCode, string building, int userid)
-        {
-            var dayAndBatch = string.Empty;
-            var pattern = @"((\d*)-(\w*)-)*";
-            var obj = new string[] { };
-            Regex r = new Regex(pattern, RegexOptions.IgnoreCase);
-
-            Match m = r.Match(qrCode);
-            if (m.Success)
-            {
-                dayAndBatch = m.Groups[1].ToSafetyString();
-                obj = dayAndBatch.Split('-');
-            }
-
-            var Barcode = qrCode.Replace(dayAndBatch, "");
-            var ProductionDate = obj[0];
-            var Batch = obj[1];
-            var model = _repoIngredient.FindAll().FirstOrDefault(x => x.MaterialNO.Equals(Barcode));
-            var supModel = _repoSupplier.GetAll();
-            var ProductionDates = Convert.ToDateTime(ProductionDate.Substring(0, 4) + "/" + ProductionDate.Substring(4, 2) + "/" + ProductionDate.Substring(6, 2));
-            var exp = ProductionDates.AddMonths(3);
-            var currentDate = DateTime.Now;
-            var data = await CreateIngredientInfo(new IngredientInfo
-            {
-                Name = model.Name,
-                ExpiredTime = exp.Date,
-                ManufacturingDate = ProductionDates.Date,
-                SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
-                Qty = model.Unit.ToInt(),
-                Batch = Batch,
-                Consumption = "0",
-                Code = model.MaterialNO,
-                IngredientID = model.ID,
-                UserID = userid,
-                BuildingName = building
-
-            });
-
-            // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
-            if (await _repoIngredientInfoReport.CheckBarCodeExists(Barcode))
-            {
-                // check tiep trong bang ingredientReport xem co du lieu chua 
-                var result = _repoIngredientInfoReport.FindAll().FirstOrDefault(x => x.Code == Barcode && x.Batch == Batch && x.CreatedDate.Date == currentDate.Date);
-
-                // nếu khác Null thi update lai
-                if (result != null)
-                {
-                    result.Qty = model.Unit.ToInt() + result.Qty;
-                    await UpdateIngredientInfoReport(result);
-                }
-
-                // nếu bằng null thì tạo mới IngredientReport
-                else
-                {
-                    await CreateIngredientInfoReport(new IngredientInfoReport
-                    {
-                        Name = model.Name,
-                        ExpiredTime = ProductionDates.Date.AddMonths(3),
-                        ManufacturingDate = ProductionDates.Date,
-                        SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
-                        Qty = model.Unit.ToInt(),
-                        Consumption = "0",
-                        Code = model.MaterialNO,
-                        Batch = Batch,
-                        IngredientInfoID = data.ID,
-                        UserID = userid,
-                        BuildingName = building
-                    });
-                }
-            }
-
-            // nếu chưa tồn tại thì thêm mới
-            else
-                await CreateIngredientInfoReport(new IngredientInfoReport
-                {
-                    Name = model.Name,
-                    ExpiredTime = ProductionDates.Date.AddMonths(3),
-                    ManufacturingDate = ProductionDates.Date,
-                    SupplierName = supModel.FirstOrDefault(s => s.ID == model.SupplierID).Name,
-                    Qty = model.Unit.ToInt(),
-                    Batch = Batch,
-                    Consumption = "0",
-                    Code = model.MaterialNO,
-                    IngredientInfoID = data.ID,
-                    UserID = userid,
-                    BuildingName = building
-                });
-            return true;
-        }
-
-        public async Task<object> ScanQRCodeOutput(string qrCode, string building, int userid, DateTime min, DateTime max)
-        {
-
-            var dayAndBatch = string.Empty;
-            var pattern = @"((\d*)-(\w*)-)*";
-            var obj = new string[] { };
-            Regex r = new Regex(pattern, RegexOptions.IgnoreCase);
-
-            Match m = r.Match(qrCode);
-            if (m.Success)
-            {
-                dayAndBatch = m.Groups[1].ToSafetyString();
-                obj = dayAndBatch.Split('-');
-            }
-            // load tat ca supplier
-            var supModel = _repoSupplier.GetAll();
-            // lay gia tri "barcode" trong chuỗi qrcode được chuyền lên
-            var Barcode = qrCode.Replace(dayAndBatch, "");
-            // tim ID của ingredient
-            var ingredientID = _repoIngredient.FindAll().FirstOrDefault(x => x.MaterialNO.Equals(Barcode)).ID;
-            // Find ingredient theo ingredientID vừa tìm được ở trên
-            var model = _repoIngredient.FindById(ingredientID);
-            // lấy giá trị "Batch" trong chuỗi qrcode được chuyền lên
-            var Batch = obj[1];
-
-            var currentDay = DateTime.Now;
-
-            // check trong bang ingredientReport xem đã tồn tại code hay chưa , nếu có tồn tại 
-            if (await _repoIngredientInfo.CheckBarCodeExists(Barcode))
-            {
-                // check tiep trong bang ingredientReport xem co du lieu chua 
-                var checkStatus = _repoIngredientInfo.FindAll().Where(x => x.Code == Barcode && x.BuildingName == building && x.Batch == Batch && x.CreatedDate.Date >= min.Date && x.CreatedDate.Date <= max.Date && x.Status == false).OrderBy(y => y.CreatedTime).FirstOrDefault();
-                // nếu khác Null thi update lai
-                if (checkStatus != null)
-                {
-                    checkStatus.Status = true;
-                    await UpdateIngredientInfo(checkStatus);
-                }
-                else
-                {
-                    return new
-                    {
-                        status = false,
-                        message = "Đã dùng hết !"
-                    };
-                }
-            }
-
-            // nếu chưa tồn tại thì thêm mới
-            else
-            {
-                return new
-                {
-                    status = false,
-                    message = "Hãy scan QR Code hàng nhập trước :) !"
-                };
-            }
-
-            return true;
-        }
+        
 
         public Task<object> ScanQRCodeFromChemialWareHouseDate(string qrCode, string start, string end)
         {

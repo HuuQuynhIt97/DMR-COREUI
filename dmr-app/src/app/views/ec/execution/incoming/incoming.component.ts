@@ -226,7 +226,9 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
             const model = {
               qrCode: res.QRCode,
               building: this.buildingName,
-              userid: userID
+              userid: userID,
+              min: this.startDate.toDateString(),
+              max: this.endDate.toDateString()
             };
 
             this.ingredientService.scanQRCodeOutputV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
