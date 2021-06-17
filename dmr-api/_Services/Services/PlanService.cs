@@ -1839,31 +1839,31 @@ namespace DMR_API._Services.Services
                 });
             }
 
-            var items = list.GroupBy(t => new {
-                t.Glue,
-                t.ModelNo,
-                t.ModelName,
-                t.ID,
-                t.Line,
-                t.ArticleNo,
-                t.Process
-            })
-                .Select(t => new ConsumtionDto
-                {
-                    ModelName = t.FirstOrDefault().ModelName,
-                    ModelNo = t.FirstOrDefault().ModelNo,
-                    ArticleNo = t.FirstOrDefault().ArticleNo,
-                    Process = t.FirstOrDefault().Process,
-                    Line = t.FirstOrDefault().Line,
-                    Remark = t.FirstOrDefault().Remark,
-                    Glue = t.FirstOrDefault().Glue,
-                    Std = t.Sum(ta => ta.Std),
-                    ID = t.FirstOrDefault().ID,
-                    DueDate = t.FirstOrDefault().DueDate,
+            //var items = list.GroupBy(t => new {
+            //    t.Glue,
+            //    t.ModelNo,
+            //    t.ModelName,
+            //    t.ID,
+            //    t.Line,
+            //    t.ArticleNo,
+            //    t.Process
+            //})
+            //    .Select(t => new ConsumtionDto
+            //    {
+            //        ModelName = t.FirstOrDefault().ModelName,
+            //        ModelNo = t.FirstOrDefault().ModelNo,
+            //        ArticleNo = t.FirstOrDefault().ArticleNo,
+            //        Process = t.FirstOrDefault().Process,
+            //        Line = t.FirstOrDefault().Line,
+            //        Remark = t.FirstOrDefault().Remark,
+            //        Glue = t.FirstOrDefault().Glue,
+            //        Std = t.Sum(ta => ta.Std),
+            //        ID = t.FirstOrDefault().ID,
+            //        DueDate = t.FirstOrDefault().DueDate,
 
-                }).ToList();
+            //    }).ToList();
             //return items;
-            return items.ToList();
+            return list;
            // throw new NotImplementedException();
         }
 

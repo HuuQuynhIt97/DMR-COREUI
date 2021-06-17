@@ -573,24 +573,28 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
       case 'grid_Excel Import':
         this.showModal(this.importModal);
         break;
+
       case 'Done':
         this.gridObj.searchSettings.key = '';
         this.tab = DONE;
         this.router.navigate([`/ec/establish/bpfc-schedule/${this.tab}`]);
         this.getDone();
         break;
+
       case 'Undone':
         this.gridObj.searchSettings.key = '';
         this.tab = UNDONE;
         this.router.navigate([`/ec/establish/bpfc-schedule/${this.tab}`]);
         this.getUndone();
         break;
+
       case 'All':
         this.gridObj.searchSettings.key = '';
         this.tab = ALL;
         this.router.navigate([`/ec/establish/bpfc-schedule/${this.tab}`]);
         this.getAll();
         break;
+
       case 'grid_excelexport':
         const data = this.data.filter(x => x.modelName !== "STOP" && x.modelNo !== "STOP").map((item) => {
           return {
