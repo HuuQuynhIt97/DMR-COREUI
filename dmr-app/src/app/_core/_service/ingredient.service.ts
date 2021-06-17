@@ -71,6 +71,13 @@ export class IngredientService {
   getAllIngredient() {
     return this.http.get<IIngredient[]>(this.baseUrl + 'ingredient/GetAll', {});
   }
+  //Update 08/04/2021 - Leo
+  scanQRCodeFromChemicalWareHouseV1(model) {
+    return this.http.post(`${this.baseUrl}ingredient/ScanQRCodeFromChemialWareHouseV1/`, model);
+  }
+  scanQRCodeOutputV1(model) {
+    return this.http.post(`${this.baseUrl}ingredient/ScanQRCodeOutputV1/`, model);
+  }
   rate() {
     return this.http.get<ResponseDetail<any>>(this.baseUrl + 'ingredient/Rate', {});
   }

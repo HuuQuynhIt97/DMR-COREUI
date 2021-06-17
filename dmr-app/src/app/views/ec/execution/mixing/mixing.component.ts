@@ -148,16 +148,34 @@ export class MixingComponent implements OnInit, OnDestroy {
         const item = arg.ingredient;
         this.ingredientsTamp = item;
         this.position = item.position;
-        const input = args.split('-') || [];
-        const dateAndBatch = /(\d+)-(\w+)-/g;
-        const qr = args.match(item.materialNO);
-        const validFormat = args.match(dateAndBatch);
-        const qrcode = args.replace(validFormat[0], '');
+        // const input = args.split('-') || [];
+        // const dateAndBatch = /(\d+)-(\w+)-/g;
+        // const validFormat = args.match(dateAndBatch);
+        // const qrcode = args.replace(validFormat[0], '');
+
+        // Update 08/04/2021 - Leo
+        const input = args.split('    ') || [];
+        console.log('input',input);
+
+        const qr = item.partNO;
+        console.log('qr', qr);
+
+        var qrcode = null
+        try {
+          qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
+          console.log('qrcode',qrcode);
+        } catch (error) {
+          qrcode = null
+        }
+
+        //console.log(qrcode);
+        // const qr = args.match(item.materialNO);
+        // End update
         if (qr === null) {
           this.alertify.warning(`Mã QR không hợp lệ!<br>The QR Code invalid!`);
           this.qrCode = '';
-          this.status = false;
           this.errorScan();
+          this.offSignalr();
           return;
         }
         if (qr !== null) {

@@ -19,7 +19,7 @@ export class AutoSelectSubpackageDirective implements AfterViewInit, OnInit, OnD
     setTimeout(() => {
       this.host.nativeElement.focus();
       this.host.nativeElement.select();
-    }, 30000);
+    }, 10000);
   }
   @HostListener('ngModelChange', ['$event']) onChange(value) {
     this.subject.next(value);
@@ -56,9 +56,12 @@ export class AutoSelectSubpackageDirective implements AfterViewInit, OnInit, OnD
 
   @HostListener('window:keydown', ['$event'])
   spaceEvent(event: any) {
-    event.preventDefault();
-    if (event.ctrlKey && event.keyCode === 74) {
-      this.host.nativeElement.value = this.host.nativeElement.value + '    ';
+    if (event.srcElement.id === 'scanner') {
+      event.preventDefault();
+      if (event.ctrlKey && event.keyCode === 74 || event.keyCode === 13) {
+        this.host.nativeElement.value = this.host.nativeElement.value + '    ';
+        this.host.nativeElement.value = this.host.nativeElement.value.replaceAll('        ', '    ');
+      }
     }
   }
 }

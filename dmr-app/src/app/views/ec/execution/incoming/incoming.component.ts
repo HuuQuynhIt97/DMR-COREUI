@@ -179,11 +179,20 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (res) => {
-        const input = res.QRCode.split('-') || [];
         // const commonPattern = /(\d+)-(\w+)-([\w\-\d]+)/g;
         const dateAndBatch = /(\d+)-(\w+)-/g;
         const validFormat = res.QRCode.match(dateAndBatch);
-        const qrcode = res.QRCode.replace(validFormat[0], '');
+        const array = [];
+        for (const item of res.QRCode.split('    ')) {
+          array.push(item);
+        }
+        // Update 08/04/2021 - Leo
+        const input = res.QRCode.split('    ') || [];
+        const qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
+        console.log(qrcode);
+        // End Update
+
+        // const qrcode = res.QRCode.replace(validFormat[0], '');
         const levels = [1, 0];
         const building = JSON.parse(localStorage.getItem('building'));
         let buildingName = building.name;
@@ -191,10 +200,17 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
           buildingName = 'E';
         }
         const chemical = this.findIngredientCode(qrcode);
+
         if (this.checkin === true) {
           if (this.checkCode === true) {
             const userID = JSON.parse(localStorage.getItem('user')).user.id;
-            this.ingredientService.scanQRCodeFromChemicalWareHouse(res.QRCode, this.buildingName, userID).subscribe((status: any) => {
+            const model = {
+              qrCode: res.QRCode,
+              building: this.buildingName,
+              userid: userID
+            };
+
+            this.ingredientService.scanQRCodeFromChemicalWareHouseV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
               if (status === true) {
                 this.getAllIngredientInfoByBuilding();
                 const count = this.findInputedIngredient(qrcode);
@@ -207,7 +223,13 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
           if (this.checkCode === true) {
             const userID = JSON.parse(localStorage.getItem('user')).user.id;
-            this.ingredientService.scanQRCodeOutput(res.QRCode, this.buildingName, userID, this.startDate.toDateString(), this.endDate.toDateString()).subscribe((status: any) => {
+            const model = {
+              qrCode: res.QRCode,
+              building: this.buildingName,
+              userid: userID
+            };
+
+            this.ingredientService.scanQRCodeOutputV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
               if (status === true) {
                 this.getAllIngredientInfoOutputByBuilding();
                 const count = this.findOutputedIngredient(qrcode);
@@ -321,3 +343,4 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 }
+
