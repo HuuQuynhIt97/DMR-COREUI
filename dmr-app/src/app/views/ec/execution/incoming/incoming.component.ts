@@ -288,7 +288,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
   // tim Qrcode dang scan co ton tai khong
   findIngredientCode(code) {
     for (const item of this.ingredients) {
-      if (item.materialNO === code) {
+      if (item.partNO === code) {
         // return true;
         this.checkCode = true;
         return item;
