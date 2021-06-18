@@ -50,16 +50,7 @@ export class AutoSelectDirective implements AfterViewInit, OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.forEach(item => item.unsubscribe());
   }
-  // @HostListener('document:keydown.enter', ['$event'])
-  // onKeydownHandler(event: KeyboardEvent) {
-  // event.preventDefault();
-  // this.host.nativeElement.value = this.host.nativeElement.value + ' ';
-  // this.host.nativeElement.value = this.host.nativeElement.value.replaceAll(' ' || ' ', ' ');
-  // }
-  // @HostListener('document:keydown.tab', ['$event'])
-  // onKeydownTabHandler(event: KeyboardEvent) {
-  // event.preventDefault();
-  // }
+
   @HostListener('window:keydown', ['$event'])
   spaceEvent(event: any) {
     event.preventDefault();
