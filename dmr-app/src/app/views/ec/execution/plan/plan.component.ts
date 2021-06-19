@@ -161,7 +161,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
 
   @ViewChild('gridStopLine')
   public gridStopLine: GridComponent;
-
+  StoplineDate: Date;
   constructor(
     private alertify: AlertifyService,
     public modalService: NgbModal,
@@ -185,6 +185,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.buildingID = 0;
     this.date = new Date();
     this.endDate = new Date();
+    this.StoplineDate = new Date();
     this.startDate = new Date();
     this.hasWorker = false;
     const BUIDLING: IBuilding[] = JSON.parse(localStorage.getItem('building'));
@@ -288,7 +289,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           IsOffline: true,
           hourlyOutput: 0,
           workingHour: 0,
-          dueDate: this.endDate,
+          dueDate: this.StoplineDate,
           startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
           finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
           startTime: {
@@ -311,7 +312,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         IsOffline: true,
         hourlyOutput: 0,
         workingHour: 0,
-        dueDate: this.endDate,
+        dueDate: this.StoplineDate,
         startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
         finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
         startTime: {
@@ -325,26 +326,28 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       };
       this.dataPicked.push(this.modalStopLine);
     }
+    console.log('rowSelected',this.dataPicked);
   }
 
   rowDeselected(args) {
-    if (args.isHeaderCheckboxClicked) {
-      for (const item of args.data) {
-        for (var i = 0; i < this.dataPicked.length; i++) {
-          if (this.dataPicked[i].buildingID == item.id) {
-            this.dataPicked.splice(i, 1);
-            break;
-          }
-        }
-      }
-    }else {
-      for (var i = 0; i < this.dataPicked.length; i++) {
-        if (this.dataPicked[i].buildingID == args.data.id) {
-          this.dataPicked.splice(i, 1);
-          break;
-        }
-      }
-    }
+    console.log('rowDeselected',args);
+    // if (args.isHeaderCheckboxClicked) {
+    //   for (const item of args.data) {
+    //     for (var i = 0; i < this.dataPicked.length; i++) {
+    //       if (this.dataPicked[i].buildingID == item.id) {
+    //         this.dataPicked.splice(i, 1);
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }else {
+    //   for (var i = 0; i < this.dataPicked.length; i++) {
+    //     if (this.dataPicked[i].buildingID == args.data.id) {
+    //       this.dataPicked.splice(i, 1);
+    //       break;
+    //     }
+    //   }
+    // }
   }
 
   onTimeChange(agrs) {
@@ -435,6 +438,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.buildingID = this.buildingID === undefined ? 0 : this.buildingID;
     this.getAllLine(this.buildingID);
   }
+
   Permission(route: ActivatedRoute) {
     const functionCode = route.snapshot.data.functionCode;
     this.functions = JSON.parse(localStorage.getItem('functions')).filter(x => x.functionCode === functionCode) || [];
