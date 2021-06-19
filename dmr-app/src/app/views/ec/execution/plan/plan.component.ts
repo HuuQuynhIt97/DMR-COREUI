@@ -1,33 +1,49 @@
-import { BaseComponent } from 'src/app/_core/_component/base.component';
-import { PlanService } from './../../../../_core/_service/plan.service';
-import { BPFC, IPlan, ITime, Plan } from './../../../../_core/_model/plan';
-import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
-import { AlertifyService } from 'src/app/_core/_service/alertify.service';
+import * as introJs from 'intro.js/intro.js'
+import { BaseComponent } from 'src/app/_core/_component/base.component'
 import {
-  PageSettingsModel, GridComponent,
-  SelectionService, QueryCellInfoEventArgs,
-  EditService, IEditCell, Column, ForeignKeyService
-} from '@syncfusion/ej2-angular-grids';
-import { NgbModal, NgbModalRef, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap';
-import { DatePipe } from '@angular/common';
-import { FormGroup } from '@angular/forms';
-import { BPFCEstablishService } from 'src/app/_core/_service/bpfc-establish.service';
-import { BuildingService } from 'src/app/_core/_service/building.service';
-import { IRole } from 'src/app/_core/_model/role';
-import { IBuilding } from 'src/app/_core/_model/building';
-import { FilteringEventArgs, highlightSearch, DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
-import { EmitType } from '@syncfusion/ej2-base';
-import { Subscription } from 'rxjs';
-import { DataService } from 'src/app/_core/_service/data.service';
-import { TodolistService } from 'src/app/_core/_service/todolist.service';
-import { Tooltip } from '@syncfusion/ej2-angular-popups';
-import { StationService } from 'src/app/_core/_service/station.service';
-import * as introJs from 'intro.js/intro.js';
-import { AuthService } from 'src/app/_core/_service/auth.service';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { Query } from '@syncfusion/ej2-data';
-import { ActionConstant, RoleConstant } from 'src/app/_core/_constants';
-import { ActivatedRoute } from '@angular/router';
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core'
+import { AlertifyService } from 'src/app/_core/_service/alertify.service'
+import {
+  Column,
+  EditService,
+  ForeignKeyService,
+  GridComponent,
+  IEditCell,
+  PageSettingsModel,
+  QueryCellInfoEventArgs,
+  SelectionService,
+} from '@syncfusion/ej2-angular-grids'
+import { NgbModal, NgbModalRef, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap'
+import { DatePipe } from '@angular/common'
+import { FormGroup } from '@angular/forms'
+import { BPFCEstablishService } from 'src/app/_core/_service/bpfc-establish.service'
+import { BuildingService } from 'src/app/_core/_service/building.service'
+import { IRole } from 'src/app/_core/_model/role'
+import { IBuilding } from 'src/app/_core/_model/building'
+import { DropDownListComponent, FilteringEventArgs, highlightSearch } from '@syncfusion/ej2-angular-dropdowns'
+import { EmitType } from '@syncfusion/ej2-base'
+import { Subscription } from 'rxjs'
+import { DataService } from 'src/app/_core/_service/data.service'
+import { TodolistService } from 'src/app/_core/_service/todolist.service'
+import { Tooltip } from '@syncfusion/ej2-angular-popups'
+import { StationService } from 'src/app/_core/_service/station.service'
+import { AuthService } from 'src/app/_core/_service/auth.service'
+import { NgxSpinnerService } from 'ngx-spinner'
+import { Query } from '@syncfusion/ej2-data'
+import { ActionConstant, RoleConstant } from 'src/app/_core/_constants'
+import { ActivatedRoute } from '@angular/router'
+
+import { PlanService } from './../../../../_core/_service/plan.service'
+import { BPFC, IPlan, ITime, Plan } from './../../../../_core/_model/plan'
+
 declare var $;
 @Component({
   selector: 'app-plan',
@@ -240,9 +256,11 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.modalReference.result.then((result) => {
       this.dataPicked = []
       this.getAllLine(this.buildingID);
+      this.StoplineDate = new Date();
     }, (reason) => {
       this.dataPicked = []
       this.getAllLine(this.buildingID);
+      this.StoplineDate = new Date();
     });
     // end event
   }
@@ -326,28 +344,26 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       };
       this.dataPicked.push(this.modalStopLine);
     }
-    console.log('rowSelected',this.dataPicked);
   }
 
   rowDeselected(args) {
-    console.log('rowDeselected',args);
-    // if (args.isHeaderCheckboxClicked) {
-    //   for (const item of args.data) {
-    //     for (var i = 0; i < this.dataPicked.length; i++) {
-    //       if (this.dataPicked[i].buildingID == item.id) {
-    //         this.dataPicked.splice(i, 1);
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }else {
-    //   for (var i = 0; i < this.dataPicked.length; i++) {
-    //     if (this.dataPicked[i].buildingID == args.data.id) {
-    //       this.dataPicked.splice(i, 1);
-    //       break;
-    //     }
-    //   }
-    // }
+    if (args.isHeaderCheckboxClicked) {
+      for (const item of args.data) {
+        for (var i = 0; i < this.dataPicked.length; i++) {
+          if (this.dataPicked[i].buildingID == item.id) {
+            this.dataPicked.splice(i, 1);
+            break;
+          }
+        }
+      }
+    }else {
+      for (var i = 0; i < this.dataPicked.length; i++) {
+        if (this.dataPicked[i].buildingID == args.data.id) {
+          this.dataPicked.splice(i, 1);
+          break;
+        }
+      }
+    }
   }
 
   onTimeChange(agrs) {
@@ -998,6 +1014,9 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           id: item.id,
           bpfcName: `${item.modelName} - ${item.modelNoName} - ${item.articleName} - ${item.processName}`,
           dueDate: item.dueDate,
+          modelName: item.modelName,
+          modelNoName: item.modelNoName,
+          articleName: item.articleName,
           createdDate: item.createdDate,
           hourlyOutput: item.hourlyOutput,
           buildingName: item.buildingName,
@@ -1062,6 +1081,10 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
   endDateOnchange(args) {
     this.endDate = (args.value as Date);
     this.search(this.startDate, this.endDate);
+  }
+
+  StoplineDateOnchange(args) {
+    this.StoplineDate = (args.value as Date);
   }
 
   tooltipContext(data) {
