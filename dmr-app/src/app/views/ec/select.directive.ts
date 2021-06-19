@@ -1,7 +1,7 @@
-import { Directive, AfterViewInit, ElementRef, OnDestroy, OnChanges, HostListener, OnInit } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { IScanner } from 'src/app/_core/_model/IToDoList';
+import { AfterViewInit, Directive, ElementRef, HostListener, OnChanges, OnDestroy, OnInit } from '@angular/core'
+import { Subject, Subscription } from 'rxjs'
+import { debounceTime } from 'rxjs/operators'
+import { IScanner } from 'src/app/_core/_model/IToDoList'
 
 @Directive({
   // tslint:disable-next-line:directive-selector
@@ -50,7 +50,16 @@ export class AutoSelectDirective implements AfterViewInit, OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.forEach(item => item.unsubscribe());
   }
-
+  // @HostListener('document:keydown.enter', ['$event'])
+  // onKeydownHandler(event: KeyboardEvent) {
+  // event.preventDefault();
+  // this.host.nativeElement.value = this.host.nativeElement.value + ' ';
+  // this.host.nativeElement.value = this.host.nativeElement.value.replaceAll(' ' || ' ', ' ');
+  // }
+  // @HostListener('document:keydown.tab', ['$event'])
+  // onKeydownTabHandler(event: KeyboardEvent) {
+  // event.preventDefault();
+  // }
   @HostListener('window:keydown', ['$event'])
   spaceEvent(event: any) {
     event.preventDefault();
@@ -59,15 +68,4 @@ export class AutoSelectDirective implements AfterViewInit, OnInit, OnDestroy {
       this.host.nativeElement.value = this.host.nativeElement.value.replaceAll('        ', '    ');
     }
   }
-
-  // @HostListener('document:keydown.enter', ['$event'])
-  // onKeydownHandler(event: KeyboardEvent) {
-  //   event.preventDefault();
-  //   this.host.nativeElement.value = this.host.nativeElement.value + '    ';
-  // }
-  // @HostListener('document:keydown.tab', ['$event'])
-  // onKeydownTabHandler(event: KeyboardEvent) {
-  //   event.preventDefault();
-  //   this.host.nativeElement.value = this.host.nativeElement.value + '    ';
-  // }
 }

@@ -1,28 +1,28 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { IBuilding } from 'src/app/_core/_model/building';
-import { IIngredient } from 'src/app/_core/_model/summary';
-import { AbnormalService } from 'src/app/_core/_service/abnormal.service';
-import { AlertifyService } from 'src/app/_core/_service/alertify.service';
-import { IngredientService } from 'src/app/_core/_service/ingredient.service';
-import { MakeGlueService } from 'src/app/_core/_service/make-glue.service';
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
+import { HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr'
+import { Observable, Subject, Subscription } from 'rxjs'
+import { IBuilding } from 'src/app/_core/_model/building'
+import { IIngredient } from 'src/app/_core/_model/summary'
+import { AbnormalService } from 'src/app/_core/_service/abnormal.service'
+import { AlertifyService } from 'src/app/_core/_service/alertify.service'
+import { IngredientService } from 'src/app/_core/_service/ingredient.service'
+import { MakeGlueService } from 'src/app/_core/_service/make-glue.service'
+import { NgxSpinnerService } from 'ngx-spinner'
+import { debounceTime } from 'rxjs/operators'
+import { MixingService } from 'src/app/_core/_service/mixing.service'
+import { IMixingDetailForResponse } from 'src/app/_core/_model/IMixingInfo'
+import { IScanner } from 'src/app/_core/_model/IToDoList'
+import { IMixingInfo } from 'src/app/_core/_model/plan'
+import { IRole } from 'src/app/_core/_model/role'
+import { SettingService } from 'src/app/_core/_service/setting.service'
+import { TodolistService } from 'src/app/_core/_service/todolist.service'
+import { environment } from 'src/environments/environment'
+
+import { AutoSelectDirective } from '../../select.directive'
+
 // import * as signalr from '../../../../assets/js/ec-client.js';
 // import * as signalr from '../../../../assets/js/weighing-scale-client.js';
-import { NgxSpinnerService } from 'ngx-spinner';
-
-import { debounceTime } from 'rxjs/operators';
-import { MixingService } from 'src/app/_core/_service/mixing.service';
-import { AutoSelectDirective } from '../../select.directive';
-import { IMixingDetailForResponse } from 'src/app/_core/_model/IMixingInfo';
-import { IScanner } from 'src/app/_core/_model/IToDoList';
-import { IMixingInfo } from 'src/app/_core/_model/plan';
-import { IRole } from 'src/app/_core/_model/role';
-import { SettingService } from 'src/app/_core/_service/setting.service';
-import { TodolistService } from 'src/app/_core/_service/todolist.service';
-import { environment } from 'src/environments/environment';
-
 const SUMMARY_RECIEVE_SIGNALR = 'ok';
 const BIG_MACHINE_UNIT = 'k';
 const SMALL_MACHINE_UNIT = 'g';
@@ -157,7 +157,7 @@ export class MixingComponent implements OnInit, OnDestroy {
 
         var qrcode = null
         try {
-          qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
+          qrcode = input[2].split(":")[1].trim();
           console.log('qrcode',qrcode);
         } catch (error) {
           qrcode = null
