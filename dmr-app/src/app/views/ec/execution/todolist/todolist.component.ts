@@ -136,6 +136,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   DISPATCH_DELAY = 'dispatchDelay';
   EVA_UV = 'EVA_UV';
   BONDING_GAP = 'bondingGap';
+
   tabs = [this.TODO, this.DONE, this.DELAY, this.DISPATCH, this.DISPATCH_DELAY, this.EVA_UV, this.BONDING_GAP];
   dispatchData: any;
   // tslint:disable-next-line:variable-name
@@ -380,6 +381,11 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
           this.loadData();
           break;
         case this.EVA_UV:
+          this.isShowTab = tab;
+          this.focusDone = tab;
+          this.loadData();
+          break;
+        case this.BONDING_GAP:
           this.isShowTab = tab;
           this.focusDone = tab;
           this.loadData();
@@ -696,12 +702,13 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   bondingGap() {
-    this.spinner.show();
+    // this.spinner.show();
     this.additionService.getAllByBuildingID(this.buildingID).subscribe(data => {
       this.bondingGapData = data;
-      this.spinner.hide();
+      // this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   done() {
     this.spinner.show();
     this.todolistService.done(this.buildingID).subscribe(res => {
@@ -1011,9 +1018,9 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
     }
   }
-  onClickToolbar(args: ClickEventArgs): void {
-    // debugger;
-    const target: HTMLElement = (args.originalEvent.target as HTMLElement).closest('button'); // find clicked button
+
+  onClickToolbar(args): void {
+    const target: HTMLElement = (args.target as HTMLElement).closest('button'); // find clicked button
     this.glueName = '';
     switch (target?.id) {
       case 'transfer':
@@ -1021,14 +1028,6 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
       case 'addition':
         this.openAddition();
-        break;
-      case 'bondingGap':
-        this.bondingGap();
-        this.isShowTab = this.BONDING_GAP;
-        this.focusDone = this.BONDING_GAP;
-        this.router.navigate([
-          `/ec/execution/todolist-2/${this.BONDING_GAP}`,
-        ]);
         break;
       case 'done':
         this.isShowTab = this.DONE;
@@ -1089,6 +1088,14 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
           `/ec/execution/todolist-2/${this.EVA_UV}/${this.glueName}`,
         ]);
         // target.focus();
+        break;
+      case 'bondingGap':
+        this.bondingGap();
+        this.isShowTab = this.BONDING_GAP;
+        this.focusDone = this.BONDING_GAP;
+        this.router.navigate([
+          `/ec/execution/todolist-2/${this.BONDING_GAP}`,
+        ]);
         break;
       case 'excelExport':
         this.spinner.show();

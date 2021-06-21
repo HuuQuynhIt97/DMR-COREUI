@@ -712,17 +712,17 @@ namespace DMR_API._Services.Services
                 {
                     var plan = _mapper.Map<Plan>(item);
 
-                    //var checkExist = await _repoPlan.FindAll()
-                    //    .OrderByDescending(x => x.CreatedDate)
-                    //    .FirstOrDefaultAsync(x =>
-                    //    x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1507
-                    //    && x.DueDate.Date == item.DueDate.Date);
+                    // var checkExist = await _repoPlan.FindAll()
+                    //     .OrderByDescending(x => x.CreatedDate)
+                    //     .FirstOrDefaultAsync(x =>
+                    //     x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1507
+                    //     && x.DueDate.Date == item.DueDate.Date);
 
                     var checkExist = await _repoPlan.FindAll()
-                        .OrderByDescending(x => x.CreatedDate)
-                        .FirstOrDefaultAsync(x =>
-                        x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1511
-                        && x.DueDate.Date == item.DueDate.Date);
+                       .OrderByDescending(x => x.CreatedDate)
+                       .FirstOrDefaultAsync(x =>
+                       x.BuildingID == item.BuildingID && x.BPFCEstablishID == 1511
+                       && x.DueDate.Date == item.DueDate.Date);
 
                     // Neu ton tai thi kiem tra xem co phai la ngung chuyen khong
                     if (checkExist != null)
