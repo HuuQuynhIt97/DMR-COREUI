@@ -21,7 +21,8 @@ export class SearchDirective implements AfterViewInit, OnInit, OnDestroy {
   @HostListener('focusout') onFocusout() {
     setTimeout(() => {
       this.host.nativeElement.focus();
-    }, 5000);
+      this.host.nativeElement.select();
+    }, 300);
   }
   @HostListener('ngModelChange', ['$event']) onChange(value) {
     this.isShow = true;

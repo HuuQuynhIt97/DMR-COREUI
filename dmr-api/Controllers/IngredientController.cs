@@ -212,8 +212,6 @@ namespace DMR_API.Controllers
             return Ok(await _ingredientService.ScanQRCode(qrCode));
         }
 
-        
-
         [HttpGet("{qrCode}/{start}/{end}")]
         public async Task<IActionResult> ScanQRCodeFromChemialWareHouseDate(string qrCode, string start, string end)
         {
