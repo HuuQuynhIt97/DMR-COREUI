@@ -583,7 +583,7 @@ namespace DMR_API._Services.Services
 
         public async Task<IngredientDto> ScanQRCode(string qrCode)
         {
-            var ingredient = await _repoIngredient.FindAll().Where(x => x.isShow == true).FirstOrDefaultAsync(x => x.MaterialNO.Equals(qrCode));
+            var ingredient = await _repoIngredient.FindAll().Where(x => x.isShow == true).FirstOrDefaultAsync(x => x.PartNO.Equals(qrCode));
             var result = _mapper.Map<IngredientDto>(ingredient);
             return result;
         }

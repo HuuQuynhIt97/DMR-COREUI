@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, HostListener, OnChanges, OnDestroy, OnInit } from '@angular/core'
+import { AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, OnChanges, OnDestroy, OnInit, Output } from '@angular/core'
 import { Subject, Subscription } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { IScanner } from 'src/app/_core/_model/IToDoList'
@@ -10,29 +10,39 @@ import { IScanner } from 'src/app/_core/_model/IToDoList'
 export class AutoSelectDirective implements AfterViewInit, OnInit, OnDestroy {
   subject = new Subject<string>();
   subscription: Subscription[] = [];
+  regexStr = '^[a-zA-Z0-9_]*$';
   isShow: boolean;
+  @Output() messageEvent = new EventEmitter<boolean>();
+  lastValue: boolean;
   @HostListener('focus') onFocus() {
     setTimeout(() => {
       this.host.nativeElement.select();
     }, 300);
   }
-  @HostListener('focusout', ['$event']) onFocusout(value) {
+  @HostListener('focusout') onFocusout() {
     setTimeout(() => {
       this.host.nativeElement.focus();
-      this.host.nativeElement.select();
-    }, 300);
+    }, 5000);
   }
-  // 74 Ctrl + Enter , 9 tab
+  @HostListener('ngModelChange', ['$event']) onChange(value) {
+    this.isShow = true;
+    this.messageEvent.emit(true);
+    // console.log(value);
+    this.subject.next(value);
+  }
   @HostListener('document:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
     if (event.keyCode === 74 || event.keyCode === 9) {
       event.preventDefault();
     }
   }
-  @HostListener('ngModelChange', ['$event']) onChange(value) {
-    this.subject.next(value);
-  }
+
   constructor(private host: ElementRef) { }
   ngAfterViewInit() {
+    // document.addEventListener('keydown', (event) => {
+    //   if (event.keyCode === 13 || event.keyCode === 17 || event.keyCode === 74) {
+    //     event.preventDefault();
+    //   }
+    // });
     setTimeout(() => {
       this.host.nativeElement.focus();
     }, 500);
@@ -40,30 +50,34 @@ export class AutoSelectDirective implements AfterViewInit, OnInit, OnDestroy {
   ngOnInit() {
     this.subscription.push(this.subject
       .pipe(
-        debounceTime(1000)
+        debounceTime(50)
       )
-      .subscribe(async (arg) => {
-        this.host.nativeElement.focus();
+      .subscribe(async (args) => {
         this.host.nativeElement.select();
+        // console.log(args);
+        this.messageEvent.emit(false);
+        this.isShow = false;
       }));
   }
   ngOnDestroy() {
     this.subscription.forEach(item => item.unsubscribe());
   }
-  // @HostListener('document:keydown.enter', ['$event'])
+  @HostListener('document:keydown.enter', ['$event'])
   // onKeydownHandler(event: KeyboardEvent) {
-  // event.preventDefault();
-  // this.host.nativeElement.value = this.host.nativeElement.value + ' ';
-  // this.host.nativeElement.value = this.host.nativeElement.value.replaceAll(' ' || ' ', ' ');
+  //   event.preventDefault();
+  //   this.host.nativeElement.value = this.host.nativeElement.value + '    ';
+  //   this.host.nativeElement.value = this.host.nativeElement.value.replaceAll('    ' || '          ', '    ');
   // }
+
   // @HostListener('document:keydown.tab', ['$event'])
   // onKeydownTabHandler(event: KeyboardEvent) {
-  // event.preventDefault();
+  //   event.preventDefault();
   // }
+
   @HostListener('window:keydown', ['$event'])
   spaceEvent(event: any) {
-    event.preventDefault();
     if (event.ctrlKey && event.keyCode === 74 || event.keyCode === 13) {
+      event.preventDefault();
       this.host.nativeElement.value = this.host.nativeElement.value + '    ';
       this.host.nativeElement.value = this.host.nativeElement.value.replaceAll('        ', '    ');
     }

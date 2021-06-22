@@ -62,20 +62,22 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
   }
   checkQRCode() {
     this.subscription.push(this.subject
-      .pipe(debounceTime(500)).subscribe(async (input) => {
-        const valid = await this.validateQRCode(input);
+      .pipe(debounceTime(500)).subscribe(async (res) => {
+        const valid = await this.validateQRCode(res);
         if (valid.status === false) { return; }
+
+        const input = res.QRCode.split('    ') || [];
         const mixing = {
           glueName: this.value.glueName,
           glueID: this.value.glueID,
           buildingID: this.building.id,
-          mixBy: JSON.parse(localStorage.getItem('user')).user.id || 0,
+          mixBy: JSON.parse(localStorage.getItem('user')).user.id,
           estimatedStartTime: this.value.estimatedStartTime,
           estimatedFinishTime: this.value.estimatedFinishTime,
           details: [{
             amount: this.value.standardConsumption,
             ingredientID: valid.ingredient.id,
-            batch: input[1],
+            batch: input[4].split(":")[1].trim() + ':' + input[0].split(":")[1].trim(),
             mixingInfoID: 0,
             position: 'A'
           }]
@@ -86,23 +88,19 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
           this.data = item;
         }, error => this.alertify.error(error));
       }));
-    }
+  }
   async validateQRCode(args: IScanner): Promise<{ status: boolean; ingredient: any; }> {
-    // const commonPattern = /(\d+)-(\w+)-([\w\-\d]+)/g;
-    const input = args.QRCode.split('-') || [];
-    const dateAndBatch = /(\d+)-(\w+)-/g;
-    const validFormat = args.QRCode.match(dateAndBatch);
-    const qrcode = args.QRCode.replace(validFormat[0], '');
-    const qrCodeTemp = validFormat[0] + qrcode;
-    if (qrCodeTemp.length !== args.QRCode.length) {
+    const input = args.QRCode.split('    ') || [];
+    const qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
+    this.qrCode = qrcode;
+    const result = await this.scanQRCode();
+    if (result === null) {
       this.alertify.warning('The QR Code is invalid!<br> Mã QR không hợp lệ! Vui lòng thử lại mã khác.', true);
       return {
         status: false,
         ingredient: null
       };
     }
-    this.qrCode = qrcode;
-    const result = await this.scanQRCode();
     if (result.name !== this.value.glueName) {
       this.alertify.warning(`Please you should look for the chemical name "${this.value.glueName}"<br> Vui lòng quét đúng hóa chất "${this.value.glueName}"!`, true);
       this.qrCode = '';
@@ -111,7 +109,7 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
         ingredient: null
       };
     }
-    const checkLock = await this.hasLock(result.name, input[1]);
+    const checkLock = await this.hasLock(result.name, input[4].split(":")[1].trim() + ':' + input[0].split(":")[1].trim());
     if (checkLock === true) {
       this.alertify.error('This chemical has been locked! <br> Hóa chất này đã bị khóa!', true);
       this.qrCode = '';
