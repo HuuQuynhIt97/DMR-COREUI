@@ -384,6 +384,11 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
           this.focusDone = tab;
           this.loadData();
           break;
+        case this.BONDING_GAP:
+          this.isShowTab = tab;
+          this.focusDone = tab;
+          this.loadData();
+          break;
       }
     });
   }
