@@ -196,49 +196,49 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         const chemical = this.findIngredientCode(qrcode);
 
-        // if (this.checkin === true) {
-        //   if (this.checkCode === true) {
-        //     const userID = JSON.parse(localStorage.getItem('user')).user.id;
-        //     const model = {
-        //       qrCode: res.QRCode,
-        //       building: this.buildingName,
-        //       userid: userID
-        //     };
+        if (this.checkin === true) {
+          if (this.checkCode === true) {
+            const userID = JSON.parse(localStorage.getItem('user')).user.id;
+            const model = {
+              qrCode: res.QRCode,
+              building: this.buildingName,
+              userid: userID
+            };
 
-        //     this.ingredientService.scanQRCodeFromChemicalWareHouseV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
-        //       if (status === true) {
-        //         this.getAllIngredientInfoByBuilding();
-        //         const count = this.findInputedIngredient(qrcode);
-        //         this.showPopupWindow(count, chemical);
-        //       }
-        //     });
-        //   } else {
-        //     this.alertify.error('Wrong Chemical!');
-        //   }
-        // } else {
-        //   if (this.checkCode === true) {
-        //     const userID = JSON.parse(localStorage.getItem('user')).user.id;
-        //     const model = {
-        //       qrCode: res.QRCode,
-        //       building: this.buildingName,
-        //       userid: userID,
-        //       min: this.startDate.toDateString(),
-        //       max: this.endDate.toDateString()
-        //     };
+            this.ingredientService.scanQRCodeFromChemicalWareHouseV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
+              if (status === true) {
+                this.getAllIngredientInfoByBuilding();
+                const count = this.findInputedIngredient(qrcode);
+                this.showPopupWindow(count, chemical);
+              }
+            });
+          } else {
+            this.alertify.error('Wrong Chemical!');
+          }
+        } else {
+          if (this.checkCode === true) {
+            const userID = JSON.parse(localStorage.getItem('user')).user.id;
+            const model = {
+              qrCode: res.QRCode,
+              building: this.buildingName,
+              userid: userID,
+              min: this.startDate.toDateString(),
+              max: this.endDate.toDateString()
+            };
 
-        //     this.ingredientService.scanQRCodeOutputV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
-        //       if (status === true) {
-        //         this.getAllIngredientInfoOutputByBuilding();
-        //         const count = this.findOutputedIngredient(qrcode);
-        //         this.showPopupWindow(count, chemical);
-        //       } else {
-        //         this.alertify.error(status.message);
-        //       }
-        //     });
-        //   } else {
-        //     this.alertify.error('Wrong Chemical!');
-        //   }
-        // }
+            this.ingredientService.scanQRCodeOutputV1(model).subscribe((status: any) => { // Update 08/04/2021 - Leo
+              if (status === true) {
+                this.getAllIngredientInfoOutputByBuilding();
+                const count = this.findOutputedIngredient(qrcode);
+                this.showPopupWindow(count, chemical);
+              } else {
+                this.alertify.error(status.message);
+              }
+            });
+          } else {
+            this.alertify.error('Wrong Chemical!');
+          }
+        }
       }));
   }
 

@@ -57,38 +57,40 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
     this.isShowQRCode = this.value.mixingInfoID === 0 && !this.value.glueName.includes(' + ');
     this.chemicalA = this.data?.mixingInfoDetails.filter(x => x.position === 'A')[0];
   }
+
   ngOnDestroy(): void {
     this.subscription.forEach(item => item.unsubscribe());
   }
-  checkQRCode() {
-    this.subscription.push(this.subject
-      .pipe(debounceTime(500)).subscribe(async (res) => {
-        const valid = await this.validateQRCode(res);
-        if (valid.status === false) { return; }
 
-        const input = res.QRCode.split('    ') || [];
-        const mixing = {
-          glueName: this.value.glueName,
-          glueID: this.value.glueID,
-          buildingID: this.building.id,
-          mixBy: JSON.parse(localStorage.getItem('user')).user.id,
-          estimatedStartTime: this.value.estimatedStartTime,
-          estimatedFinishTime: this.value.estimatedFinishTime,
-          details: [{
-            amount: this.value.standardConsumption,
-            ingredientID: valid.ingredient.id,
-            batch: input[4].split(":")[1].trim() + ':' + input[0].split(":")[1].trim(),
-            mixingInfoID: 0,
-            position: 'A'
-          }]
-        };
-        this.makeGlueService.add(mixing).subscribe((item: IMixingInfo) => {
-          this.alertify.success('Success!');
-          this.isShow = false;
-          this.data = item;
-        }, error => this.alertify.error(error));
-      }));
+  checkQRCode() {
+    this.subscription.push(this.subject.pipe(debounceTime(500)).subscribe(async (res) => {
+      const valid = await this.validateQRCode(res);
+      if (valid.status === false) { return; }
+
+      const input = res.QRCode.split('    ') || [];
+      const mixing = {
+        glueName: this.value.glueName,
+        glueID: this.value.glueID,
+        buildingID: this.building.id,
+        mixBy: JSON.parse(localStorage.getItem('user')).user.id,
+        estimatedStartTime: this.value.estimatedStartTime,
+        estimatedFinishTime: this.value.estimatedFinishTime,
+        details: [{
+          amount: this.value.standardConsumption,
+          ingredientID: valid.ingredient.id,
+          batch: input[4].split(":")[1].trim() + ':' + input[0].split(":")[1].trim(),
+          mixingInfoID: 0,
+          position: 'A'
+        }]
+      };
+      this.makeGlueService.add(mixing).subscribe((item: IMixingInfo) => {
+        this.alertify.success('Success!');
+        this.isShow = false;
+        this.data = item;
+      }, error => this.alertify.error(error));
+    }));
   }
+
   async validateQRCode(args: IScanner): Promise<{ status: boolean; ingredient: any; }> {
     const input = args.QRCode.split('    ') || [];
     const qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
@@ -123,9 +125,11 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
       ingredient: result
     };
   }
+
   scanQRCode(): Promise<any> {
     return this.ingredientService.scanQRCode(this.qrCode).toPromise();
   }
+
   hasLock(ingredient, batch): Promise<any> {
     let buildingName = this.building.name;
     if (this.role.id === 1 || this.role.id === 2) {
@@ -142,6 +146,7 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
       );
     });
   }
+
   async onNgModelChangeScanQRCode(args) {
     const scanner: IScanner = {
       QRCode: args,
