@@ -149,6 +149,7 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
     };
     this.subject.next(scanner);
   }
+
   printData() {
     // <li class='subInfo' style='font-size: 18px ;'>${this.data.code}</li>
     // <li class='subInfo' style='font-size: 15px ;'> Batch: ${this.chemicalA?.batch === undefined ? 'N/A' : this.chemicalA?.batch}</li>
@@ -173,6 +174,7 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
       `;
     this.configurePrint(html);
   }
+
   configurePrint(html) {
     const WindowPrt = window.open('', '_blank', 'left=0,top=0,width=1000,height=900,toolbar=0,scrollbars=0,status=0');
     WindowPrt.document.write(`
@@ -243,6 +245,7 @@ export class PrintGlueComponent implements OnInit, OnDestroy {
     WindowPrt.document.close();
     this.finish();
   }
+
   finish() {
     this.todolistService.printGlue(this.data.id).subscribe((data: any) => {
       this.alertify.success('success', true);
