@@ -157,7 +157,7 @@ export class MixingComponent implements OnInit, OnDestroy {
 
         var qrcode = null
         try {
-          qrcode = input[2].split(":")[1].trim();
+          qrcode = input[2].split(":")[1].trim() + ':' + input[0].split(":")[1].trim().replace(' ', '').toUpperCase();
           console.log('qrcode',qrcode);
         } catch (error) {
           qrcode = null
