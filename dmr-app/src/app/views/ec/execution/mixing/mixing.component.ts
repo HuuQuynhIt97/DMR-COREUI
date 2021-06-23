@@ -23,13 +23,9 @@ import { AutoSelectDirective } from '../../select.directive'
 
 // import * as signalr from '../../../../assets/js/ec-client.js';
 // import * as signalr from '../../../../assets/js/weighing-scale-client.js';
-const SUMMARY_RECIEVE_SIGNALR = 'ok';
 const BIG_MACHINE_UNIT = 'k';
 const SMALL_MACHINE_UNIT = 'g';
-const BUILDING_LEVEL = 2;
 declare var $: any;
-const ADMIN = 1;
-const SUPERVISOR = 2;
 const CONNECTION_WEIGHING_SCALE_HUB = new HubConnectionBuilder()
   .withUrl(environment.scalingHubLocal)
   .withAutomaticReconnect([1000, 3000, 5000, 10000, 30000])
@@ -57,12 +53,6 @@ export class MixingComponent implements OnInit, OnDestroy {
   buildingID: number;
   scalingKG: string;
   volume: number;
-  volumeA: number;
-  volumeB: any;
-  volumeC: any;
-  volumeD: any;
-  volumeE: any;
-  volumeH: any;
   B: number;
   C: number;
   D: number;
@@ -72,17 +62,15 @@ export class MixingComponent implements OnInit, OnDestroy {
   startTime: any;
   glueName: string;
   role: IRole;
-  estimatedTime: any;
   estimatedStartTime: any;
   estimatedFinishTime: any;
   stdcon: number;
   subject = new Subject<IScanner>();
   subscription: Subscription[] = [];
   detail: IMixingDetailForResponse;
-  scaleStatus = true;
   checkedSmallScale: boolean;
   tab: string;
-  status: boolean = true
+  scaleStatus: boolean = true
   BUIDLING_ID = 0;
   constructor(
     private route: ActivatedRoute,
@@ -179,7 +167,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (qrcode !== qr) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
-              this.status = false;
+              this.scaleStatus = false;
               this.errorScan();
               return;
             }
@@ -187,7 +175,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (this.qrCode !== item.partNO) {
               this.alertify.warning(`Mã QR không hợp lệ!<br>Please you should look for the chemical name "${item.name}"`);
               this.qrCode = '';
-              this.status = false;
+              this.scaleStatus = false;
               this.errorScan();
               return;
             }
@@ -206,7 +194,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             if (checkLock === true) {
               this.alertify.error('Hóa chất này đã bị khóa!<br>This chemical has been locked!');
               this.qrCode = '';
-              this.status = false;
+              this.scaleStatus = false;
               this.errorScan();
               return;
             }
@@ -217,7 +205,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             const ingredient = this.findIngredientCode(code);
             this.setBatch(ingredient, input[1]);
             if (ingredient) {
-              this.status = true
+              this.scaleStatus = true
               this.signal();
               this.changeInfo('success-scan', ingredient.code);
               if (ingredient.expected === 0 && ingredient.position === 'A') {
@@ -281,7 +269,7 @@ export class MixingComponent implements OnInit, OnDestroy {
             this.checkValidPosition(this.ingredientsTamp, this.volume);
             break;
           case 'B':
-            if (this.status) {
+            if (this.scaleStatus) {
               if (unit !== SMALL_MACHINE_UNIT) {
                 // update realA
                 this.changeActualByPosition('B', this.volume, unit);
@@ -293,27 +281,27 @@ export class MixingComponent implements OnInit, OnDestroy {
               break;
             }
           case 'C':
-            if (this.status) {
+            if (this.scaleStatus) {
               this.changeActualByPosition('C', this.volume, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'D':
-            if (this.status) {
+            if (this.scaleStatus) {
               this.changeActualByPosition('D', this.volume, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'E':
-            if (this.status) {
+            if (this.scaleStatus) {
               this.changeActualByPosition('E', this.volume, unit);
               this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
           case 'H':
-            if (this.status) {
-              this.changeActualByPosition('E', this.volumeH, unit);
-              this.checkValidPosition(this.ingredientsTamp, this.volumeH);
+            if (this.scaleStatus) {
+              this.changeActualByPosition('H', this.volume, unit);
+              this.checkValidPosition(this.ingredientsTamp, this.volume);
               break;
             }
         }

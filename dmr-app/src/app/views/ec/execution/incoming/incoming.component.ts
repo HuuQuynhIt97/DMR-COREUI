@@ -183,6 +183,7 @@ export class IncomingComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(async (res) => {
         // Update 08/04/2021 - Leo
         const input = res.QRCode.split('    ') || [];
+        console.log(input);
         const qrcode = this.QRCode(input)
         console.log(qrcode);
         // End Update

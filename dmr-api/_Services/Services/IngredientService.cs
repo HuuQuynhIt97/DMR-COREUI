@@ -216,7 +216,7 @@ namespace DMR_API._Services.Services
         {
             var results = entity.qrCode.Split("    ");
             var partNo = results[2].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim().Replace(" ", "").ToUpper();
-            var Batch = results[4].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim();
+            var Batch = results[4].Split(":")[1].Trim() + ':' + results[0].Split(":")[1].Trim().Replace(" ", "").ToUpper();
             var model = _repoIngredient.FindAll().FirstOrDefault(x => x.PartNO.Equals(partNo));
             var supModel = _repoSupplier.GetAll();
             var ProductionDates = results[5].Split(":")[1].Trim().ToDateTime();

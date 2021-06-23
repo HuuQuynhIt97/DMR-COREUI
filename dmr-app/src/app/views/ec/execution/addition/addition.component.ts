@@ -50,7 +50,6 @@ export class AdditionComponent extends BaseComponent implements OnInit {
   lineData: any = [];
   lines: any[] = [];
   addData: any[];
-  editData: any[];
   public onFiltering: EmitType<FilteringEventArgs> = (
     e: FilteringEventArgs
   ) => {

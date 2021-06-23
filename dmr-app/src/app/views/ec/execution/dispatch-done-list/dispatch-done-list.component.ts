@@ -70,6 +70,7 @@ export class DispatchDoneListComponent implements OnInit {
     this.startDispatchingTime = new Date();
     this.isShow = this.value.mixingInfoID === 0 && !this.value.glueName.includes(' + ');
   }
+
   actionBegin(args) {
     if (args.requestType === 'save' && args.action === 'edit') {
       const data = args.data;
@@ -98,12 +99,14 @@ export class DispatchDoneListComponent implements OnInit {
   }
   toolbarClick(args) {
   }
+
   loadData() {
     this.todolistService.getDispatchDetail(this.value.buildingID, this.value.glueNameID,
       this.value.estimatedStartTime, this.value.estimatedFinishTime).subscribe((data: any) => {
         this.data = data;
       });
   }
+
   finishDispatch() {
     const lines = this.data.map(x => {
       return x.lineID;
@@ -120,6 +123,7 @@ export class DispatchDoneListComponent implements OnInit {
       this.activeModal.dismiss();
     });
   }
+
   updateDispatchDetail(obj) {
     this.todolistService.updateDispatchDetail(obj).subscribe((res: any) => {
       this.loadData();
@@ -128,12 +132,14 @@ export class DispatchDoneListComponent implements OnInit {
       this.alertify.warning(error);
     });
   }
+
   updateStartDispatchingTime(id: number) {
     this.dispatchService.updateStartDispatchingTime(id).subscribe((res) => {
     }, error => {
       this.alertify.warning(error);
     });
   }
+
   save() {
     this.finishDispatch();
   }
