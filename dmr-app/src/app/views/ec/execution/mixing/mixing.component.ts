@@ -134,6 +134,7 @@ export class MixingComponent implements OnInit, OnDestroy {
       .subscribe(async (arg) => {
         const args = arg.QRCode;
         const item = arg.ingredient;
+        this.ingredientsTamp = item;
         this.position = item.position;
 
         // Update 08/04/2021 - Leo
