@@ -740,6 +740,7 @@ namespace DMR_API._Services.Services
                     plan.CreateBy = userID;
                     //plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE LOCAL TEST
                     plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE RUN PRODUCT
+                    plan.UpdatedTime = dt;
                     _repoPlan.Add(plan);
                     await _repoPlan.SaveAll();
                     //var stationModel = await _stationService.GetAllByPlanID(plan.ID);
@@ -782,7 +783,7 @@ namespace DMR_API._Services.Services
                 plan.CreateBy = userID;
                 if (model.BPFCEstablishID == 0)
                 {
-                    plan.BPFCEstablishID = 1507; // GÁN CỨNG BPFC STOP_LINE
+                    plan.BPFCEstablishID = 1511; // GÁN CỨNG BPFC STOP_LINE
                 }
                 plan.BPFCEstablishID = model.BPFCEstablishID;
                 _repoPlan.Add(plan);
@@ -3530,7 +3531,7 @@ namespace DMR_API._Services.Services
             .ToList();
 
             var lineTotal = lines.Count();
-            var planTotal = model.Where(x => x.ToDoList.Count() > 0 || x.DispatchList.Count() > 0
+            var planTotal = model.Where(x => x.ToDoList.Count() > 0 || x.DispatchList.Count() > 0 || x.HourlyOutput == 0
                                          && x.UpdatedTime.Value.Date == today
                                          && x.CreatedDate.Date == today).Count();
             var rateTemp = planTotal != 0 && lineTotal != 0 ? (planTotal / (double)lineTotal) * 100 : 0;

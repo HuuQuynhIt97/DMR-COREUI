@@ -70,10 +70,15 @@
                 {{'BPFC_NAME_LABEL' | translate}}
               </ng-template>
               <ng-template #template let-data>
-                <ejs-tooltip #tooltip class="fix-css" position='RightCenter'
+                <ng-container *ngIf="data.modelName === modelNameStopLineFixed && data.modelNoName === modelNoStopLineFixed && data.articleName === articleNameStopLineFixed; else elseTemplate">
+                  <span>#N/A</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <ejs-tooltip #tooltip class="fix-css" position='RightCenter'
                    [content]="tooltipContext(data.glues)">
                   {{data.bpfcName}}
                 </ejs-tooltip>
+                </ng-template>
               </ng-template>
               <ng-template #editTemplate let-data>
                 <ejs-dropdownlist #bpfcDropdownlist id="bpfcDropdownlist" [dataSource]='BPFCs' [value]="data.bpfcEstablishID"
@@ -82,15 +87,7 @@
                   (change)='onChangeBPFC($event, data)'>
                 </ejs-dropdownlist>
               </ng-template>
-              <ng-template let-data #template>
-                <ng-container *ngIf="data.modelName === modelNameStopLineFixed && data.modelNoName === modelNoStopLineFixed && data.articleName === articleNameStopLineFixed; else elseTemplate">
-                  <span>#N/A</span>
-                </ng-container>
-                <ng-template #elseTemplate>
-                  {{data.bpfcName}}
-                </ng-template>
 
-              </ng-template>
             </e-column>
 
             <e-column field='dueDate' type='date' format='MM-dd-yyyy' headerText="{{'DUE_DATE_LABEL' | translate}}"
@@ -163,12 +160,19 @@
                 N/A
               </ng-template>
               <ng-template #template let-data>
-                <span *ngIf="data.isGenerate">
-                  <i class="fa fa-check" style="color: green"></i>
-                </span>
-                <span *ngIf="!data.isGenerate">
-                  <i class="fa fa-times" style="color: red"></i>
-                </span>
+
+                <ng-container *ngIf="data.isGenerate ; else elseTemplate">
+                  <span>
+                    <i class="fa fa-check" style="color: green"></i>
+                  </span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <span>
+                    <i class="fa fa-times" style="color: red"></i>
+                  </span>
+                </ng-template>
+
+
               </ng-template>
             </e-column>
 
@@ -306,8 +310,15 @@
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
+
   </div>
   <div class="modal-body">
+
+    <div class="font-weight-bold pr-3">Select Date:</div>
+    <ejs-datepicker class="pr-3" [value]='StoplineDate' (change)='StoplineDateOnchange($event)' [(ngModel)]='StoplineDate'>
+    </ejs-datepicker>
+
+    <hr>
     <div class="row">
       <div class="col-md-12">
         <ejs-grid #gridStopLine [dataSource]='lineStop'  showColumnMenu='true'
@@ -323,6 +334,12 @@
                 {{'LINE_LABEL' | translate}}
               </ng-template>
             </e-column>
+            <!-- <e-column  headerText='Date'  textAlign='Center'>
+              <ng-template #template let-data>
+                <ejs-datepicker class="pr-3" [value]='StoplineDate' (change)='endDateOnchange($event)' [(ngModel)]='StoplineDate'>
+                </ejs-datepicker>
+              </ng-template>
+            </e-column> -->
           </e-columns>
         </ejs-grid>
       </div>

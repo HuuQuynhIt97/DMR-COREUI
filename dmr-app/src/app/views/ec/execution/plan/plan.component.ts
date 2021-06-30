@@ -1,33 +1,49 @@
-import { BaseComponent } from 'src/app/_core/_component/base.component';
-import { PlanService } from './../../../../_core/_service/plan.service';
-import { BPFC, IPlan, ITime, Plan } from './../../../../_core/_model/plan';
-import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
-import { AlertifyService } from 'src/app/_core/_service/alertify.service';
+import * as introJs from 'intro.js/intro.js'
+import { BaseComponent } from 'src/app/_core/_component/base.component'
 import {
-  PageSettingsModel, GridComponent,
-  SelectionService, QueryCellInfoEventArgs,
-  EditService, IEditCell, Column, ForeignKeyService
-} from '@syncfusion/ej2-angular-grids';
-import { NgbModal, NgbModalRef, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap';
-import { DatePipe } from '@angular/common';
-import { FormGroup } from '@angular/forms';
-import { BPFCEstablishService } from 'src/app/_core/_service/bpfc-establish.service';
-import { BuildingService } from 'src/app/_core/_service/building.service';
-import { IRole } from 'src/app/_core/_model/role';
-import { IBuilding } from 'src/app/_core/_model/building';
-import { FilteringEventArgs, highlightSearch, DropDownListComponent } from '@syncfusion/ej2-angular-dropdowns';
-import { EmitType } from '@syncfusion/ej2-base';
-import { Subscription } from 'rxjs';
-import { DataService } from 'src/app/_core/_service/data.service';
-import { TodolistService } from 'src/app/_core/_service/todolist.service';
-import { Tooltip } from '@syncfusion/ej2-angular-popups';
-import { StationService } from 'src/app/_core/_service/station.service';
-import * as introJs from 'intro.js/intro.js';
-import { AuthService } from 'src/app/_core/_service/auth.service';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { Query } from '@syncfusion/ej2-data';
-import { ActionConstant, RoleConstant } from 'src/app/_core/_constants';
-import { ActivatedRoute } from '@angular/router';
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core'
+import { AlertifyService } from 'src/app/_core/_service/alertify.service'
+import {
+  Column,
+  EditService,
+  ForeignKeyService,
+  GridComponent,
+  IEditCell,
+  PageSettingsModel,
+  QueryCellInfoEventArgs,
+  SelectionService,
+} from '@syncfusion/ej2-angular-grids'
+import { NgbModal, NgbModalRef, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap'
+import { DatePipe } from '@angular/common'
+import { FormGroup } from '@angular/forms'
+import { BPFCEstablishService } from 'src/app/_core/_service/bpfc-establish.service'
+import { BuildingService } from 'src/app/_core/_service/building.service'
+import { IRole } from 'src/app/_core/_model/role'
+import { IBuilding } from 'src/app/_core/_model/building'
+import { DropDownListComponent, FilteringEventArgs, highlightSearch } from '@syncfusion/ej2-angular-dropdowns'
+import { EmitType } from '@syncfusion/ej2-base'
+import { Subscription } from 'rxjs'
+import { DataService } from 'src/app/_core/_service/data.service'
+import { TodolistService } from 'src/app/_core/_service/todolist.service'
+import { Tooltip } from '@syncfusion/ej2-angular-popups'
+import { StationService } from 'src/app/_core/_service/station.service'
+import { AuthService } from 'src/app/_core/_service/auth.service'
+import { NgxSpinnerService } from 'ngx-spinner'
+import { Query } from '@syncfusion/ej2-data'
+import { ActionConstant, RoleConstant } from 'src/app/_core/_constants'
+import { ActivatedRoute } from '@angular/router'
+
+import { PlanService } from './../../../../_core/_service/plan.service'
+import { BPFC, IPlan, ITime, Plan } from './../../../../_core/_model/plan'
+
 declare var $;
 @Component({
   selector: 'app-plan',
@@ -161,7 +177,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
 
   @ViewChild('gridStopLine')
   public gridStopLine: GridComponent;
-
+  StoplineDate: Date;
   constructor(
     private alertify: AlertifyService,
     public modalService: NgbModal,
@@ -185,6 +201,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.buildingID = 0;
     this.date = new Date();
     this.endDate = new Date();
+    this.StoplineDate = new Date();
     this.startDate = new Date();
     this.hasWorker = false;
     const BUIDLING: IBuilding[] = JSON.parse(localStorage.getItem('building'));
@@ -239,9 +256,11 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.modalReference.result.then((result) => {
       this.dataPicked = []
       this.getAllLine(this.buildingID);
+      this.StoplineDate = new Date();
     }, (reason) => {
       this.dataPicked = []
       this.getAllLine(this.buildingID);
+      this.StoplineDate = new Date();
     });
     // end event
   }
@@ -254,27 +273,37 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
       finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
       listAdd: this.dataPicked
     }
-    this.planService.createForStopLine(obj).subscribe(res => {
-      if (res) {
-        this.alertify.success('Tạo thành công!<br>Created succeeded!');
-        this.getAll();
-        this.achievementRate();
-        this.modalReference.close();
-        this.dataPicked = []
-        this.getAllLine(this.buildingID);
-      } else {
-        this.alertify.warning('Dữ liệu đã tồn tại! <br>This plan has already existed!!!');
-        this.getAll();
-      }
-    }, error => {
-      this.alertify.error(error, true);
-      this.grid.refresh();
-      this.getAll();
-      this.getAllLine(this.buildingID);
-      this.dataPicked = []
-      this.clearForm();
-    });
+    console.log(this.dataPicked);
+    // this.planService.createForStopLine(obj).subscribe(res => {
+    //   if (res) {
+    //     this.alertify.success('Tạo thành công!<br>Created succeeded!');
+    //     this.getAll();
+    //     this.achievementRate();
+    //     this.modalReference.close();
+    //     this.dataPicked = []
+    //     this.getAllLine(this.buildingID);
+    //   } else {
+    //     this.alertify.warning('Dữ liệu đã tồn tại! <br>This plan has already existed!!!');
+    //     this.getAll();
+    //   }
+    // }, error => {
+    //   this.alertify.error(error, true);
+    //   this.grid.refresh();
+    //   this.getAll();
+    //   this.getAllLine(this.buildingID);
+    //   this.dataPicked = []
+    //   this.clearForm();
+    // });
     // this.planService.create(this.dataPicked)
+  }
+
+  StoplineDateOnchange(args) {
+    this.StoplineDate = (args.value as Date);
+    if(this.dataPicked.length > 0) {
+      for (const item of this.dataPicked) {
+        item.dueDate = this.StoplineDate
+      }
+    }
   }
 
   rowSelected(args) {
@@ -288,7 +317,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           IsOffline: true,
           hourlyOutput: 0,
           workingHour: 0,
-          dueDate: this.endDate,
+          dueDate: this.StoplineDate,
           startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
           finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
           startTime: {
@@ -311,7 +340,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
         IsOffline: true,
         hourlyOutput: 0,
         workingHour: 0,
-        dueDate: this.endDate,
+        dueDate: this.StoplineDate,
         startWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 0, 0),
         finishWorkingTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 30, 0),
         startTime: {
@@ -435,6 +464,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.buildingID = this.buildingID === undefined ? 0 : this.buildingID;
     this.getAllLine(this.buildingID);
   }
+
   Permission(route: ActivatedRoute) {
     const functionCode = route.snapshot.data.functionCode;
     this.functions = JSON.parse(localStorage.getItem('functions')).filter(x => x.functionCode === functionCode) || [];
@@ -533,6 +563,7 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
 
   achievementRate() {
     this.planService.achievementRate(this.buildingID).subscribe((res: any) => {
+      console.log(res);
       this.planInfo = res.data;
     });
   }
@@ -994,6 +1025,9 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
           id: item.id,
           bpfcName: `${item.modelName} - ${item.modelNoName} - ${item.articleName} - ${item.processName}`,
           dueDate: item.dueDate,
+          modelName: item.modelName,
+          modelNoName: item.modelNoName,
+          articleName: item.articleName,
           createdDate: item.createdDate,
           hourlyOutput: item.hourlyOutput,
           buildingName: item.buildingName,
@@ -1059,6 +1093,8 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
     this.endDate = (args.value as Date);
     this.search(this.startDate, this.endDate);
   }
+
+
 
   tooltipContext(data) {
 

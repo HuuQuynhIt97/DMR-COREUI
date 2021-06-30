@@ -52,7 +52,7 @@ namespace DMR_API.Helpers.AutoMapper
                 .ForMember(d => d.Glues, o => o.MapFrom(x => x.BPFCEstablish.Glues.Where(x => x.isShow).Select(x =>  $"{x.Name}{( x.KindID.HasValue ? $" | {x.Kind.Name}" : String.Empty)}" )))
                 .ForMember(d => d.StartTime, o => o.MapFrom(x => new TimeDto(x.StartWorkingTime)))// 16:30 >= 16:30
                 .ForMember(d => d.EndTime, o => o.MapFrom(x => new TimeDto(x.FinishWorkingTime)))
-                .ForMember(d => d.IsGenerate, o => o.MapFrom(x => x.ToDoList.Count > 0 || x.DispatchList.Count > 0))
+                .ForMember(d => d.IsGenerate, o => o.MapFrom(x => x.ToDoList.Count > 0 || x.DispatchList.Count > 0 || x.BPFCEstablish.ModelName.Name == "STOP"))
                 .ForMember(d => d.ModelName, o => o.MapFrom(x => x.BPFCEstablish.ModelName.Name))
                 .ForMember(d => d.LineKind, o => o.MapFrom(x => x.Building.Kind != null ? x.Building.Kind.Name : string.Empty))
                 .ForMember(d => d.ModelNoName, o => o.MapFrom(x => x.BPFCEstablish.ModelNo.Name))
