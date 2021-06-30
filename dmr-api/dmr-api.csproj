@@ -68,9 +68,4 @@
     <Folder Include="wwwroot\ClientApp\" />
     <Folder Include="wwwroot\ClientApp\" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="CodeUtility">
-      <HintPath>DLL\CodeUtility.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

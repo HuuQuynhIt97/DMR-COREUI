@@ -10,7 +10,6 @@ using DMR_API._Services.Interface;
 using DMR_API.DTO;
 using DMR_API.Models;
 using Microsoft.EntityFrameworkCore;
-using CodeUtility;
 
 namespace DMR_API._Services.Services
 {

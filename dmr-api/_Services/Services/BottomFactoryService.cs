@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using CodeUtility;
+using DMR_API.Helpers;
 using dmr_api.Models;
 using DMR_API._Repositories.Interface;
 using DMR_API._Services.Interface;
@@ -8,7 +8,6 @@ using DMR_API.Constants;
 using DMR_API.Data;
 using DMR_API.DTO;
 using DMR_API.Enums;
-using DMR_API.Helpers;
 using DMR_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

@@ -356,20 +356,21 @@ export class StirComponent implements OnInit, OnDestroy {
     const buildingID = this.buildingID;
     return this.stirService.scanMachine(buildingID, qrCode).toPromise();
   }
-  // create(model: IStirForAdd) {
-  //   return this.stirService.createLocal(model).toPromise();
-  // }
-  // update(model: IStirForUpdate) {
-  //   return this.stirService.updateLocal(model).toPromise();
-  // }
 
   create(model: IStirForAdd) {
-    return this.stirService.create(model).toPromise();
+    return this.stirService.createLocal(model).toPromise();
+  }
+  update(model: IStirForUpdate) {
+    return this.stirService.updateLocal(model).toPromise();
   }
 
-  update(model: IStirForUpdate) {
-    return this.stirService.update(model).toPromise();
-  }
+  // create(model: IStirForAdd) {
+  //   return this.stirService.create(model).toPromise();
+  // }
+
+  // update(model: IStirForUpdate) {
+  //   return this.stirService.update(model).toPromise();
+  // }
 
   getStirByMixingInfoID(mixingInfoID: number) {
     return this.stirService.getStirByMixingInfoID(mixingInfoID).toPromise();

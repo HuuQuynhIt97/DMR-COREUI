@@ -1283,10 +1283,10 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   openPrintModal(value: IToDoList) {
-    // if (value.finishStirTime === null && value.glueName.includes(' + ')) {
-    //   this.alertify.warning('Hãy thực hiện bước khuấy keo trước!', true);
-    //   return;
-    // }
+    if ( value.finishStirTime === null  && value.finishMixingTime === null) {
+      this.alertify.warning('Hãy thực hiện bước trộn và khuấy keo trước!', true);
+      return;
+    }
     this.todolistService.findPrintGlue(value.mixingInfoID).subscribe(data => {
       if (data?.id === 0 && value.glueName.includes(' + ')) {
         this.alertify.error('Please mixing this glue first!', true);

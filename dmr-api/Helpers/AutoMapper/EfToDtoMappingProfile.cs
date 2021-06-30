@@ -6,7 +6,7 @@ using System.Linq;
 using dmr_api.Models;
 using System.Collections.Generic;
 using DMR_API.Constants;
-using CodeUtility;
+using DMR_API.Helpers;
 
 namespace DMR_API.Helpers.AutoMapper
 {

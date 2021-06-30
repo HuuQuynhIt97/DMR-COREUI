@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using DMR_API.Helpers.Enum;
 using System.Transactions;
-using CodeUtility;
 using DMR_API.Data;
 
 namespace DMR_API._Services.Services

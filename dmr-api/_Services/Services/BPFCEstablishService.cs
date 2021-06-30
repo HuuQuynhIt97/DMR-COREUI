@@ -14,7 +14,6 @@ using System.Transactions;
 using Microsoft.Extensions.Configuration;
 using DMR_API.Helpers.Enum;
 using Microsoft.AspNetCore.Http;
-using CodeUtility;
 using DMR_API.Data;
 
 namespace DMR_API._Services.Services

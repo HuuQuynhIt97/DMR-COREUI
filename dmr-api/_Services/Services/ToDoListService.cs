@@ -22,7 +22,6 @@ using DMR_API.Enums;
 using AutoMapper.QueryableExtensions;
 using dmr_api.Models;
 using DMR_API.Constants;
-using CodeUtility;
 
 namespace DMR_API._Services.Services
 {

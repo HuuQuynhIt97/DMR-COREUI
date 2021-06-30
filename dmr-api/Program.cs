@@ -15,11 +15,11 @@ namespace DMR_API
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                })
-           .ConfigureWebHost(config =>
-           {
-           config.UseUrls("http://*:5002/");
-        })
-           .UseWindowsService();
+                });
+        //   .ConfigureWebHost(config =>
+        //   {
+        //    config.UseUrls("http://*:5002/");
+        //})
+        //   .UseWindowsService();
     }
 }

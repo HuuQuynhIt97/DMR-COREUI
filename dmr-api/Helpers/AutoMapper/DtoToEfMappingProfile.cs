@@ -4,7 +4,7 @@ using AutoMapper;
 using System;
 using System.Linq;
 using dmr_api.Models;
-using CodeUtility;
+using DMR_API.Helpers;
 
 namespace DMR_API.Helpers.AutoMapper
 {

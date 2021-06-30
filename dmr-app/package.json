@@ -31,6 +31,7 @@
     "prod": "node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng build --prod  --aot --build-optimizer --common-chunk --vendor-chunk --optimization"
   },
   "private": true,
+
   "dependencies": {
     "@angular/animations": "^11.2.5",
     "@angular/cdk": "^11.2.4",
@@ -125,6 +126,7 @@
     "web-animations-js": "^2.3.2",
     "zone.js": "~0.10.3"
   },
+
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1102.4",
     "@angular/cli": "^11.2.4",

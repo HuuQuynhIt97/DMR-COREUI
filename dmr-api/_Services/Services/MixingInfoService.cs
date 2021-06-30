@@ -17,7 +17,6 @@ using System.Transactions;
 using dmr_api.Models;
 using DMR_API._Repositories;
 using Microsoft.AspNetCore.Http;
-using CodeUtility;
 
 namespace DMR_API._Services.Services
 {
