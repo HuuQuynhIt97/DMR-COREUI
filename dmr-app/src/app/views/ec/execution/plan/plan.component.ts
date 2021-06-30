@@ -1085,6 +1085,11 @@ export class PlanComponent extends BaseComponent implements OnInit, OnDestroy {
 
   StoplineDateOnchange(args) {
     this.StoplineDate = (args.value as Date);
+    if(this.dataPicked.length > 0) {
+      for (const item of this.dataPicked) {
+        item.dueDate = this.StoplineDate
+      }
+    }
   }
 
   tooltipContext(data) {
