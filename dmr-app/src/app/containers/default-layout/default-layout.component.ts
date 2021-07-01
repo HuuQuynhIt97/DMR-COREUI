@@ -108,7 +108,7 @@ export class DefaultLayoutComponent implements OnInit, AfterViewInit {
       this.firstItem = item[0] || {};
     });
 
-    this.langsData = [{ id: 'vi', name: 'VI' }, { id: 'en', name: 'EN' }];
+    this.langsData = [{ id: 'vi', name: 'Local' }, { id: 'en', name: 'EN' }];
     this.navAdmin = new Nav().getNavAdmin();
     this.navClient = new Nav().getNavClient();
     this.navEc = new Nav().getNavEc();
@@ -124,6 +124,7 @@ export class DefaultLayoutComponent implements OnInit, AfterViewInit {
     this.currentTime = moment().format('hh:mm:ss A');
     setInterval(() => this.updateCurrentTime(), 1 * 1000);
   }
+
   ngAfterViewInit() {
     this.getBuilding();
     const img = localStorage.getItem('avatar');
@@ -154,6 +155,7 @@ export class DefaultLayoutComponent implements OnInit, AfterViewInit {
       this.navItems = navs;
     }
   }
+
   home() {
     return '/ec/execution/todolist-2';
   }
