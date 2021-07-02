@@ -1,3 +1,4 @@
+import { StirService } from './../../../../_core/_service/stir.service';
 import { AdditionComponent } from './../addition/addition.component';
 import { SubpackageComponent } from '../subpackage/subpackage.component';
 import { DispatchEVAUVComponent } from '../dispatchEVAUV/dispatchEVAUV.component';
@@ -30,7 +31,7 @@ import { PrintGlueComponent } from '../print-glue/print-glue.component';
 import { DispatchDoneListComponent } from '../dispatch-done-list/dispatch-done-list.component';
 import { PrintGlueDispatchListComponent } from '../print-glue-dispatch-list/print-glue-dispatch-list.component';
 import { DispatchComponent } from '../dispatch/dispatch.component';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { AdditionService } from 'src/app/_core/_service/addition.service';
 
 declare var $: any;
@@ -53,7 +54,9 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   dataAddition: any = [];
   dataAdditionDispatch: any = [];
   dataHistoryMixed: any = []; // Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
+  dataHistoryStir: any = [];
   @ViewChild('historyMixed', { static: true }) historyMixed: TemplateRef<any>;
+  @ViewChild('historyStir', { static: true }) historyStir: TemplateRef<any>;
   @ViewChild('addition', { static: true }) addition: TemplateRef<any>;
   @ViewChild('additionDispatch', { static: true }) additionDispatch: TemplateRef<any>;
   modalReference: NgbModalRef;
@@ -136,6 +139,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   DISPATCH_DELAY = 'dispatchDelay';
   EVA_UV = 'EVA_UV';
   BONDING_GAP = 'bondingGap';
+
   tabs = [this.TODO, this.DONE, this.DELAY, this.DISPATCH, this.DISPATCH_DELAY, this.EVA_UV, this.BONDING_GAP];
   dispatchData: any;
   // tslint:disable-next-line:variable-name
@@ -181,7 +185,8 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     private additionService: AdditionService,
     private authService: AuthService,
     private spinner: NgxSpinnerService,
-    public todolistService: TodolistService
+    public todolistService: TodolistService,
+    public stirService: StirService
   ) {
     const ROLE: IRole = JSON.parse(localStorage.getItem('level'));
     this.role = ROLE;
@@ -484,6 +489,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.building = [args.itemData];
     this.loadData();
   }
+
   onSelectBuildingDone(args: any): void {
     this.buildingID = args.itemData.id;
     this.buildingName = args.itemData.name;
@@ -493,6 +499,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.building = [args.itemData];
     this.loadData();
   }
+
   loadData() {
     this.isSTF = JSON.parse(localStorage.getItem('isSTF')) as boolean;
     if (this.isSTF === true) {
@@ -701,12 +708,13 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   bondingGap() {
-    this.spinner.show();
+    // this.spinner.show();
     this.additionService.getAllByBuildingID(this.buildingID).subscribe(data => {
       this.bondingGapData = data;
-      this.spinner.hide();
+      // this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   done() {
     this.spinner.show();
     this.todolistService.done(this.buildingID).subscribe(res => {
@@ -725,27 +733,33 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.spinner.hide();
     }, err => this.spinner.hide());
   }
+
   gridConfig(): void {
     this.pageSettings = { pageCount: 20, pageSizes: true, pageSize: 10 };
     this.sortSettings = {};
     this.editSettings = { showDeleteConfirmDialog: false, allowEditing: true, allowAdding: true, allowDeleting: true, mode: 'Normal' };
     this.toolbarOptions = ['Search'];
   }
+
   dataBoundDone() {
     this.gridDone.autoFitColumns();
   }
+
   dataBound() {
   }
+
   createdDispatchGrid() {
     if (this.glueName !== undefined) {
       this.gridDispatch.search(this.glueName);
     }
   }
+
   createdTodoGrid() {
     if (this.glueName !== undefined) {
       this.gridTodo.search(this.glueName);
     }
   }
+
   public cancelBtnGridTodoClick(args) {
     this.glueName = '';
     switch (this.isShowTab) {
@@ -762,6 +776,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
     }
   }
+
   createdToolbar() {
     // this.fullscreenBtn = new Button(
     //   {
@@ -782,6 +797,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     //   }
     // };
   }
+
   createdTodo() {
     // const tabsTest = this.route.snapshot.params.tab;
     const tab = this.route.snapshot.params.tab || '';
@@ -963,6 +979,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
   }
+
   searchDone(args) {
     if (this.focusDone === this.DONE) {
       this.gridDone.search(this.glueName);
@@ -978,6 +995,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.gridEVAUV.search(this.glueName);
     }
   }
+
   onClickToolbarTop(args: ClickEventArgs): void {
     // debugger;
     const target: HTMLElement = (args.originalEvent.target as HTMLElement).closest('button'); // find clicked button
@@ -1016,9 +1034,9 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
     }
   }
-  onClickToolbar(args: ClickEventArgs): void {
-    // debugger;
-    const target: HTMLElement = (args.originalEvent.target as HTMLElement).closest('button'); // find clicked button
+
+  onClickToolbar(args): void {
+    const target: HTMLElement = (args.target as HTMLElement).closest('button'); // find clicked button
     this.glueName = '';
     switch (target?.id) {
       case 'transfer':
@@ -1026,14 +1044,6 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
       case 'addition':
         this.openAddition();
-        break;
-      case 'bondingGap':
-        this.bondingGap();
-        this.isShowTab = this.BONDING_GAP;
-        this.focusDone = this.BONDING_GAP;
-        this.router.navigate([
-          `/ec/execution/todolist-2/${this.BONDING_GAP}`,
-        ]);
         break;
       case 'done':
         this.isShowTab = this.DONE;
@@ -1094,6 +1104,14 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
           `/ec/execution/todolist-2/${this.EVA_UV}/${this.glueName}`,
         ]);
         // target.focus();
+        break;
+      case 'bondingGap':
+        this.bondingGap();
+        this.isShowTab = this.BONDING_GAP;
+        this.focusDone = this.BONDING_GAP;
+        this.router.navigate([
+          `/ec/execution/todolist-2/${this.BONDING_GAP}`,
+        ]);
         break;
       case 'excelExport':
         this.spinner.show();
@@ -1194,7 +1212,12 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       const value = args.rowData as IToDoList;
       this.openMixHistory(value); // <!--Thêm bởi Quỳnh (Leo 2/2/2021 11:46)-->
     }
+    if (args.column.field === 'startStirTime' || args.column.field === 'finishStirTime') {
+      const value = args.rowData as IToDoList;
+      this.openStirHistory(value); // <!--Thêm bởi Quỳnh (Leo 2/2/2021 11:46)-->
+    }
   }
+
   // Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
   openMixHistory(value) {
     this.modalReference = this.modalService.open(this.historyMixed, { size: 'lg', backdrop: 'static', keyboard: false });
@@ -1206,6 +1229,15 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
+
+  openStirHistory(value) {
+    this.modalReference = this.modalService.open(this.historyStir, { size: 'lg', backdrop: 'static', keyboard: false });
+    this.stirService.getStirByMixingInfoID(value.mixingInfoID).subscribe((res: any) => {
+      this.dataHistoryStir = res.filter(x => x.startStiringTime !== "0001-01-01T00:00:00" && x.finishStiringTime !== "0001-01-01T00:00:00")
+      this.glueMix_name = value.glueName;
+    });
+  }
+
   // End Thêm bởi Quỳnh (Leo 2/2/2021 11:46)
   actionBegin(args) {
     if (args.requestType === 'cancel') {
@@ -1222,6 +1254,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
+
   onBeforeRender(args, data, i) {
     const t = this.tooltip.filter((item, index) => index === +i)[0];
     t.content = 'Loading...';
@@ -1243,6 +1276,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.router.navigate([`/ec/execution/todolist-2/stir/${this.isShowTab}/${data.mixingInfoID}/${data.glueName}`]);
   }
+
   goToShake(data: IToDoList) {
     // if (data.finishMixingTime === null) {
     //   this.alertify.warning('Hãy thực hiện bước trộn keo trước!', true);
@@ -1251,9 +1285,11 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.router.navigate([`/ec/execution/todolist-2/shake/${this.isShowTab}/${data.mixingInfoID}`]);
 
   }
+
   goToMixing(data: IToDoList) {
     return [`/ec/execution/todolist-2/mixing/${this.isShowTab}/${data.glueID}/${data.estimatedStartTime}/${data.estimatedFinishTime}/${data.standardConsumption}`];
   }
+
   openDispatchModal(value: any) {
     if (value.printTime === null && value.glueName.includes(' + ')) {
       this.alertify.warning('Hãy thực hiện bước in keo trước!', true);
@@ -1267,6 +1303,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.todolistService.setValue(true);
     });
   }
+
   openDispatchModalDoneList(value: any) {
     if (value.printTime === null && value.glueName.includes(' + ')) {
       this.alertify.warning('Hãy thực hiện bước in keo trước!', true);
@@ -1280,11 +1317,12 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       this.todolistService.setValue(true);
     });
   }
+
   openPrintModal(value: IToDoList) {
-    // if (value.finishStirTime === null && value.glueName.includes(' + ')) {
-    //   this.alertify.warning('Hãy thực hiện bước khuấy keo trước!', true);
-    //   return;
-    // }
+    if ( value.finishStirTime === null  && value.finishMixingTime === null) {
+      this.alertify.warning('Hãy thực hiện bước trộn và khuấy keo trước!', true);
+      return;
+    }
     this.todolistService.findPrintGlue(value.mixingInfoID).subscribe(data => {
       if (data?.id === 0 && value.glueName.includes(' + ')) {
         this.alertify.error('Please mixing this glue first!', true);
@@ -1298,6 +1336,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     });
   }
+
   openPrintModalDispatchList(value: IToDoList) {
     const modalRef = this.modalService.open(PrintGlueDispatchListComponent, { size: 'md', backdrop: 'static', keyboard: false });
     modalRef.componentInstance.value = value;
@@ -1305,6 +1344,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     }, (reason) => {
     });
   }
+
   lockDispatch(data: any): string {
     const classList = ''; // loai bo khong dung nua nhe
     // if (data.deliveredAmount > 0) {
@@ -1312,6 +1352,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     // }
     return classList;
   }
+
   // config screen
   openFullscreen() {
     // Use this.divRef.nativeElement here to request fullscreen
@@ -1328,6 +1369,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.hasCloseScreen = true;
     this.hasShowFullScreen = false;
   }
+
   closeFullscreen() {
     if (document.exitFullscreen) {
       document.exitFullscreen();
@@ -1342,12 +1384,14 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.hasShowFullScreen = true;
 
   }
+
   reloadPage() {
     this.router.navigateByUrl('/TodolistComponent', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/ec/execution/todolist-2/' + this.isShowTab]);
     });
     // window.location.reload();
   }
+
   // Start Thêm bởi Quỳnh (Leo 1/28/2021 11:46)
   onChangeGlue(args) {
     this.AddGlueNameID = args.itemData.glueNameID,
@@ -1358,6 +1402,7 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
     this.finishWorkingTime = new Date(args.itemData.estimatedFinishTime);
 
   }
+
   onChangeGlueDispatch(args) {
     this.glueNameIDDispatch = args.itemData.glueNameID;
   }

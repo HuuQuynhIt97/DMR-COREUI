@@ -7,6 +7,7 @@
 </marquee>
 <hr> -->
 <div class="card" #fullScreen>
+
   <div class="control-section e-tbar-section">
     <div class="e-sample-resize-container">
       <!-- Render the Toolbar Component -->
@@ -80,7 +81,7 @@
           </e-item>
         </e-items>
       </ejs-toolbar>
-      <ejs-toolbar #toolbarTodo (created)='createdTodo()' (clicked)='onClickToolbar($event)'>
+      <ejs-toolbar #toolbarTodo (created)='createdTodo()' (click)='onClickToolbar($event)'>
         <e-items>
           <e-item id='todo' prefixIcon="fa fa-tasks" text=" {{ 'Todo' | translate }} ({{todoTotal}})"> </e-item>
           <e-item id='eva_uv' *ngIf="isSTF" prefixIcon="fa fa-tasks" text=" {{ 'EVA_UV' }} "> </e-item>
@@ -111,9 +112,10 @@
         </e-items>
       </ejs-toolbar>
     </div>
+
     <!-- To do -->
     <div class="card-body p-0">
-      <ejs-grid #gridTodo id="gridTodo" *ngIf="isShowTab == TODO || isShowTab == DELAY"
+      <ejs-grid #gridTodo id="gridTodo" *ngIf="isShowTab === TODO || isShowTab === DELAY"
         [dataSource]='data' [searchSettings]="searchSettings" showColumnMenu='true' [allowExcelExport]='true'
         allowSorting='true' allowResizing='true' gridLines='Both' (actionBegin)="actionBegin($event)"
         (actionComplete)="actionComplete($event)" height='600' (rowDataBound)='rowDB($event)'
@@ -222,7 +224,7 @@
     <!-- Dispatch -->
     <div class="card-body p-0">
       <ejs-grid #gridDispatch id="gridDispatch"
-        *ngIf="isShowTab == DISPATCH || isShowTab == DISPATCH_DELAY" [dataSource]='dispatchData'
+        *ngIf="isShowTab == DISPATCH || isShowTab === DISPATCH_DELAY" [dataSource]='dispatchData'
         [searchSettings]="searchSettings" showColumnMenu='true' [allowExcelExport]='true' allowSorting='true'
         allowResizing='true' gridLines='Both' (actionBegin)="actionBegin($event)"
         (actionComplete)="actionComplete($event)" height='600' (toolbarClick)='toolbarClick($event)'
@@ -293,9 +295,10 @@
       </ejs-grid>
     </div>
     <!-- end Dispatch -->
+
     <!-- EVA_UV -->
       <div class="card-body p-0">
-        <ejs-grid #gridDispatch id="gridEVAUV" *ngIf="isShowTab == EVA_UV"
+        <ejs-grid #gridDispatch id="gridEVAUV" *ngIf="isShowTab === EVA_UV"
           [dataSource]='EVAUVData' [searchSettings]="searchSettings" showColumnMenu='true' [allowExcelExport]='true'
           allowSorting='true' allowResizing='true' gridLines='Both' (actionBegin)="actionBegin($event)"
           (actionComplete)="actionComplete($event)" height='600' (toolbarClick)='toolbarClick($event)'
@@ -370,9 +373,10 @@
         </ejs-grid>
       </div>
     <!-- end EVA_UV -->
+
     <!--  Done -->
     <div class="card-body p-0">
-      <ejs-grid #gridDone id="gridDone" *ngIf="isShowTab == DONE" [dataSource]='doneData'
+      <ejs-grid #gridDone id="gridDone" *ngIf="isShowTab === DONE" [dataSource]='doneData'
         [searchSettings]="searchSettings" showColumnMenu='true' [allowExcelExport]='true' allowSorting='true'
         allowResizing='true' gridLines='Both' (actionBegin)="actionBegin($event)"
         (actionComplete)="actionComplete($event)" height='600' (rowDataBound)='rowDB($event)'
@@ -632,38 +636,38 @@
     </div>
     <!-- End Done -->
 
-       <!-- Bonding Gap -->
-       <div class="card-body p-0" *ngIf="isShowTab == BONDING_GAP" >
-        <ejs-grid #gridBondingGap  gridLines='Both'
-        [dataSource]='bondingGapData'
-        allowPaging='true' showColumnMenu='true' [allowSorting]='true' allowResizing='true'
-        [allowExcelExport]='true' allowFiltering='true' [filterSettings]='filterSettings'
-        [pageSettings]='pageSettings'>
-        <e-columns>
-            <e-column field='#' headerText='#' width='70' textAlign='Center' isPrimaryKey='true'>
-                <ng-template #template let-data>
-                    {{NO(data.index)}}
-                </ng-template>
-            </e-column>
-            <e-column field='workerID' headerText="{{'Worker ID' | translate}}" width='150' textAlign='Center'>
-            </e-column>
-            <e-column field='chemicalName' headerText="{{'Chemical Name' | translate}}" width='150' textAlign='Center'>
-            </e-column>
-            <e-column field='amount' headerText="{{'Amount' | translate}}" editType='numericedit' width='150' textAlign='Center'>
-            </e-column>
-            <e-column field='lineName' headerText="{{'Line' | translate}}" width='150' textAlign='Center'>
-            </e-column>
+    <!-- Bonding Gap -->
+    <div class="card-body p-0" *ngIf="isShowTab === BONDING_GAP " >
+    <ejs-grid #gridBondingGap  gridLines='Both'
+    [dataSource]='bondingGapData'
+    allowPaging='true' showColumnMenu='true' [allowSorting]='true' allowResizing='true'
+    [allowExcelExport]='true' allowFiltering='true' [filterSettings]='filterSettings'
+    [pageSettings]='pageSettings'>
+    <e-columns>
+        <e-column field='#' headerText='#' width='70' textAlign='Center' isPrimaryKey='true'>
+            <ng-template #template let-data>
+                {{NO(data.index)}}
+            </ng-template>
+        </e-column>
+        <e-column field='workerID' headerText="{{'Worker ID' | translate}}" width='150' textAlign='Center'>
+        </e-column>
+        <e-column field='chemicalName' headerText="{{'Chemical Name' | translate}}" width='150' textAlign='Center'>
+        </e-column>
+        <e-column field='amount' headerText="{{'Amount' | translate}}" editType='numericedit' width='150' textAlign='Center'>
+        </e-column>
+        <e-column field='lineName' headerText="{{'Line' | translate}}" width='150' textAlign='Center'>
+        </e-column>
 
-            <e-column field='bpfcEstablishName' headerText="{{'BPFC Name' | translate}}" width='350' textAlign='Center'>
-            </e-column>
-            <e-column field='remark' headerText="{{'Remark' | translate}}" width='200' textAlign='Center'>
-            </e-column>
-            <e-column field='createdTime' type='date'  headerText="{{'Created Time' | translate}}" format='MM-dd-yyyy HH:mm:ss' width='170' textAlign='Center'>
-            </e-column>
-        </e-columns>
-    </ejs-grid>
-      </div>
-      <!-- End Bonding Gap -->
+        <e-column field='bpfcEstablishName' headerText="{{'BPFC Name' | translate}}" width='350' textAlign='Center'>
+        </e-column>
+        <e-column field='remark' headerText="{{'Remark' | translate}}" width='200' textAlign='Center'>
+        </e-column>
+        <e-column field='createdTime' type='date'  headerText="{{'Created Time' | translate}}" format='MM-dd-yyyy HH:mm:ss' width='170' textAlign='Center'>
+        </e-column>
+    </e-columns>
+</ejs-grid>
+    </div>
+    <!-- End Bonding Gap -->
 
 
   </div>
@@ -738,6 +742,47 @@
             </ng-template>
             <ng-template #template let-data>
               <span style=" font-size: 20px;">{{ data.time_Start | date: "HH:mm:ss" }}</span>
+            </ng-template>
+
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" (click)="modal.close('Close click')">
+        Close
+      </button>
+    </div>
+  </ng-template>
+
+  <!--Thêm bởi Quỳnh (2/2/2021 11:46)-->
+  <ng-template #historyStir let-modal>
+    <div class="modal-header">
+      <h3 class="modal-title" style="color: red">Stir History: {{glueMix_name}}</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ejs-grid #gridMixedHistory [dataSource]="dataHistoryStir" [searchSettings]="searchSettings"
+        showColumnMenu="true" allowSorting="true" allowResizing="true" gridLines="Both" [sortSettings]="sortSettings">
+        <e-columns>
+
+          <e-column field="endTime" type="date" headerText="Start Time" width="120" textAlign="Center">
+            <ng-template #headerTemplate let-data>
+              <span style="color: red; font-size: 20px;">Start Time</span>
+            </ng-template>
+            <ng-template #template let-data>
+              <span style=" font-size: 20px;">{{ data.startStiringTime | date: "HH:mm:ss" }}</span>
+            </ng-template>
+
+          </e-column>
+          <e-column field="endTime" type="date" headerText="End Time" width="120" textAlign="Center">
+            <ng-template #headerTemplate let-data>
+              <span style="color: red; font-size: 20px;">End Time</span>
+            </ng-template>
+            <ng-template #template let-data>
+              <span style=" font-size: 20px;">{{ data.finishStiringTime | date: "HH:mm:ss" }}</span>
             </ng-template>
 
           </e-column>
@@ -860,36 +905,36 @@
     </div>
   </ng-template>
 
-    <ng-template #additionDispatch let-modal>
-      <div class="modal-header">
-        <h4 class="modal-title">Addition</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <ejs-grid #gridAdditionDispatch [dataSource]="dataAdditionDispatch" [searchSettings]="searchSettings" showColumnMenu="true"
-          [allowExcelExport]="true" allowSorting="true" allowResizing="true" gridLines="Both"
-          (actionBegin)="actionBeginAdditionDispatch($event)" [toolbar]="toolbarAdditionDispatch"
-          [editSettings]="editSettings">
-          <e-columns>
-            <e-column field="bpfcName" headerText="Glue Name" width="290" textAlign="Center">
-                <ng-template #headerTemplate>
-                  {{ 'Glue' | translate }}
-                </ng-template>
-              <ng-template #editTemplate let-data>
-                <ejs-dropdownlist #additionDispatchDropdownlist [dataSource]="glueDispatchList" (filtering)="onFilteringGlueDispatch($event)"
-                  popupHeight="300px" popupWidth="450px" [value]='glueNameIDDispatch' [placeholder]="'Select glue' | translate" [fields]="fieldsBPFC"
-                  [allowFiltering]="true" (select)="onChangeGlueDispatch($event)">
-                </ejs-dropdownlist>
+  <ng-template #additionDispatch let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Addition</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ejs-grid #gridAdditionDispatch [dataSource]="dataAdditionDispatch" [searchSettings]="searchSettings" showColumnMenu="true"
+        [allowExcelExport]="true" allowSorting="true" allowResizing="true" gridLines="Both"
+        (actionBegin)="actionBeginAdditionDispatch($event)" [toolbar]="toolbarAdditionDispatch"
+        [editSettings]="editSettings">
+        <e-columns>
+          <e-column field="bpfcName" headerText="Glue Name" width="290" textAlign="Center">
+              <ng-template #headerTemplate>
+                {{ 'Glue' | translate }}
               </ng-template>
-            </e-column>
-          </e-columns>
-        </ejs-grid>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="modal.close('Close click')">
-          Close
-        </button>
-      </div>
-    </ng-template>
+            <ng-template #editTemplate let-data>
+              <ejs-dropdownlist #additionDispatchDropdownlist [dataSource]="glueDispatchList" (filtering)="onFilteringGlueDispatch($event)"
+                popupHeight="300px" popupWidth="450px" [value]='glueNameIDDispatch' [placeholder]="'Select glue' | translate" [fields]="fieldsBPFC"
+                [allowFiltering]="true" (select)="onChangeGlueDispatch($event)">
+              </ejs-dropdownlist>
+            </ng-template>
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('Close click')">
+        Close
+      </button>
+    </div>
+  </ng-template>
