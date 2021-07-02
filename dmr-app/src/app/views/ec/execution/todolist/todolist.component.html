@@ -520,6 +520,15 @@
 
             </ng-template>
           </e-column>
+
+          <e-column field='standardDuration'  headerText='Std. RPM' width='160' textAlign='Center'>
+
+          </e-column>
+
+          <e-column field='actualDuration'  headerText='Actual RPM' width='160' textAlign='Center'>
+
+          </e-column>
+
           <e-column field='printTime' type='date' format='HH:mm' headerText='PT' width='160' textAlign='Center'>
             <ng-template #headerTemplate>
               <ejs-tooltip [content]="'PT_Tooltip' | translate">

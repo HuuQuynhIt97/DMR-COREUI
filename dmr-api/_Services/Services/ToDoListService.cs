@@ -305,6 +305,10 @@ namespace DMR_API._Services.Services
                 itemTodolist.StartDispatchingTime = item.StartDispatchingTime;
                 itemTodolist.FinishDispatchingTime = item.FinishDispatchingTime;
 
+                var StirDuration = _repoStir.FindAll().FirstOrDefault(x => x.MixingInfoID == item.MixingInfoID);
+                itemTodolist.StandardDuration = StirDuration != null ? StirDuration.StandardDuration : 0;
+                itemTodolist.ActualDuration = StirDuration != null ? StirDuration.ActualDuration : 0;
+
                 itemTodolist.PrintTime = item.PrintTime;
 
                 itemTodolist.MixedConsumption = Math.Round(item.MixedConsumption, 2);
