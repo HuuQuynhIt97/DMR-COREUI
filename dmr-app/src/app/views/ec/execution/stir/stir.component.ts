@@ -292,14 +292,14 @@ export class StirComponent implements OnInit, OnDestroy {
       this.alertify.error('Please scan the machine QR Code first! <br> Hãy quét mã QR của máy trước!', true);
       return;
     } else {
-      const currentTime = new Date().getTime();
-      const second = item.standardDuration > 0 ? item.standardDuration : item.glueType.minutes * 60;
-      const startScanTime = new Date(item.startScanTime as any);
-      const endStart = startScanTime.setSeconds(startScanTime.getSeconds() + second);
-      if (currentTime < endStart) {
-        this.alertify.error('The glue is stiring! <br> Máy đang khuấy keo bạn ơi!', true);
-        return;
-      }
+      // const currentTime = new Date().getTime();
+      // const second = item.standardDuration > 0 ? item.standardDuration : item.glueType.minutes * 60;
+      // const startScanTime = new Date(item.startScanTime as any);
+      // const endStart = startScanTime.setSeconds(startScanTime.getSeconds() + second);
+      // if (currentTime < endStart) {
+      //   this.alertify.error('The glue is stiring! <br> Máy đang khuấy keo bạn ơi!', true);
+      //   return;
+      // }
     }
     try {
       const stirModel: IStirForUpdate = {

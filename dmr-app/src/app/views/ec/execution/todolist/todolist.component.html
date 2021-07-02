@@ -7,6 +7,7 @@
 </marquee>
 <hr> -->
 <div class="card" #fullScreen>
+
   <div class="control-section e-tbar-section">
     <div class="e-sample-resize-container">
       <!-- Render the Toolbar Component -->
@@ -754,6 +755,47 @@
     </div>
   </ng-template>
 
+  <!--Thêm bởi Quỳnh (2/2/2021 11:46)-->
+  <ng-template #historyStir let-modal>
+    <div class="modal-header">
+      <h3 class="modal-title" style="color: red">Stir History: {{glueMix_name}}</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ejs-grid #gridMixedHistory [dataSource]="dataHistoryStir" [searchSettings]="searchSettings"
+        showColumnMenu="true" allowSorting="true" allowResizing="true" gridLines="Both" [sortSettings]="sortSettings">
+        <e-columns>
+
+          <e-column field="endTime" type="date" headerText="Start Time" width="120" textAlign="Center">
+            <ng-template #headerTemplate let-data>
+              <span style="color: red; font-size: 20px;">Start Time</span>
+            </ng-template>
+            <ng-template #template let-data>
+              <span style=" font-size: 20px;">{{ data.startStiringTime | date: "HH:mm:ss" }}</span>
+            </ng-template>
+
+          </e-column>
+          <e-column field="endTime" type="date" headerText="End Time" width="120" textAlign="Center">
+            <ng-template #headerTemplate let-data>
+              <span style="color: red; font-size: 20px;">End Time</span>
+            </ng-template>
+            <ng-template #template let-data>
+              <span style=" font-size: 20px;">{{ data.finishStiringTime | date: "HH:mm:ss" }}</span>
+            </ng-template>
+
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" (click)="modal.close('Close click')">
+        Close
+      </button>
+    </div>
+  </ng-template>
+
   <!--Thêm bởi Quỳnh (11/06/2021)-->
   <ng-template #transferModal let-modal>
     <div class="modal-header">
@@ -863,36 +905,36 @@
     </div>
   </ng-template>
 
-    <ng-template #additionDispatch let-modal>
-      <div class="modal-header">
-        <h4 class="modal-title">Addition</h4>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <ejs-grid #gridAdditionDispatch [dataSource]="dataAdditionDispatch" [searchSettings]="searchSettings" showColumnMenu="true"
-          [allowExcelExport]="true" allowSorting="true" allowResizing="true" gridLines="Both"
-          (actionBegin)="actionBeginAdditionDispatch($event)" [toolbar]="toolbarAdditionDispatch"
-          [editSettings]="editSettings">
-          <e-columns>
-            <e-column field="bpfcName" headerText="Glue Name" width="290" textAlign="Center">
-                <ng-template #headerTemplate>
-                  {{ 'Glue' | translate }}
-                </ng-template>
-              <ng-template #editTemplate let-data>
-                <ejs-dropdownlist #additionDispatchDropdownlist [dataSource]="glueDispatchList" (filtering)="onFilteringGlueDispatch($event)"
-                  popupHeight="300px" popupWidth="450px" [value]='glueNameIDDispatch' [placeholder]="'Select glue' | translate" [fields]="fieldsBPFC"
-                  [allowFiltering]="true" (select)="onChangeGlueDispatch($event)">
-                </ejs-dropdownlist>
+  <ng-template #additionDispatch let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Addition</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ejs-grid #gridAdditionDispatch [dataSource]="dataAdditionDispatch" [searchSettings]="searchSettings" showColumnMenu="true"
+        [allowExcelExport]="true" allowSorting="true" allowResizing="true" gridLines="Both"
+        (actionBegin)="actionBeginAdditionDispatch($event)" [toolbar]="toolbarAdditionDispatch"
+        [editSettings]="editSettings">
+        <e-columns>
+          <e-column field="bpfcName" headerText="Glue Name" width="290" textAlign="Center">
+              <ng-template #headerTemplate>
+                {{ 'Glue' | translate }}
               </ng-template>
-            </e-column>
-          </e-columns>
-        </ejs-grid>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="modal.close('Close click')">
-          Close
-        </button>
-      </div>
-    </ng-template>
+            <ng-template #editTemplate let-data>
+              <ejs-dropdownlist #additionDispatchDropdownlist [dataSource]="glueDispatchList" (filtering)="onFilteringGlueDispatch($event)"
+                popupHeight="300px" popupWidth="450px" [value]='glueNameIDDispatch' [placeholder]="'Select glue' | translate" [fields]="fieldsBPFC"
+                [allowFiltering]="true" (select)="onChangeGlueDispatch($event)">
+              </ejs-dropdownlist>
+            </ng-template>
+          </e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-light" (click)="modal.close('Close click')">
+        Close
+      </button>
+    </div>
+  </ng-template>
