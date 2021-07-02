@@ -298,6 +298,10 @@ namespace DMR_API._Services.Services
                 itemTodolist.StartMixingTime = item.StartMixingTime;
                 itemTodolist.FinishMixingTime = item.FinishMixingTime;
 
+                var StirDuration = _repoStir.FindAll().FirstOrDefault(x => x.MixingInfoID == item.MixingInfoID);
+                itemTodolist.StandardDuration = StirDuration != null ? StirDuration.StandardDuration : 0;
+                itemTodolist.ActualDuration = StirDuration != null ? StirDuration.ActualDuration : 0;
+
                 itemTodolist.StartStirTime = item.StartStirTime;
                 itemTodolist.FinishStirTime = item.FinishStirTime;
 
