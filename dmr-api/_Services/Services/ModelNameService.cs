@@ -735,7 +735,7 @@ namespace DMR_API._Services.Services
             var gluesData = new List<Glue>();
             gluesData = bpfcSourceClone.Glues.Where(x => x.isShow == true).ToList();
 
-            var checkExist = _repoGlue.FindAll().Where(x => x.BPFCEstablishID == bpfcDestination.ID && x.isShow == true).ToList();
+            var checkExist = _repoGlue.FindAll().Where(x => x.BPFCEstablishID == clone.BPFCID_Destination && x.isShow == true).ToList();
             if (checkExist != null)
             {
                 _repoGlue.RemoveMultiple(checkExist);
@@ -759,7 +759,7 @@ namespace DMR_API._Services.Services
                 glue.PartID = item.PartID;
                 glue.GlueNameID = item.GlueNameID;
                 glue.ExpiredTime = item.ExpiredTime;
-                glue.BPFCEstablishID = bpfcDestination.ID;
+                glue.BPFCEstablishID = clone.BPFCID_Destination;
                 _repoGlue.Add(glue);
 
                 await _repoGlue.SaveAll();

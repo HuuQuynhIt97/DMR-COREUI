@@ -154,6 +154,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
   };
   bpfcDataSource: any;
   isSTF: any;
+  bpfc_destination: any;
   constructor(
     private modalNameService: ModalNameService,
     private alertify: AlertifyService,
@@ -466,6 +467,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
       articleNOID: this.articleNoID,
       artProcessID: Number(this.artProcessID),
       bpfcID: this.BPFCID,
+      bpfcID_destination: this.bpfc_destination,
       cloneBy: JSON.parse(localStorage.getItem('user')).user.id,
     };
     this.clone(clone);
