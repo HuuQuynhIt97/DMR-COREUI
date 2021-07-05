@@ -154,7 +154,7 @@ namespace DMR_API._Services.Services
                         .Select(x => new { x.RPM, x.CreatedTime, x.Sequence })
                         .OrderByDescending(x => x.CreatedTime).ToArray();
 
-                    int temp = 0;
+                    int temp = 20; // thoi gian chuan bi 20s
                     int standardDuration = item.StandardDuration == 0 ? (int)model.GlueType.Minutes * 60 : item.StandardDuration;
                     //if (rawData.Count == 0) return false;
                     // Neu = 0 thì lấy dữ liệu giả
