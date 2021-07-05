@@ -154,6 +154,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
   };
   bpfcDataSource: any;
   isSTF: any;
+  bpfc_destination: any;
   constructor(
     private modalNameService: ModalNameService,
     private alertify: AlertifyService,
@@ -466,6 +467,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
       articleNOID: this.articleNoID,
       artProcessID: Number(this.artProcessID),
       bpfcID: this.BPFCID,
+      bpfcID_destination: this.bpfc_destination,
       cloneBy: JSON.parse(localStorage.getItem('user')).user.id,
     };
     this.clone(clone);
@@ -499,6 +501,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
     this.modelNoID = data.modelNoID;
     console.log(data);
     this.articleNoID = data.articleNoID;
+    this.bpfc_destination = data.id;
     // this.artProcessID = data.artProcessID;
     this.getArticleNoByModelNoID(this.modelNoID, data.articleNo);
     if (data.artProcess === 'ASY') {
