@@ -500,6 +500,7 @@ export class BPFCScheduleComponent extends BaseComponent implements OnInit, OnDe
     this.modelNameID = data.modelNameID;
     this.modelNoID = data.modelNoID;
     console.log(data);
+    this.bpfc_destination = data.id;
     this.articleNoID = data.articleNoID;
     // this.artProcessID = data.artProcessID;
     this.getArticleNoByModelNoID(this.modelNoID, data.articleNo);
