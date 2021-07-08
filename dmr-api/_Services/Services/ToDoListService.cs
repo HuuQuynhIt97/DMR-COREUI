@@ -318,7 +318,8 @@ namespace DMR_API._Services.Services
                 }
                 var StirDuration = _repoStir.FindAll().FirstOrDefault(x => x.MixingInfoID == item.MixingInfoID);
                 itemTodolist.StandardRPM = RPM;
-                itemTodolist.StandardDuration = StirDuration != null ? StirDuration.StandardDuration : 0;;
+                itemTodolist.StandardDuration = StirDuration != null ? StirDuration.StandardDuration : 0;
+                itemTodolist.ActualRPM = StirDuration != null ? StirDuration.RPM : 0;
                 itemTodolist.ActualDuration = StirDuration != null ? StirDuration.ActualDuration : 0;
 
                 itemTodolist.PrintTime = item.PrintTime;

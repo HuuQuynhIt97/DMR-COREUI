@@ -66,6 +66,7 @@ namespace DMR_API.DTO
         public double StandardConsumption { get; set; }
         public double StandardRPM { get; set; }
         public double StandardDuration { get; set; }
+        public double ActualRPM { get; set; }
         public double ActualDuration { get; set; }
         public double MixedConsumption { get; set; }
         public double DeliveredConsumption { get; set; }
