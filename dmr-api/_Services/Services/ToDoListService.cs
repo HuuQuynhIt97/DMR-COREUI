@@ -292,21 +292,34 @@ namespace DMR_API._Services.Services
                 itemTodolist.Supplier = item.Supplier;
                 itemTodolist.Status = item.Status;
 
-                var glue = _repoGlue.FindById(item.GlueID);
+                var glue = _repoGlue.FindAll(x => x.ID == item.GlueID)
+                .Include(x => x.GlueIngredients)
+                .ThenInclude(x => x.Ingredient)
+                .ThenInclude(x => x.GlueType)
+                .FirstOrDefault();
                 itemTodolist.KindID = glue != null && glue.KindID != null ? glue.KindID.Value : 0;
 
                 itemTodolist.StartMixingTime = item.StartMixingTime;
                 itemTodolist.FinishMixingTime = item.FinishMixingTime;
-
-                var StirDuration = _repoStir.FindAll().FirstOrDefault(x => x.MixingInfoID == item.MixingInfoID);
-                itemTodolist.StandardDuration = StirDuration != null ? StirDuration.StandardDuration : 0;
-                itemTodolist.ActualDuration = StirDuration != null ? StirDuration.ActualDuration : 0;
 
                 itemTodolist.StartStirTime = item.StartStirTime;
                 itemTodolist.FinishStirTime = item.FinishStirTime;
 
                 itemTodolist.StartDispatchingTime = item.StartDispatchingTime;
                 itemTodolist.FinishDispatchingTime = item.FinishDispatchingTime;
+                double RPM = 0;
+                
+                if(glue != null && glue.GlueIngredients.FirstOrDefault(x => x.Position == "A") != null) {
+                    var itemA = glue.GlueIngredients.FirstOrDefault(x => x.Position == "A");
+                    if(itemA.Ingredient != null && itemA.Ingredient.GlueType != null) {
+                        RPM = itemA.Ingredient.GlueType.RPM;
+                    }
+                }
+                var StirDuration = _repoStir.FindAll().FirstOrDefault(x => x.MixingInfoID == item.MixingInfoID);
+                itemTodolist.StandardRPM = RPM;
+                itemTodolist.StandardDuration = StirDuration != null ? StirDuration.StandardDuration : 0;
+                itemTodolist.ActualRPM = StirDuration != null ? StirDuration.RPM : 0;
+                itemTodolist.ActualDuration = StirDuration != null ? StirDuration.ActualDuration : 0;
 
                 itemTodolist.PrintTime = item.PrintTime;
 
