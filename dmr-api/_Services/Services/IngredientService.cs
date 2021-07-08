@@ -392,6 +392,7 @@ namespace DMR_API._Services.Services
             {
                 var ingredient = _mapper.Map<Ingredient>(model);
                 ingredient.isShow = true;
+                ingredient.Name = model.Name.Trim();
                 var supplier_name = _repoSupplier.FindAll().FirstOrDefault(x => x.ID == model.SupplierID).Name;
                 ingredient.PartNO = model.PartNO + ':' + supplier_name;
                 ingredient.CreatedBy = userID;
@@ -480,6 +481,7 @@ namespace DMR_API._Services.Services
             var ingredient = _mapper.Map<Ingredient>(model);
             ingredient.isShow = true;
             ingredient.ModifiedBy = userID;
+            ingredient.Name = model.Name.Trim();
             var supplier_name = _repoSupplier.FindAll().FirstOrDefault(x => x.ID == model.SupplierID).Name;
             ingredient.PartNO = model.PartNO + ':' + supplier_name;
             ingredient.ModifiedDate = DateTime.Now;
