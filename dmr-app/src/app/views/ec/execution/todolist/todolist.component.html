@@ -525,9 +525,18 @@
 
           <e-column field='actualRPM'  headerText='Average RPM' width='160' textAlign='Center'></e-column>
 
-          <e-column field='standardDuration'  headerText='Std. Duration' width='160' textAlign='Center'></e-column>
+          <e-column field='standardDuration'  headerText='Std. Duration' width='160' textAlign='Center'>
+            <ng-template #template let-data>
+              <span>{{ data.standardDuration * 1000 | date:'mm:ss':'UTC'}}</span>
+            </ng-template>
 
-          <e-column field='actualDuration'  headerText='Actual Duration' width='160' textAlign='Center'></e-column>
+          </e-column>
+
+          <e-column field='actualDuration'  headerText='Actual Duration' width='160' textAlign='Center'>
+            <ng-template #template let-data>
+              <span>{{ data.actualDuration * 1000 | date:'mm:ss':'UTC'}}</span>
+            </ng-template>
+          </e-column>
 
           <e-column field='printTime' type='date' format='HH:mm' headerText='PT' width='160' textAlign='Center'>
             <ng-template #headerTemplate>
