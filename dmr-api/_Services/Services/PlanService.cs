@@ -1357,7 +1357,7 @@ namespace DMR_API._Services.Services
                     await _repoPlan.SaveAll();
 
                     var planLine = await _repoPlan.FindAll(x => x.IsOffline == false && ct.Date == x.DueDate.Date && x.BuildingID == plan.BuildingID).ToListAsync();
-                    var startWorkingTime = ct;
+                    var startWorkingTime = plan.DueDate.ToRemoveSecond();
                     // var check = planLine.Any(x => startWorkingTime > x.StartWorkingTime && startWorkingTime >= x.FinishWorkingTime);
                     foreach (var item in planLine)
                     {
