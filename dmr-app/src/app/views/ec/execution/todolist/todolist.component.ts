@@ -219,7 +219,10 @@ export class TodolistComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }));
   }
-
+  transform(value): string {
+    const minutes: number = Math.floor(parseInt(value)/ 60);
+    return minutes + 'm' + ' ' + (value - minutes * 60) + 's';
+  }
   public changeHandler(args, data): void {
     if(args.checked) {
       for (const item of this.selectedRecords) {

@@ -527,14 +527,14 @@
 
           <e-column field='standardDuration'  headerText='Std. Duration' width='160' textAlign='Center'>
             <ng-template #template let-data>
-              <span>{{ data.standardDuration * 1000 | date:'mm:ss':'UTC'}}</span>
+              <span>{{transform(data.standardDuration)}}</span>
             </ng-template>
 
           </e-column>
 
           <e-column field='actualDuration'  headerText='Actual Duration' width='160' textAlign='Center'>
             <ng-template #template let-data>
-              <span>{{ data.actualDuration * 1000 | date:'mm:ss':'UTC'}}</span>
+              <span>{{transform(data.actualDuration)}}</span>
             </ng-template>
           </e-column>
 
