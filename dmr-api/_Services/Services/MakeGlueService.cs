@@ -63,7 +63,6 @@ namespace DMR_API._Services.Services
         public async Task<object> GetGlueWithIngredients(int glueid)
         {
             return await _repoGlueIngredient.GetIngredientOfGlue(glueid);
-            throw new NotImplementedException();
         }
 
         public async Task<object> MakeGlue(string code)

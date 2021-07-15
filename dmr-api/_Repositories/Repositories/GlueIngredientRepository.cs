@@ -61,19 +61,18 @@ namespace DMR_API._Repositories.Repositories
 
         public async Task<object> GetIngredientOfGlue(int glueid)
         {
-            var model2 = await (from a in _context.GlueIngredient
-                                join b in _context.Glues on a.GlueID equals b.ID
-                                join c in _context.Ingredients on a.IngredientID equals c.ID
-                                select new GlueIngredientDto
+            var model = await  _context.GlueIngredient.Where(a => a.GlueID == glueid)
+            .Include(a => a.Glue)
+            .Include(a => a.Ingredient).Select(a => new GlueIngredientDto
                                 {
                                     ID = a.GlueID,
-                                    Name = b.Name,
-                                    Code = b.Code,
-                                    Ingredient = c,
+                                    Name = a.Glue != null ? a.Glue.Name : "",
+                                    Code = a.Glue != null ? a.Glue.Code : "",
+                                    Ingredient = a.Ingredient,
                                     Percentage = a.Percentage
-                                }).GroupBy(x => x.ID).ToListAsync();
+                                }).ToListAsync();
 
-            return model2;
+            return model;
         }
 
         public Task<Glue> Guidance(List<GlueIngredientForGuidanceDto> glueIngredientForGuidanceDto)

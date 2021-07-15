@@ -29,8 +29,17 @@ namespace DMR_API.Controllers
         [HttpGet("getGlueIngredientByGlueID/{glueid}", Name = "getGlueIngredientByGlueID")]
         public async Task<IActionResult> getGlueIngredientByGlueID(int glueid)
         {
-            var obj = await _makeGlueService.GetGlueWithIngredients(glueid);
+            try
+            {
+                            var obj = await _makeGlueService.GetGlueWithIngredients(glueid);
             return Ok(obj);
+            }
+            catch (System.Exception ex)
+            {
+                
+                return BadRequest(ex.Message);
+            }
+
         }
         [HttpGet("GetAllGlues", Name = "GetAllGlues")]
         public async Task<IActionResult> GetAllGlues()
