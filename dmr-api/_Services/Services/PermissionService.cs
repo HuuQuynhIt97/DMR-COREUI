@@ -607,10 +607,12 @@ namespace DMR_API._Services.Services
                 {
                     newPermissions.Add(new Permission(roleID, p.ActionID, p.FunctionID));
                 }
-                var existingPermissions = await _repoPermission.FindAll(x => x.RoleID == roleID).ToListAsync();
+                var existingPermissions = _repoPermission.FindAll().Where(x => x.RoleID == roleID).ToList();
+                if (existingPermissions.Count > 0)
+                {
+                    _repoPermission.RemoveMultiple(existingPermissions);
 
-                _repoPermission.RemoveMultiple(existingPermissions);
-                await _repoPermission.SaveAll();
+                }
 
                 _repoPermission.AddRange(newPermissions.DistinctBy(x => new { x.RoleID, x.ActionID, x.FunctionSystemID }).ToList());
 

@@ -105,7 +105,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
       // console.log('Begin getMenu', userId);
 
-      const menus = await this.permissionService.getMenuByLangID(userId, 'vi').toPromise();
+      const menus = await this.permissionService.getMenuByLangID(userId, 'en').toPromise();
       // console.log('end nav', menus);
 
       const userRole: IUserRole = {
@@ -133,7 +133,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (currentLang) {
         localStorage.setItem('lang', currentLang);
       } else {
-        localStorage.setItem('lang', 'vi');
+        localStorage.setItem('lang', 'en');
       }
 
       if (this.remember) {

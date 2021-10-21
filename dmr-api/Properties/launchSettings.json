@@ -25,7 +25,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
 
-      "applicationUrl": "http://10.4.5.132:1009"
+      "applicationUrl": "http://10.4.5.174:1019"
       //"applicationUrl": "http://10.4.4.224:80"
       //"applicationUrl": "http://10.4.4.224:1002"
     },

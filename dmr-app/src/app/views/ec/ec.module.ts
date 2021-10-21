@@ -139,10 +139,10 @@ export class ECModule {
       });
     } else {
       setTimeout(() => {
-        translate.setDefaultLang('vi');
-        translate.use('vi');
-        L10n.load(this.vi);
-        setCulture('vi');
+        translate.setDefaultLang('en');
+        translate.use('en');
+        L10n.load(this.en);
+        setCulture('en');
       });
     }
   }

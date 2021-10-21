@@ -20,7 +20,7 @@
   "scripts": {
     "start": "ng serve --open --disable-host-check",
     "dev_henry": "ng serve --open --host 10.4.4.224 --port 1000 --disable-host-check",
-    "leo": "ng serve --open --host 10.4.5.132 --port 1000 --disable-host-check",
+    "leo": "ng serve --open --host 10.4.5.174 --port 8097 --disable-host-check",
     "ng": "ng",
     "dev": "ng serve --open",
     "postinstall": "ngcc --properties es2015 browser module main --first-only",

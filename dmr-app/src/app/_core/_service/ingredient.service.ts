@@ -149,11 +149,11 @@ export class IngredientService {
     return this.http.get<ISupplier[]>(this.baseUrl + `GlueIngredient/GetIngredientsByGlueID/${glueid}` );
   }
 
-  create(ingredient: IIngredient) {
+  create(ingredient) {
     return this.http.post(this.baseUrl + 'ingredient/create1', ingredient);
   }
 
-  update(ingredient: IIngredient) {
+  update(ingredient) {
     return this.http.put(this.baseUrl + 'ingredient/update', ingredient);
   }
 

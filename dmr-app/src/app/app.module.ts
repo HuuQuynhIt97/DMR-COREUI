@@ -106,7 +106,7 @@ export function tokenGetter() {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       },
-      defaultLanguage: 'vi'
+      defaultLanguage: 'en'
     }),
     JwtModule.forRoot({
       config: {

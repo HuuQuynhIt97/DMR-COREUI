@@ -833,7 +833,7 @@ namespace DMR_API._Services.Services
                 x.MaterialNO, x.VOC, x.DaysToExpiration, x.Unit, x.ExpiredTime
             }).ToListAsync();
             var total = model.Count;
-            var complete = model.Where(x => x.MaterialNO != "" && x.VOC > 0 && x.ExpiredTime > 0 && x.DaysToExpiration > 0 && x.Unit > 0
+            var complete = model.Where(x => x.MaterialNO != ""  && x.ExpiredTime > 0 && x.DaysToExpiration > 0 && x.Unit > 0
             ).Count();
             var rate = Math.Round((complete / (double)total) * 100);
            return new ResponseDetail<object>{

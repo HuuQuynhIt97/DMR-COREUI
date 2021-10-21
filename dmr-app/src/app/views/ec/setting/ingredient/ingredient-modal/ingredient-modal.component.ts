@@ -13,7 +13,7 @@ import { IngredientService } from 'src/app/_core/_service/ingredient.service';
 export class IngredientModalComponent implements OnInit {
   fields: object = { text: 'title', value: 'id' };
   @Input() title: '';
-  @Input() ingredient: IIngredient = {
+  @Input() ingredient = {
     id: 0,
     name: '',
     percentage: 0,
@@ -22,7 +22,7 @@ export class IngredientModalComponent implements OnInit {
     supplierID: 0,
     position: 0,
     allow: 0,
-    voc: 0,
+    voc: null,
     expiredTime: 0,
     daysToExpiration: 0,
     materialNO: '',
@@ -94,10 +94,10 @@ export class IngredientModalComponent implements OnInit {
       this.alertify.warning('The amount must be greater than zero<br> Vui lòng nhập khối lượng phải lớn hơn 0', true);
       return false;
     }
-    if (this.ingredient.expiredTime === 0) {
-      this.alertify.warning('The expiry period must be greater than zero<br> Vui lòng nhập thời gian hết hạn phải lớn hơn 0', true);
-      return false;
-    }
+    // if (this.ingredient.expiredTime === 0) {
+    //   this.alertify.warning('The expiry period must be greater than zero<br> Vui lòng nhập thời gian hết hạn phải lớn hơn 0', true);
+    //   return false;
+    // }
     if (this.ingredient.daysToExpiration === 0) {
       this.alertify.warning('The days to expiry must be greater than zero<br> Vui lòng nhập ngày hết hạn phải lớn hơn 0', true);
       return false;
@@ -121,6 +121,11 @@ export class IngredientModalComponent implements OnInit {
   }
   create() {
     const check = this.validForm();
+    if(this.ingredient.voc === null)
+    {
+      this.ingredient.voc = 0 
+    }
+
     if (!check) { return; }
     // tslint:disable-next-line:no-string-literal
     delete this.ingredient['glueType'];
@@ -139,6 +144,10 @@ export class IngredientModalComponent implements OnInit {
     // if (this.ingredient.replacementFrequency ) {
       // }
      // tslint:disable-next-line:no-string-literal
+     if(this.ingredient.voc === null)
+     {
+       this.ingredient.voc = 0 
+     }
     delete this.ingredient['glueType'];
     this.ingredientService.update(this.ingredient).subscribe( res => {
       this.alertify.success('Updated successed!');
@@ -176,6 +185,7 @@ export class IngredientModalComponent implements OnInit {
 
   genaratorIngredientCode() {
     this.ingredient.code = this.makeid(8);
+    this.ingredient.voc = ''
   }
 
   makeid(length) {

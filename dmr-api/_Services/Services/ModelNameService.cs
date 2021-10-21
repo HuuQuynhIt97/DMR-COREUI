@@ -671,7 +671,7 @@ namespace DMR_API._Services.Services
                             }
                             else
                             {
-                                await CloneGlueByCloneDto(clone, bpfc, bpfcForClone);
+                                await CloneGlueByCloneDto(clone, bpfcForClone, bpfc);
                             }
                         }
                         // IF keep model NO

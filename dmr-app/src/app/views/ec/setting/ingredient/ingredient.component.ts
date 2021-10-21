@@ -210,7 +210,7 @@ export class IngredientComponent extends BaseComponent implements OnInit {
   }
   rowDB(args: RowDataBoundEventArgs) {
     const data = args.data as any;
-    if (data.expiredTime === 0 || data.unit === 0 || data.voc === 0 ||  data.daysToExpiration === 0 || data.materialNO === '') {
+    if (data.expiredTime === 0 || data.unit === 0  ||  data.daysToExpiration === 0 || data.materialNO === '') {
       args.row.classList.add('bgcolor');
     }
   }
