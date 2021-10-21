@@ -22,6 +22,7 @@ import { IRole } from 'src/app/_core/_model/role';
 import { SettingService } from 'src/app/_core/_service/setting.service';
 import { TodolistService } from 'src/app/_core/_service/todolist.service';
 import { environment } from 'src/environments/environment';
+import { ClassGetter } from '@angular/compiler/src/output/output_ast';
 
 const SUMMARY_RECIEVE_SIGNALR = 'ok';
 const BIG_MACHINE_UNIT = 'k';
@@ -144,6 +145,7 @@ export class MixingComponent implements OnInit, OnDestroy {
     this.subscription.push(this.subject
       .pipe(debounceTime(500))
       .subscribe(async (arg) => {
+        console.log(arg)
         const args = arg.QRCode;
         const item = arg.ingredient;
         this.ingredientsTamp = item;
